@@ -6,7 +6,7 @@ Local development runs infrastructure in Docker Compose and Go services on the h
 
 This gives fast rebuilds, easy debugger attachment, and predictable MySQL/Redis dependencies.
 
-## Planned Files
+## Local Files
 
 - `deploy/docker-compose.infra.yml`: starts MySQL and Redis.
 - `.env.example`: documents local environment values.
@@ -29,8 +29,6 @@ Use named volumes so database state survives container restarts.
 
 ## Common Commands
 
-Planned commands:
-
 ```bash
 make infra-up
 make infra-down
@@ -42,19 +40,18 @@ make test
 make test-integration
 ```
 
-The exact commands will be implemented after the service structure exists.
+`make run-rpc` starts the generated RPC skeleton with `etc/link-rpc-local.yaml`.
+`make run-api` starts the generated API skeleton with `etc/link-api-local.yaml`.
 
 ## Local Verification Flow
 
-1. Start MySQL and Redis.
-2. Run migrations.
-3. Start `link-rpc` locally.
-4. Start `link-api` locally.
-5. Log in as administrator.
-6. Create a short link.
-7. Open `http://localhost:{api_port}/{code}`.
-8. Confirm redirect status and destination.
-9. View link statistics.
+1. Start MySQL and Redis with `make infra-up`.
+2. Start `link-rpc` locally with `make run-rpc`.
+3. Start `link-api` locally with `make run-api`.
+4. Open `http://127.0.0.1:8080/healthz`.
+5. Open `http://127.0.0.1:8080/readyz`.
+6. Confirm `healthz` succeeds when the API process is alive.
+7. Confirm `readyz` succeeds only when API, RPC, MySQL, and Redis are reachable.
 
 ## Configuration Rules
 

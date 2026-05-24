@@ -1,5 +1,5 @@
 # API Contracts
 
-This directory is reserved for future go-zero `.api` files.
+This directory contains go-zero `.api` files.
 
-Contracts will be added when the service boundary is ready to be generated with `goctl`.
+Stage 2 includes only health/readiness contracts. Business API contracts are reserved for later stages.

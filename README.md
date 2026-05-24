@@ -1,14 +1,15 @@
 # zero-link
 
-zero-link is a go-zero-oriented short-link system. The project is currently in a skeleton-only engineering stage: repository structure, local infrastructure, and documentation are prepared, while go-zero service contracts, generated code, and business schema are intentionally deferred.
+zero-link is a go-zero-oriented short-link system. The project is currently in Stage 2 API/RPC skeleton development: go-zero service skeletons exist for health/readiness, while short-link business behavior and business schema are intentionally deferred.
 
 ## Current Stage
 
-Stage 1 builds the project skeleton without business implementation:
+Stage 2 builds the minimal API/RPC transport skeleton without short-link business implementation:
 
 - MySQL and Redis are provided by `deploy/docker-compose.infra.yml`.
-- Service directories are reserved under `services/`.
-- Future migration, API, RPC, and admin UI locations are reserved.
+- `link-api` exposes `GET /healthz` and `GET /readyz`.
+- `link-rpc` exposes a minimal readiness RPC used by the API.
+- Business migrations, admin APIs, redirect APIs, and short-link logic are still deferred.
 - `go.mod` is initialized with `github.com/aliaxy/zero-link`.
 
 ## Requirements
@@ -35,7 +36,14 @@ The `*.example.*` files are committed templates. The `*.local.*` files are for m
 make infra-up
 ```
 
-Generation, migrations, service run commands, and business implementation are reserved for later stages. The current repository contains skeleton directories, infra config, and documentation only.
+Run the generated services locally:
+
+```bash
+make run-rpc
+make run-api
+```
+
+Business migrations and short-link implementation are reserved for later stages.
 
 Validate the current repository:
 

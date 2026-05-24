@@ -1,5 +1,7 @@
 # link-rpc
 
-This directory is reserved for the future go-zero RPC service.
+This directory contains the generated go-zero RPC skeleton.
 
-No generated code or business methods are committed in the skeleton stage.
+Stage 2 exposes only a readiness RPC used by `link-api`.
+
+Business RPC methods are reserved for later stages.
