@@ -72,15 +72,24 @@ Acceptance:
 
 ## Task 4: Configuration
 
-Create:
+Create committed examples:
+
+- `etc/link-api.example.yaml`
+- `etc/link-rpc.example.yaml`
+
+Create local copies for machine-specific values:
 
 - `etc/link-api-local.yaml`
 - `etc/link-rpc-local.yaml`
+
+Local copies must be ignored by Git.
 
 The first implementation can use simple environment variables with these YAML files as documented configuration targets. Full YAML parsing can be added when go-zero generated config structs are introduced.
 
 Acceptance:
 
+- Example configuration files are committed.
+- Local configuration files exist for development but are not tracked.
 - API defaults to `127.0.0.1:8080`.
 - RPC defaults to `127.0.0.1:9090`.
 - RPC dependency defaults point to local MySQL and Redis.

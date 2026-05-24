@@ -1,5 +1,29 @@
 # Git Workflow
 
+## Branch Workflow
+
+Do not make task changes directly on `main`. Create a task branch from `main` before implementation work.
+
+Branch prefixes should match the task type:
+
+| Prefix | Use |
+| --- | --- |
+| `docs/` | Documentation-only changes |
+| `chore/` | Project maintenance, configuration, and repository hygiene |
+| `feat/` | New user-facing or system capability |
+| `fix/` | Bug fixes |
+| `ci/` | CI/CD changes |
+
+Examples:
+
+```text
+chore/config-example-local
+docs/update-local-development
+feat/link-redirect
+fix/cache-invalidation
+ci/add-github-actions
+```
+
 ## Commit Message Format
 
 zero-link uses Conventional Commits:

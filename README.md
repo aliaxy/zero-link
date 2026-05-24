@@ -21,6 +21,16 @@ If `go` is not available in your normal shell, enter the Nix development environ
 
 ## Local Development
 
+Create local configuration from the committed examples:
+
+```bash
+cp .env.example .env.local
+cp etc/link-api.example.yaml etc/link-api-local.yaml
+cp etc/link-rpc.example.yaml etc/link-rpc-local.yaml
+```
+
+The `*.example.*` files are committed templates. The `*.local.*` files are for machine-local values and are ignored by Git.
+
 ```bash
 make infra-up
 ```

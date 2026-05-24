@@ -37,6 +37,15 @@ Do not add any of the above unless the user explicitly asks for that implementat
 - Prefer documentation-first changes when project intent or architecture changes.
 - Keep changes small and scoped.
 
+## Configuration Rules
+
+- Every committed configuration file should have an example variant.
+- Use `.env.example` for committed environment variable documentation.
+- Use `.env.local` for machine-local environment values. Do not commit it.
+- Use `etc/<service>.example.yaml` for committed service configuration examples.
+- Use `etc/<service>-local.yaml` for machine-local service configuration. Do not commit it.
+- Keep secrets and machine-specific values in ignored local files only.
+
 ## Go And go-zero Rules
 
 - The Go module path is `github.com/aliaxy/zero-link`.
@@ -80,6 +89,16 @@ docker compose -f deploy/docker-compose.infra.yml config --quiet
 The current skeleton has no Go packages, so `make test` should report that the skeleton foundation is ready.
 
 ## Git Rules
+
+- Do not make task changes directly on `main`.
+- Create a task branch from `main` before implementation work.
+- Choose branch prefixes by task type, such as `docs/`, `chore/`, `feat/`, `fix/`, or `ci/`.
+- Example branch names:
+  - `chore/config-example-local`
+  - `docs/update-local-development`
+  - `feat/link-redirect`
+  - `fix/cache-invalidation`
+  - `ci/add-github-actions`
 
 Use Conventional Commits without emoji.
 

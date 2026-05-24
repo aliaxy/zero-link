@@ -10,8 +10,11 @@ This gives fast rebuilds, easy debugger attachment, and predictable MySQL/Redis 
 
 - `deploy/docker-compose.infra.yml`: starts MySQL and Redis.
 - `.env.example`: documents local environment values.
-- `etc/link-api-local.yaml`: local API service config.
-- `etc/link-rpc-local.yaml`: local RPC service config.
+- `.env.local`: machine-local environment values ignored by Git.
+- `etc/link-api.example.yaml`: committed API service config example.
+- `etc/link-api-local.yaml`: machine-local API service config ignored by Git.
+- `etc/link-rpc.example.yaml`: committed RPC service config example.
+- `etc/link-rpc-local.yaml`: machine-local RPC service config ignored by Git.
 - `Makefile`: wraps common development commands.
 
 ## Dependency Services
@@ -55,10 +58,22 @@ The exact commands will be implemented after the service structure exists.
 
 ## Configuration Rules
 
+- Committed configuration files are examples only.
+- Local configuration files are copied from examples and ignored by Git.
 - Local service config uses `127.0.0.1` for MySQL and Redis.
 - Compose deployment config uses service names.
 - Secrets are read from environment variables or local ignored files.
 - `.env.example` documents required values but must not contain real secrets.
+
+Create local configuration before running services:
+
+```bash
+cp .env.example .env.local
+cp etc/link-api.example.yaml etc/link-api-local.yaml
+cp etc/link-rpc.example.yaml etc/link-rpc-local.yaml
+```
+
+Only edit the local files for machine-specific values.
 
 ## Tooling Note
 
