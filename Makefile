@@ -1,8 +1,9 @@
 GO ?= go
+GO_ENV := GOCACHE=$(CURDIR)/.cache/go-build
 DOCKER_COMPOSE ?= docker compose
 INFRA_COMPOSE := deploy/docker-compose.infra.yml
 
-.PHONY: infra-up infra-down migrate-up migrate-down run-api run-rpc test test-integration fmt install-hooks
+.PHONY: infra-up infra-down migrate-up migrate-down run-api run-rpc test test-integration lint fmt install-hooks
 
 infra-up:
 	$(DOCKER_COMPOSE) -f $(INFRA_COMPOSE) up -d
@@ -17,24 +18,27 @@ migrate-down:
 	@echo "No migrations exist in the skeleton stage."
 
 run-api:
-	@echo "link-api has not been generated yet. Generate it with goctl in a later stage."
+	$(GO_ENV) $(GO) run ./services/link-api -f etc/link-api-local.yaml
 
 run-rpc:
-	@echo "link-rpc has not been generated yet. Generate it with goctl in a later stage."
+	$(GO_ENV) $(GO) run ./services/link-rpc -f etc/link-rpc-local.yaml
 
 test:
 	@if find . -name '*.go' -not -path './.direnv/*' -not -path './.cache/*' | grep -q .; then \
-		$(GO) test ./...; \
+		$(GO_ENV) $(GO) test ./...; \
 	else \
 		echo "No Go packages yet; skeleton foundation is ready."; \
 	fi
 
 test-integration:
 	@if find . -name '*.go' -not -path './.direnv/*' -not -path './.cache/*' | grep -q .; then \
-		$(GO) test -tags=integration ./...; \
+		$(GO_ENV) $(GO) test -tags=integration ./...; \
 	else \
 		echo "No Go integration packages yet; skeleton foundation is ready."; \
 	fi
+
+lint:
+	GOCACHE=$(CURDIR)/.cache/go-build GOLANGCI_LINT_CACHE=$(CURDIR)/.cache/golangci-lint golangci-lint run ./...
 
 fmt:
 	@if find . -name '*.go' -not -path './.direnv/*' -not -path './.cache/*' | grep -q .; then \
