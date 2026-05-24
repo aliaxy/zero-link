@@ -99,6 +99,7 @@ The current skeleton has no Go packages, so `make test` should report that the s
   - `feat/link-redirect`
   - `fix/cache-invalidation`
   - `ci/add-github-actions`
+- Before creating any commit, show the intended staged changes and commit message, then wait for explicit user confirmation.
 
 Use Conventional Commits without emoji.
 
