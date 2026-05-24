@@ -1,0 +1,25 @@
+.DS_Store
+.env
+.env.local
+.direnv/
+.cache/
+
+# Go
+/bin/
+/dist/
+/vendor/
+*.test
+*.out
+coverage.*
+
+# Local data
+/data/
+
+# Node / future admin UI
+node_modules/
+web/admin/dist/
+web/admin/build/
+
+# IDE
+.idea/
+.vscode/
