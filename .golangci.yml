@@ -1,0 +1,26 @@
+version: "2"
+
+run:
+  timeout: 5m
+
+linters:
+  default: standard
+  enable:
+    - revive
+    - govet
+    - errcheck
+    - staticcheck
+    - unused
+    - lll
+    - modernize
+
+  settings:
+    revive:
+      enable-default-rules: true
+    lll:
+      line-length: 120
+
+formatters:
+  enable:
+    - gofmt
+    - gofumpt
