@@ -1,0 +1,38 @@
+#!/bin/sh
+
+commit_msg_file="$1"
+first_line="$(sed -n '1p' "$commit_msg_file")"
+
+pattern='^(feat|fix|docs|style|refactor|test|chore|ci|build|perf|revert|security)(\([a-z0-9-]+\))?: .{1,72}$'
+
+if ! printf '%s\n' "$first_line" | grep -Eq "$pattern"; then
+  cat >&2 <<'EOF'
+Invalid commit message.
+
+Expected:
+  <type>(<scope>): <subject>
+
+Examples:
+  docs: add project documentation set
+  chore(project): initialize repository skeleton
+  feat(link-api): add redirect route
+
+Allowed types:
+  feat
+  fix
+  docs
+  style
+  refactor
+  test
+  chore
+  ci
+  build
+  perf
+  revert
+  security
+
+Scope is optional and must use lowercase letters, digits, or hyphens.
+Subject must be 1-72 characters.
+EOF
+  exit 1
+fi
