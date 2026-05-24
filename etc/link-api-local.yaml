@@ -1,0 +1,7 @@
+Name: link-api
+Host: 127.0.0.1
+Port: 8080
+
+LinkRPC:
+  Target: 127.0.0.1:9090
+  HealthURL: http://127.0.0.1:9090/rpc/health
