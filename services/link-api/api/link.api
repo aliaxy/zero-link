@@ -1,0 +1,26 @@
+syntax = "v1"
+
+info (
+	title:  "zero-link API"
+	desc:   "Stage 2 API skeleton"
+	author: "zero-link"
+)
+
+type HealthResponse {
+	Status  string `json:"status"`
+	Message string `json:"message"`
+}
+
+type ReadyResponse {
+	Status  string `json:"status"`
+	Message string `json:"message"`
+}
+
+service link-api {
+	@handler HealthHandler
+	get /healthz returns (HealthResponse)
+
+	@handler ReadyHandler
+	get /readyz returns (ReadyResponse)
+}
+
