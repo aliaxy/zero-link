@@ -25,7 +25,7 @@ Risks:
 
 ## Stage 1: Engineering Initialization And Local Dependencies
 
-Goal: create a runnable development foundation.
+Goal: create a skeleton-only development foundation.
 
 Inputs:
 
@@ -34,16 +34,18 @@ Inputs:
 Outputs:
 
 - Go module.
-- go-zero API/RPC skeleton.
+- Reserved service, migration, config, and admin UI directories.
 - `deploy/docker-compose.infra.yml`.
 - MySQL and Redis local setup.
-- Migration mechanism.
+- Example and local configuration files.
+- Placeholder documentation for future generated service contracts and migrations.
 
 Acceptance:
 
-- MySQL and Redis start locally.
-- API can call RPC.
-- RPC can reach MySQL and Redis.
+- `make test` reports that the skeleton foundation is ready.
+- `deploy/docker-compose.infra.yml` validates with Docker Compose.
+- MySQL and Redis can be started locally with `make infra-up`.
+- No generated go-zero service code, API route contracts, protobuf RPC methods, business migrations, or short-link logic exist yet.
 
 Risks:
 
@@ -58,8 +60,10 @@ Outputs:
 
 - API route definitions.
 - RPC proto definitions.
+- Generated go-zero API and RPC service skeletons.
 - Basic health checks.
 - Shared error response mapping.
+- Minimal local API-to-RPC wiring.
 
 Acceptance:
 
