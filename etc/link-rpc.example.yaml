@@ -1,10 +1,10 @@
 Name: link-rpc
 ListenOn: 127.0.0.1:9090
 
-MySQL:
-  Endpoint: 127.0.0.1:3306
-  Database: zero_link
-  User: zerolink
-
-Redis:
-  Endpoint: 127.0.0.1:6379
+Dependencies:
+  MySQL:
+    Endpoint: 127.0.0.1:3306
+    Database: zero_link
+    User: zerolink
+  Redis:
+    Endpoint: 127.0.0.1:6379
