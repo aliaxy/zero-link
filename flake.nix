@@ -17,6 +17,11 @@
       ];
       perSystem =
         { pkgs, ... }:
+        let
+          go-migrate-mysql = pkgs.go-migrate.overrideAttrs (_oldAttrs: {
+            tags = [ "mysql" ];
+          });
+        in
         {
           devShells.default = pkgs.mkShell {
             packages = with pkgs; [
@@ -28,6 +33,7 @@
               gofumpt
               revive
               goctl
+              go-migrate-mysql
 
               # gRPC / Protobuf tooling
               protobuf

@@ -2,6 +2,10 @@ GO ?= go
 GO_ENV := GOCACHE=$(CURDIR)/.cache/go-build
 DOCKER_COMPOSE ?= docker compose
 INFRA_COMPOSE := deploy/docker-compose.infra.yml
+MIGRATE ?= migrate
+
+-include .env.local
+export
 
 .PHONY: infra-up infra-down migrate-up migrate-down run-api run-rpc test test-integration lint fmt install-hooks
 
@@ -12,10 +16,18 @@ infra-down:
 	$(DOCKER_COMPOSE) -f $(INFRA_COMPOSE) down
 
 migrate-up:
-	@echo "No migrations exist in the skeleton stage."
+	@if [ -z "$$ZERO_LINK_MIGRATE_DSN" ]; then \
+		echo "ZERO_LINK_MIGRATE_DSN is not set. Create or update .env.local from .env.example."; \
+		exit 1; \
+	fi
+	$(MIGRATE) -path migrations -database "$$ZERO_LINK_MIGRATE_DSN" up
 
 migrate-down:
-	@echo "No migrations exist in the skeleton stage."
+	@if [ -z "$$ZERO_LINK_MIGRATE_DSN" ]; then \
+		echo "ZERO_LINK_MIGRATE_DSN is not set. Create or update .env.local from .env.example."; \
+		exit 1; \
+	fi
+	$(MIGRATE) -path migrations -database "$$ZERO_LINK_MIGRATE_DSN" down 1
 
 run-api:
 	$(GO_ENV) $(GO) run ./services/link-api -f etc/link-api-local.yaml
