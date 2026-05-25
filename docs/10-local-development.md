@@ -43,15 +43,31 @@ make test-integration
 `make run-rpc` starts the generated RPC skeleton with `etc/link-rpc-local.yaml`.
 `make run-api` starts the generated API skeleton with `etc/link-api-local.yaml`.
 
+## Migration Workflow
+
+Stage 3 should replace the skeleton migration placeholder with a `golang-migrate` workflow.
+
+Intended local behavior:
+
+- `make migrate-up` applies all pending migrations to the local MySQL database.
+- `make migrate-down` rolls back the latest local migration step.
+- Migration files live under `migrations/` and use versioned up/down SQL.
+- The first Stage 3 migration creates `admin_user` and `short_link`.
+- A local/dev seed administrator may be inserted by migration SQL so login can be tested without manual database edits.
+
+Do not run migrations before `make infra-up` has started MySQL.
+
 ## Local Verification Flow
 
 1. Start MySQL and Redis with `make infra-up`.
-2. Start `link-rpc` locally with `make run-rpc`.
-3. Start `link-api` locally with `make run-api`.
-4. Open `http://127.0.0.1:8080/healthz`.
-5. Open `http://127.0.0.1:8080/readyz`.
-6. Confirm `healthz` succeeds when the API process is alive.
-7. Confirm `readyz` succeeds only when API, RPC, MySQL, and Redis are reachable.
+2. After Stage 3 migrations exist, run `make migrate-up`.
+3. Start `link-rpc` locally with `make run-rpc`.
+4. Start `link-api` locally with `make run-api`.
+5. Open `http://127.0.0.1:8080/healthz`.
+6. Open `http://127.0.0.1:8080/readyz`.
+7. Confirm `healthz` succeeds when the API process is alive.
+8. Confirm `readyz` succeeds only when API, RPC, MySQL, and Redis are reachable.
+9. After Stage 3 management APIs exist, log in with the seeded local administrator and create a short link through the management API.
 
 ## Configuration Rules
 
