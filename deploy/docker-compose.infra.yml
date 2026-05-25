@@ -2,6 +2,9 @@ services:
   mysql:
     image: mysql:8.4
     container_name: zero-link-mysql
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_0900_ai_ci
     environment:
       MYSQL_DATABASE: zero_link
       MYSQL_USER: zerolink
