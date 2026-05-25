@@ -8,8 +8,11 @@
 - Pass `context.Context` through all database operations.
 - Use parameterized queries for all user-controlled values.
 - Convert `sql.ErrNoRows` into domain-level not-found errors.
+- Use `golang-migrate` with reviewed versioned SQL for schema changes.
 
-## Tables
+## Stage 3 Tables
+
+Stage 3 introduces the first business schema for administrator authentication and short-link management only.
 
 ### admin_user
 
@@ -54,6 +57,10 @@ Indexes:
 - Index on `created_at`.
 - Index on `created_by`.
 - Index on `expire_at`.
+
+## Deferred Analytics Tables
+
+Analytics storage is intentionally deferred until the analytics stage. Do not add these tables during Stage 3 implementation.
 
 ### link_visit_event
 
@@ -107,9 +114,11 @@ Indexes:
 1. Validate input.
 2. Generate or validate code.
 3. Insert into MySQL.
-4. Do not require immediate Redis write; redirect can populate cache on first read.
+4. Do not require an immediate Redis write in Stage 3.
 
 ### Resolve Short Link
+
+Redirect resolution is deferred until Stage 4. The intended future flow is:
 
 1. Try Redis.
 2. On miss, read MySQL.
@@ -119,10 +128,12 @@ Indexes:
 ### Update Short Link
 
 1. Update MySQL.
-2. Delete the Redis cache key for the code.
-3. Let later redirects repopulate cache.
+2. Keep cache invalidation requirements documented for Stage 4.
+3. Do not add Redis redirect cache behavior during Stage 3.
 
 ### Record Visit
+
+Visit recording is deferred until the analytics stage. The intended future flow is:
 
 1. Redirect path emits a lightweight visit event.
 2. Event storage failure is logged and counted but does not cancel a valid redirect.
@@ -131,6 +142,10 @@ Indexes:
 ## Migration Policy
 
 - Schema changes must be versioned.
+- Use `golang-migrate` for local and future deployment migrations.
 - Migration SQL should be reviewed by humans.
 - Rollback scripts are required for destructive changes.
 - Local development must support recreating a clean schema.
+- Stage 3 should create `admin_user` and `short_link` before any generated models or business logic depend on them.
+- Local development may seed one default administrator through migration SQL so login can be verified without manual setup.
+- Seeded administrator passwords must be stored as bcrypt hashes; plaintext passwords must not be committed outside documented local examples.
