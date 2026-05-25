@@ -5,9 +5,10 @@
 - Management APIs return JSON.
 - Redirect APIs return HTTP redirects or simple browser-facing error pages.
 - Internal technical errors are logged server-side and exposed as stable public error codes.
-- All management APIs except login require administrator authentication.
+- Stage 3 management APIs use `Authorization: Bearer <jwt>` authentication.
+- All Stage 3 management APIs except login require administrator authentication.
 
-## Management HTTP API
+## Stage 3 Management HTTP API
 
 ### POST /admin/login
 
@@ -33,6 +34,11 @@ Response:
 
 Returns the authenticated administrator profile.
 
+Authentication:
+
+- Required.
+- The request must include `Authorization: Bearer <jwt>`.
+
 ### POST /admin/links
 
 Request:
@@ -49,6 +55,10 @@ Request:
 
 `code` is optional. If omitted, the system generates one.
 
+Authentication:
+
+- Required.
+
 ### GET /admin/links
 
 Query parameters:
@@ -60,9 +70,17 @@ Query parameters:
 
 Returns paginated short-link summaries.
 
+Authentication:
+
+- Required.
+
 ### GET /admin/links/{id}
 
-Returns one short link and basic aggregate counters.
+Returns one short link.
+
+Authentication:
+
+- Required.
 
 ### PATCH /admin/links/{id}
 
@@ -76,9 +94,21 @@ Updates mutable fields:
 
 The short code is immutable.
 
+Authentication:
+
+- Required.
+
 ### DELETE /admin/links/{id}
 
 Soft deletes or archives the link.
+
+Authentication:
+
+- Required.
+
+## Deferred Management APIs
+
+The following management APIs are deferred until later stages.
 
 ### GET /admin/links/{id}/stats
 
@@ -89,7 +119,9 @@ Query parameters:
 
 Returns totals and daily trend data.
 
-## Redirect API
+## Deferred Redirect API
+
+Redirect serving is deferred until Stage 4. Do not add this route during Stage 3.
 
 ### GET /{code}
 
@@ -112,9 +144,23 @@ Returns readiness. It checks dependencies needed to serve traffic, including RPC
 
 ## RPC Methods
 
+Stage 3 RPC methods should support administrator authentication and short-link management only.
+
+### AuthenticateAdmin
+
+Authenticates administrator credentials and returns token subject data for API token creation.
+
+### GetAdminProfile
+
+Fetches the authenticated administrator profile.
+
 ### CreateShortLink
 
 Creates a link, validates code and URL, and returns the created link.
+
+### ListShortLinks
+
+Returns paginated short-link summaries for management APIs.
 
 ### GetShortLink
 
@@ -122,7 +168,13 @@ Fetches link details by ID.
 
 ### UpdateShortLink
 
-Updates mutable link fields and invalidates cache.
+Updates mutable link fields. Cache invalidation behavior is deferred until Stage 4.
+
+### DeleteShortLink
+
+Soft deletes a short link.
+
+## Deferred RPC Methods
 
 ### ResolveShortLink
 
