@@ -1,3 +1,4 @@
+// Package model contains generated database models for link-rpc.
 package model
 
 import "github.com/zeromicro/go-zero/core/stores/sqlx"

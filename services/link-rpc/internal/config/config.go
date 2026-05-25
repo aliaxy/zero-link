@@ -5,9 +5,10 @@ import "github.com/zeromicro/go-zero/zrpc"
 
 // MySQLConfig contains the MySQL dependency settings used by readiness checks.
 type MySQLConfig struct {
-	Endpoint string
-	Database string
-	User     string
+	Endpoint   string
+	Database   string
+	User       string
+	DataSource string
 }
 
 // RedisConfig contains the Redis dependency settings used by readiness checks.
