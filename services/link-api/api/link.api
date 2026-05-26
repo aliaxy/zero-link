@@ -2,7 +2,7 @@ syntax = "v1"
 
 info (
 	title:  "zero-link API"
-	desc:   "Stage 2 API skeleton"
+	desc:   "Health/readiness API skeleton"
 	author: "zero-link"
 )
 
@@ -23,4 +23,3 @@ service link-api {
 	@handler ReadyHandler
 	get /readyz returns (ReadyResponse)
 }
-

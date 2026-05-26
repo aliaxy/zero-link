@@ -2,9 +2,9 @@
 
 ## Goal
 
-Track the current zero-link implementation state and define the next safe handoff point. The project has moved past the Stage 1 repository foundation and is now at the end of Stage 2 API/RPC skeleton work.
+Track the current zero-link implementation state and define the next safe handoff point. The project has moved past the Stage 1 repository foundation and completed the Stage 2 API/RPC skeleton. It is now in Stage 3 foundation alignment.
 
-This plan intentionally preserves the current stage boundary: no short-link business APIs, business RPC methods, database migrations, redirect behavior, admin UI, or analytics should be added until the next implementation stage is explicitly started.
+This plan intentionally preserves the current Stage 3 foundation boundary: no short-link business APIs, business RPC methods, additional database migrations, redirect behavior, admin UI, or analytics should be added until the next implementation pass is explicitly started.
 
 ## Source Documents
 
@@ -24,7 +24,8 @@ Stage 1 is complete. The repository foundation includes:
 - Go module `github.com/aliaxy/zero-link`.
 - Local dependency Compose file at `deploy/docker-compose.infra.yml`.
 - Example configuration files under `etc/`.
-- Reserved directories for services, migrations, and future admin UI.
+- Reserved directories for services and future admin UI.
+- Stage 3 foundation migrations under `migrations/`.
 - Make targets for local infrastructure, service runs, tests, formatting, and linting.
 
 Stage 2 is implemented. The current transport skeleton includes:
@@ -41,6 +42,14 @@ Stage 2 is implemented. The current transport skeleton includes:
 - RPC readiness logic that validates configured MySQL and Redis endpoints and performs simple TCP connectivity checks.
 - Unit coverage for RPC readiness validation of missing dependency endpoints.
 
+Stage 3 foundation work has started. The current foundation includes:
+
+- `golang-migrate` commands for local schema application and rollback.
+- Initial migration files for `admin_user` and `short_link`.
+- A seeded local/dev administrator account for migration smoke testing.
+- Generated go-zero MySQL models for `admin_user` and `short_link`.
+- RPC service-context wiring for the generated models.
+
 ## Stage 2 Decisions
 
 - Keep service discovery local and direct for now.
@@ -55,14 +64,13 @@ Stage 2 is implemented. The current transport skeleton includes:
 
 ## Stage 2 Acceptance
 
-Stage 2 is accepted when:
+Stage 2 is accepted:
 
 - `GET /healthz` returns a successful API health response.
 - `GET /readyz` calls `link-rpc` and returns ready when RPC dependencies are reachable.
 - `link-rpc` readiness reports unavailable dependencies without requiring any business schema.
 - `make test` passes in a shell where Go is available.
 - The local infrastructure Compose file validates.
-- No business migrations exist.
 - No admin, redirect, analytics, or short-link management API has been introduced.
 
 ## Current Verification
@@ -94,11 +102,11 @@ Expected behavior:
 - `/healthz` reports the API process is healthy.
 - `/readyz` reports the API and RPC are ready when MySQL and Redis are reachable.
 
-## Stage 3 Entry Point
+## Stage 3 Foundation Status
 
-The next implementation stage is Stage 3: Administrator And Link Management.
+The active implementation stage is Stage 3: Administrator And Link Management. The first foundation slice has begun with migration tooling, initial schema, generated models, and model wiring.
 
-Before writing Stage 3 code, create a focused Stage 3 plan that covers:
+Before writing Stage 3 business behavior, create a focused Stage 3 implementation plan that covers:
 
 - Business database schema for administrators and links.
 - Migration workflow and local migration verification.
@@ -110,13 +118,12 @@ Before writing Stage 3 code, create a focused Stage 3 plan that covers:
 
 Stage 3 should not include redirect serving, Redis redirect caching, analytics, or the management UI. Those remain reserved for later milestones.
 
-## Stage 3 First Task Recommendation
+## Stage 3 Next Task Recommendation
 
-Start Stage 3 with a documentation-first design update for the persistence and management API slice:
+Continue Stage 3 with the administrator and short-link management implementation slice:
 
-1. Update `docs/04-storage-design.md` with the concrete administrator and link tables for the first business schema.
-2. Update `docs/06-api-design.md` with the exact management API contracts.
-3. Update `docs/12-testing-strategy.md` with the Stage 3 unit and integration coverage.
-4. Only after the design is accepted, add migrations, RPC methods, API routes, generated service code, and tests.
+1. Keep the existing `docs/04-storage-design.md`, `docs/06-api-design.md`, and `docs/12-testing-strategy.md` as the source of truth.
+2. Add administrator authentication, JWT handling, management API contracts, business RPC methods, and tests in a focused implementation pass.
+3. Do not add redirect serving, Redis redirect caching, analytics, or management UI during Stage 3 management implementation.
 
 This keeps the business implementation aligned with the existing milestone boundaries and avoids pulling redirect/cache behavior forward too early.
