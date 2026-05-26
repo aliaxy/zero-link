@@ -27,7 +27,7 @@ func main() {
 	ctx := svc.NewServiceContext(c)
 
 	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
-		linkv1.RegisterLinkServiceServer(grpcServer, server.NewLinkServer(ctx))
+		linkv1.RegisterLinkServiceServer(grpcServer, server.NewLinkServiceServer(ctx))
 
 		if c.Mode == service.DevMode || c.Mode == service.TestMode {
 			reflection.Register(grpcServer)

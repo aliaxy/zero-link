@@ -51,9 +51,20 @@ Do not add business API routes, business RPC methods, new migrations, or short-l
 - If the module ever needs to be recreated, use `go mod init`; do not handwrite `go.mod`.
 - Future service names are `link-api` and `link-rpc`.
 - Future go-zero services should use generated `ServiceContext` wiring.
-- Proto files should use absolute `go_package` values with explicit Go package aliases.
-- Versioned protobuf packages should use clear Go aliases, such as `linkv1` for `link.v1`.
-- If goctl generates awkward protobuf import aliases, normalize generated service code imports to the explicit package alias after generation.
+- RPC generation must be run from the repository root with:
+
+```bash
+goctl rpc protoc services/link-rpc/proto/link/v1/link.proto \
+  --go_out=services/link-rpc/pb \
+  --go_opt=paths=source_relative \
+  --go-grpc_out=services/link-rpc/pb \
+  --go-grpc_opt=paths=source_relative \
+  --zrpc_out=services/link-rpc \
+  --proto_path=services/link-rpc/proto
+```
+
+- Proto files should use absolute `go_package` values without explicit Go package aliases, such as `github.com/aliaxy/zero-link/services/link-rpc/pb/linkv1`.
+- Accept goctl-generated package names, client directories, and exported client identifiers as the source of truth.
 - Do not introduce a dependency injection framework unless explicitly requested.
 - Keep Docker Compose application service integration for a later stage; local infra is separate.
 - Readiness checks may use simple dependency connectivity checks and must not depend on business data.

@@ -9,21 +9,21 @@ import (
 
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/logic"
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/svc"
-	linkv1 "github.com/aliaxy/zero-link/services/link-rpc/pb/link/v1"
+	"github.com/aliaxy/zero-link/services/link-rpc/pb/link/v1"
 )
 
-type LinkServer struct {
+type LinkServiceServer struct {
 	svcCtx *svc.ServiceContext
 	linkv1.UnimplementedLinkServiceServer
 }
 
-func NewLinkServer(svcCtx *svc.ServiceContext) *LinkServer {
-	return &LinkServer{
+func NewLinkServiceServer(svcCtx *svc.ServiceContext) *LinkServiceServer {
+	return &LinkServiceServer{
 		svcCtx: svcCtx,
 	}
 }
 
-func (s *LinkServer) Check(ctx context.Context, in *linkv1.CheckRequest) (*linkv1.CheckResponse, error) {
+func (s *LinkServiceServer) Check(ctx context.Context, in *linkv1.CheckRequest) (*linkv1.CheckResponse, error) {
 	l := logic.NewCheckLogic(ctx, s.svcCtx)
 	return l.Check(in)
 }

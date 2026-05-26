@@ -35,7 +35,7 @@ Stage 2 is implemented. The current transport skeleton includes:
 - API contract at `services/link-api/api/link.api`.
 - RPC protobuf contract at `services/link-rpc/proto/link/v1/link.proto`.
 - Generated protobuf and gRPC code under `services/link-rpc/pb/link/v1/`.
-- RPC client package under `services/link-rpc/linkclient/`.
+- RPC client package under the goctl-generated `services/link-rpc/linkservice/` directory.
 - API route contracts for `GET /healthz` and `GET /readyz` only.
 - RPC readiness method `LinkService.Check` only.
 - API readiness logic that calls the RPC readiness method.
@@ -57,8 +57,8 @@ Stage 3 foundation work has started. The current foundation includes:
 - Keep application services running on the host machine during local development.
 - Keep readiness checks simple and schema-free.
 - Use generated go-zero `ServiceContext` wiring.
-- Keep proto `go_package` absolute with explicit alias `linkv1`.
-- Normalize generated code imports to clear package aliases when needed.
+- Keep proto `go_package` absolute without an explicit Go package alias.
+- Accept goctl-generated package names, client directories, and exported client identifiers as the source of truth.
 - Do not introduce a dependency injection framework.
 - Do not add short-link business behavior in Stage 2.
 

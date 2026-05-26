@@ -9,7 +9,7 @@ import (
 
 	"github.com/aliaxy/zero-link/services/link-api/internal/svc"
 	"github.com/aliaxy/zero-link/services/link-api/internal/types"
-	"github.com/aliaxy/zero-link/services/link-rpc/linkclient"
+	"github.com/aliaxy/zero-link/services/link-rpc/linkservice"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -32,7 +32,7 @@ func NewReadyLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ReadyLogic 
 
 // Ready reports whether the API and its RPC dependency are ready.
 func (l *ReadyLogic) Ready() (resp *types.ReadyResponse, err error) {
-	check, err := l.svcCtx.LinkRPC.Check(l.ctx, &linkclient.CheckRequest{})
+	check, err := l.svcCtx.LinkRPC.Check(l.ctx, &linkservice.CheckRequest{})
 	if err != nil {
 		return nil, fmt.Errorf("check link rpc readiness: %w", err)
 	}
