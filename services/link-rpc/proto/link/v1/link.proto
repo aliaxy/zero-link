@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package link.v1;
 
-option go_package = "github.com/aliaxy/zero-link/services/link-rpc/pb/link/v1;linkv1";
+option go_package = "github.com/aliaxy/zero-link/services/link-rpc/pb/linkv1";
 
 message CheckRequest {}
 

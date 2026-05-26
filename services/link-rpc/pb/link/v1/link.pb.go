@@ -119,7 +119,7 @@ const file_link_v1_link_proto_rawDesc = "" +
 	"\x02ok\x18\x01 \x01(\bR\x02ok\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage2E\n" +
 	"\vLinkService\x126\n" +
-	"\x05Check\x12\x15.link.v1.CheckRequest\x1a\x16.link.v1.CheckResponseBAZ?github.com/aliaxy/zero-link/services/link-rpc/pb/link/v1;linkv1b\x06proto3"
+	"\x05Check\x12\x15.link.v1.CheckRequest\x1a\x16.link.v1.CheckResponseB9Z7github.com/aliaxy/zero-link/services/link-rpc/pb/linkv1b\x06proto3"
 
 var (
 	file_link_v1_link_proto_rawDescOnce sync.Once

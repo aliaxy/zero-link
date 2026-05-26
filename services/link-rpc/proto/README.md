@@ -4,6 +4,18 @@ This directory contains protobuf files.
 
 The current protobuf contract includes only a readiness RPC contract. Stage 3 database foundation exists, but business RPC methods are reserved for the next Stage 3 implementation pass.
 
-Proto files live under versioned package directories, such as `link/v1`, and should use absolute `go_package` values with explicit Go package aliases. For `link.v1`, use the Go alias `linkv1`.
+Proto files live under versioned package directories, such as `link/v1`, and should use absolute `go_package` values without explicit Go package aliases.
 
-If goctl generates awkward aliases for protobuf imports, normalize the generated service code to import the protobuf package as `linkv1`.
+RPC generation should be run from the repository root:
+
+```bash
+goctl rpc protoc services/link-rpc/proto/link/v1/link.proto \
+  --go_out=services/link-rpc/pb \
+  --go_opt=paths=source_relative \
+  --go-grpc_out=services/link-rpc/pb \
+  --go-grpc_opt=paths=source_relative \
+  --zrpc_out=services/link-rpc \
+  --proto_path=services/link-rpc/proto
+```
+
+Accept goctl's generated package, directory, and client names as the source of truth.

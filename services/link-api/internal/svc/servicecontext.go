@@ -6,7 +6,7 @@ package svc
 
 import (
 	"github.com/aliaxy/zero-link/services/link-api/internal/config"
-	"github.com/aliaxy/zero-link/services/link-rpc/linkclient"
+	"github.com/aliaxy/zero-link/services/link-rpc/linkservice"
 
 	"github.com/zeromicro/go-zero/zrpc"
 )
@@ -14,13 +14,13 @@ import (
 // ServiceContext holds dependencies shared by link-api handlers.
 type ServiceContext struct {
 	Config  config.Config
-	LinkRPC linkclient.Link
+	LinkRPC linkservice.LinkService
 }
 
 // NewServiceContext creates a link-api service context.
 func NewServiceContext(c config.Config) *ServiceContext {
 	return &ServiceContext{
 		Config:  c,
-		LinkRPC: linkclient.NewLink(zrpc.MustNewClient(c.LinkRPC)),
+		LinkRPC: linkservice.NewLinkService(zrpc.MustNewClient(c.LinkRPC)),
 	}
 }

@@ -2,12 +2,12 @@
 // goctl 1.9.2
 // Source: link.proto
 
-package linkclient
+package linkservice
 
 import (
 	"context"
 
-	linkv1 "github.com/aliaxy/zero-link/services/link-rpc/pb/link/v1"
+	"github.com/aliaxy/zero-link/services/link-rpc/pb/link/v1"
 
 	"github.com/zeromicro/go-zero/zrpc"
 	"google.golang.org/grpc"
@@ -17,22 +17,22 @@ type (
 	CheckRequest  = linkv1.CheckRequest
 	CheckResponse = linkv1.CheckResponse
 
-	Link interface {
+	LinkService interface {
 		Check(ctx context.Context, in *CheckRequest, opts ...grpc.CallOption) (*CheckResponse, error)
 	}
 
-	defaultLink struct {
+	defaultLinkService struct {
 		cli zrpc.Client
 	}
 )
 
-func NewLink(cli zrpc.Client) Link {
-	return &defaultLink{
+func NewLinkService(cli zrpc.Client) LinkService {
+	return &defaultLinkService{
 		cli: cli,
 	}
 }
 
-func (m *defaultLink) Check(ctx context.Context, in *CheckRequest, opts ...grpc.CallOption) (*CheckResponse, error) {
+func (m *defaultLinkService) Check(ctx context.Context, in *CheckRequest, opts ...grpc.CallOption) (*CheckResponse, error) {
 	client := linkv1.NewLinkServiceClient(m.cli.Conn())
 	return client.Check(ctx, in, opts...)
 }
