@@ -24,8 +24,8 @@ Columns:
 - `username VARCHAR(64) NOT NULL`
 - `password_hash VARCHAR(255) NOT NULL`
 - `status TINYINT NOT NULL`
-- `created_at DATETIME NOT NULL`
-- `updated_at DATETIME NOT NULL`
+- `created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP`
+- `updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`
 
 Indexes:
 
@@ -46,8 +46,8 @@ Columns:
 - `status TINYINT NOT NULL`
 - `expire_at DATETIME NULL`
 - `created_by BIGINT NOT NULL`
-- `created_at DATETIME NOT NULL`
-- `updated_at DATETIME NOT NULL`
+- `created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP`
+- `updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`
 - `deleted_at DATETIME NULL`
 
 Indexes:
@@ -57,6 +57,10 @@ Indexes:
 - Index on `created_at`.
 - Index on `created_by`.
 - Index on `expire_at`.
+
+Constraints:
+
+- Foreign key from `short_link.created_by` to `admin_user.id`.
 
 ## Deferred Analytics Tables
 

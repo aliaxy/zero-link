@@ -2,7 +2,7 @@
 
 This directory contains protobuf files.
 
-Stage 2 includes only a readiness RPC contract. Business RPC methods are reserved for later stages.
+The current protobuf contract includes only a readiness RPC contract. Stage 3 database foundation exists, but business RPC methods are reserved for the next Stage 3 implementation pass.
 
 Proto files live under versioned package directories, such as `link/v1`, and should use absolute `go_package` values with explicit Go package aliases. For `link.v1`, use the Go alias `linkv1`.
 

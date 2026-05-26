@@ -45,7 +45,7 @@ make test-integration
 
 ## Migration Workflow
 
-Stage 3 should replace the skeleton migration placeholder with a `golang-migrate` workflow.
+Stage 3 foundation uses a `golang-migrate` workflow.
 
 Intended local behavior:
 
@@ -60,14 +60,14 @@ Do not run migrations before `make infra-up` has started MySQL.
 ## Local Verification Flow
 
 1. Start MySQL and Redis with `make infra-up`.
-2. After Stage 3 migrations exist, run `make migrate-up`.
+2. Run `make migrate-up` to apply the Stage 3 foundation schema.
 3. Start `link-rpc` locally with `make run-rpc`.
 4. Start `link-api` locally with `make run-api`.
 5. Open `http://127.0.0.1:8080/healthz`.
 6. Open `http://127.0.0.1:8080/readyz`.
 7. Confirm `healthz` succeeds when the API process is alive.
 8. Confirm `readyz` succeeds only when API, RPC, MySQL, and Redis are reachable.
-9. After Stage 3 management APIs exist, log in with the seeded local administrator and create a short link through the management API.
+9. After Stage 3 management APIs exist in a later implementation pass, log in with the seeded local administrator and create a short link through the management API.
 
 ## Configuration Rules
 
