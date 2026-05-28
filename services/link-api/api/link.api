@@ -133,6 +133,14 @@ type DeleteShortLinkResponse {
 	Data    DeleteShortLinkData `json:"data"`
 }
 
+type RedirectRequest {
+	Code string `path:"code"`
+}
+
+type RedirectResponse {
+	OriginUrl string `json:"origin_url"`
+}
+
 service link-api {
 	@handler HealthHandler
 	get /healthz returns (HealthResponse)
@@ -142,6 +150,9 @@ service link-api {
 
 	@handler LoginHandler
 	post /admin/login (LoginRequest) returns (LoginResponse)
+
+	@handler RedirectHandler
+	get /:code (RedirectRequest) returns (RedirectResponse)
 }
 
 @server (

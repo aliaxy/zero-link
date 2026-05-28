@@ -39,6 +39,25 @@ func ErrorHandler(ctx context.Context, err error) (int, any) {
 // ErrUnauthenticated reports a missing or invalid management identity.
 var ErrUnauthenticated = errors.New("unauthenticated")
 
+// RedirectError writes a plain HTTP error for redirect path failures.
+// The redirect path does not use JSON envelopes.
+func RedirectError(w http.ResponseWriter, err error) {
+	if st, ok := status.FromError(err); ok {
+		switch st.Code() {
+		case codes.NotFound:
+			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		case codes.PermissionDenied:
+			http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+		case codes.FailedPrecondition:
+			http.Error(w, http.StatusText(http.StatusGone), http.StatusGone)
+		default:
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		}
+		return
+	}
+	http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+}
+
 func grpcError(st *status.Status) (int, ErrorEnvelope) {
 	switch st.Code() {
 	case codes.InvalidArgument:
@@ -51,6 +70,8 @@ func grpcError(st *status.Status) (int, ErrorEnvelope) {
 		return http.StatusNotFound, ErrorEnvelope{Code: "NOT_FOUND", Message: st.Message()}
 	case codes.AlreadyExists:
 		return http.StatusConflict, ErrorEnvelope{Code: "CONFLICT", Message: st.Message()}
+	case codes.FailedPrecondition:
+		return http.StatusGone, ErrorEnvelope{Code: "GONE", Message: st.Message()}
 	default:
 		return http.StatusInternalServerError, ErrorEnvelope{Code: "INTERNAL", Message: "internal error"}
 	}

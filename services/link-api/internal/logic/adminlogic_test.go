@@ -21,6 +21,7 @@ type fakeLinkService struct {
 	getResp     *linkservice.GetShortLinkResponse
 	updateResp  *linkservice.UpdateShortLinkResponse
 	deleteResp  *linkservice.DeleteShortLinkResponse
+	resolveResp *linkservice.ResolveShortLinkResponse
 	err         error
 }
 
@@ -117,7 +118,7 @@ func (f fakeLinkService) ResolveShortLink(
 	if f.err != nil {
 		return nil, f.err
 	}
-	return nil, nil
+	return f.resolveResp, nil
 }
 
 func TestLoginLogic_Login(t *testing.T) {

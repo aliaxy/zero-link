@@ -91,6 +91,14 @@ type ReadyResponse struct {
 	Message string `json:"message"`
 }
 
+type RedirectRequest struct {
+	Code string `path:"code"`
+}
+
+type RedirectResponse struct {
+	OriginUrl string `json:"origin_url"`
+}
+
 type ShortLinkInfo struct {
 	Id          int64  `json:"id"`
 	Code        string `json:"code"`

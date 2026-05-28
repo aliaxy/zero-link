@@ -41,6 +41,18 @@ func TestErrorHandlerMapsGRPCErrors(t *testing.T) {
 			wantCode:   "CONFLICT",
 		},
 		{
+			name:       "permission denied",
+			err:        status.Error(codes.PermissionDenied, "disabled"),
+			wantStatus: http.StatusForbidden,
+			wantCode:   "PERMISSION_DENIED",
+		},
+		{
+			name:       "gone",
+			err:        status.Error(codes.FailedPrecondition, "expired"),
+			wantStatus: http.StatusGone,
+			wantCode:   "GONE",
+		},
+		{
 			name:       "internal",
 			err:        status.Error(codes.Internal, "db failed"),
 			wantStatus: http.StatusInternalServerError,
