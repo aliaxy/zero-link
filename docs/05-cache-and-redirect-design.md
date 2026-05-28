@@ -2,22 +2,22 @@
 
 ## Redis Key Design
 
-- `shortlink:code:{code}`: cached short-link resolution payload.
+- `cache:shortLink:id:{id}`: short-link row cached by primary key (goctl model layer).
+- `cache:shortLink:code:{code}`: short-link row cached by unique code index (goctl model layer).
 - `ratelimit:create:{admin_id}`: administrator create-rate counter.
 - `ratelimit:redirect:{code}:{ip_hash}`: per-link redirect-rate counter.
 - `uv:{link_id}:{date}`: optional UV de-duplication set or bitmap.
 
+The `cache:shortLink:*` keys are managed by the go-zero goctl cached model. `FindOneByCode` uses a
+two-level index cache (code → id → full row). `Update` and `Delete` invalidate both keys automatically.
+Custom operations that bypass the generated `Update` or `Delete` (such as soft delete) must invalidate
+both keys explicitly.
+
 ## Cached Payload
 
-`shortlink:code:{code}` should contain only fields needed by redirect resolution:
-
-- `link_id`
-- `code`
-- `origin_url`
-- `status`
-- `expire_at`
-
-The payload must not contain administrator secrets or unrelated metadata.
+`cache:shortLink:code:{code}` caches the full `short_link` row. The redirect logic reads `origin_url`,
+`status`, and `expire_at` from the cached row. Fields unrelated to redirect resolution are present but
+unused on the redirect path.
 
 ## Redirect Flow
 
@@ -51,14 +51,16 @@ The payload must not contain administrator secrets or unrelated metadata.
 
 ## Cache Invalidation
 
-Delete `shortlink:code:{code}` after:
+Invalidate `cache:shortLink:id:{id}` and `cache:shortLink:code:{code}` after:
 
 - Original URL update.
 - Status update.
 - Expiration time update.
 - Soft delete.
 
-Cache invalidation should be best effort but observable. If Redis deletion fails, the update operation should return an error unless product requirements explicitly allow temporary stale redirects.
+The goctl `Update` and `Delete` methods handle invalidation automatically. Soft delete uses a custom
+`ExecCtx` call that invalidates both keys explicitly before executing the SQL. Cache invalidation is
+best effort; if Redis deletion fails the operation still returns success to the caller.
 
 ## Performance Boundary
 

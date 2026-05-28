@@ -3,10 +3,10 @@
 ## Goal
 
 Track the current zero-link implementation state and define the next safe handoff point. The project has
-completed the Stage 2 API/RPC skeleton and now has the Stage 3 backend management implementation in place.
+completed Stage 3 backend management and has begun Stage 4 redirect and cache work.
 
-Stage 3 covers administrator authentication and short-link management only. It intentionally does not add
-redirect behavior, Redis redirect cache behavior, analytics APIs, or the management UI.
+Stage 3 covers administrator authentication and short-link management only. Stage 4 adds redirect serving,
+Redis cache lookup and invalidation via the goctl cached model, and the `GET /{code}` route.
 
 ## Source Documents
 
@@ -41,6 +41,13 @@ Stage 2 is complete. The transport skeleton includes:
 - RPC readiness method `LinkService.Check`.
 - API readiness logic that calls the RPC readiness method.
 - RPC readiness logic that validates configured MySQL and Redis endpoints with simple connectivity checks.
+
+Stage 4 is in progress. Work completed so far:
+
+- `ResolveShortLink` RPC method added to proto and generated.
+- goctl cached model (`--cache`) wired for `AdminUserModel` and `ShortLinkModel`.
+- `CacheRedis` config field added to link-rpc config and example yaml.
+- `ErrPermissionDenied` and `ErrGone` domain errors added and mapped to gRPC status codes.
 
 Stage 3 backend management is implemented. The current implementation includes:
 
@@ -126,7 +133,8 @@ The Stage 3 RPC contracts are documented in `docs/06-api-design.md` and implemen
 Implementation notes:
 
 - The existing `Check` readiness method remains available.
-- `ResolveShortLink`, `RecordVisit`, and `GetLinkStats` remain deferred.
+- `ResolveShortLink` proto contract is generated; business logic is in progress (Stage 4).
+- `RecordVisit` and `GetLinkStats` remain deferred.
 - Proto `go_package` uses an absolute import path without an explicit Go package alias.
 - goctl-generated package names, client directories, and exported client identifiers are the source of truth.
 - The services use generated go-zero `ServiceContext` wiring.
@@ -209,12 +217,14 @@ Stage 3 management implementation is accepted when:
 
 ## Next Handoff
 
-The next implementation stage should focus on redirect serving and cache behavior:
+Stage 4 remaining work:
 
-- Add `GET /{code}` only when Stage 4 begins.
-- Add RPC support for resolving short links only when Stage 4 begins.
-- Add Redis redirect cache lookup, backfill, and invalidation only when Stage 4 begins.
-- Keep analytics and management UI deferred to their dedicated stages.
+- Implement `ResolveShortLink` business logic (Redis cache lookup via `FindOneByCode`, status and expiry checks).
+- Add best-effort cache invalidation in `UpdateShortLink` and `DeleteShortLink` logic.
+- Add `GET /{code}` route in link-api with `RedirectHandler` and `RedirectLogic`.
+- Map gRPC status codes to HTTP redirect responses (302, 404, 403, 410).
+
+Keep analytics and management UI deferred to their dedicated stages.
 
 ## Git And Commit Rules
 
