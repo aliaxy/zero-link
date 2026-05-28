@@ -411,4 +411,6 @@ Returns readiness. It checks dependencies needed to serve traffic, including RPC
 
 ## Generation Boundary
 
-The next implementation pass must explicitly update the go-zero API and RPC contracts, then run the approved `goctl` generation commands from the repository root. This documentation-only pass must not run `goctl` and must not handwrite generated service code.
+Stage 3 management API and RPC contracts have generated go-zero skeleton code. Future contract changes
+must update the `.api` or `.proto` source first, then run the approved `goctl` generation commands from
+the repository root. Do not handwrite generated service code.

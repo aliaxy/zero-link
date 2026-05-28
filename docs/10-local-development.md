@@ -15,6 +15,9 @@ This gives fast rebuilds, easy debugger attachment, and predictable MySQL/Redis 
 - `etc/link-api-local.yaml`: machine-local API service config ignored by Git.
 - `etc/link-rpc.example.yaml`: committed RPC service config example.
 - `etc/link-rpc-local.yaml`: machine-local RPC service config ignored by Git.
+- `tests/httpyac/*.http`: local HTTP smoke requests.
+- `tests/httpyac/http-client.example.env.json`: committed httpyac variable example.
+- `tests/httpyac/http-client.private.env.json`: machine-local httpyac variables ignored by Git.
 - `Makefile`: wraps common development commands.
 
 ## Dependency Services
@@ -40,8 +43,8 @@ make test
 make test-integration
 ```
 
-`make run-rpc` starts the generated RPC skeleton with `etc/link-rpc-local.yaml`.
-`make run-api` starts the generated API skeleton with `etc/link-api-local.yaml`.
+`make run-rpc` starts the RPC service with `etc/link-rpc-local.yaml`.
+`make run-api` starts the API service with `etc/link-api-local.yaml`.
 
 ## Migration Workflow
 
@@ -67,7 +70,28 @@ Do not run migrations before `make infra-up` has started MySQL.
 6. Open `http://127.0.0.1:8080/readyz`.
 7. Confirm `healthz` succeeds when the API process is alive.
 8. Confirm `readyz` succeeds only when API, RPC, MySQL, and Redis are reachable.
-9. After Stage 3 management APIs exist in a later implementation pass, log in with the seeded local administrator and create a short link through the management API.
+9. Log in with the seeded local administrator and create a short link through the management API.
+
+## HTTP Smoke Requests
+
+The repository keeps local smoke requests under `tests/httpyac/`.
+
+Create a private httpyac environment file before running authenticated requests:
+
+```bash
+cp tests/httpyac/http-client.example.env.json tests/httpyac/http-client.private.env.json
+```
+
+Use the `local` environment when running requests:
+
+```bash
+httpyac send tests/httpyac/health.http -e local --all
+httpyac send tests/httpyac/admin.http -e local -n login
+```
+
+After login, copy the returned bearer token into `tests/httpyac/http-client.private.env.json`.
+After creating a link, copy the returned link ID into `linkId` before running detail, update, or delete
+requests.
 
 ## Configuration Rules
 
