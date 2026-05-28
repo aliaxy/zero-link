@@ -37,7 +37,7 @@ run-rpc:
 
 test:
 	@if find . -name '*.go' -not -path './.direnv/*' -not -path './.cache/*' | grep -q .; then \
-		$(GO_ENV) $(GO) test -tags=testing ./...; \
+		$(GO_ENV) $(GO) test ./...; \
 	else \
 		echo "No Go packages yet; skeleton foundation is ready."; \
 	fi
