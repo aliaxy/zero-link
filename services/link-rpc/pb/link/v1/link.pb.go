@@ -109,6 +109,1050 @@ func (x *CheckResponse) GetMessage() string {
 	return ""
 }
 
+type AdminProfile struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Username      string                 `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
+	Status        int64                  `protobuf:"varint,3,opt,name=status,proto3" json:"status,omitempty"`
+	CreatedAt     string                 `protobuf:"bytes,4,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AdminProfile) Reset() {
+	*x = AdminProfile{}
+	mi := &file_link_v1_link_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AdminProfile) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AdminProfile) ProtoMessage() {}
+
+func (x *AdminProfile) ProtoReflect() protoreflect.Message {
+	mi := &file_link_v1_link_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AdminProfile.ProtoReflect.Descriptor instead.
+func (*AdminProfile) Descriptor() ([]byte, []int) {
+	return file_link_v1_link_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *AdminProfile) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *AdminProfile) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
+func (x *AdminProfile) GetStatus() int64 {
+	if x != nil {
+		return x.Status
+	}
+	return 0
+}
+
+func (x *AdminProfile) GetCreatedAt() string {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return ""
+}
+
+type AuthenticateAdminRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Username      string                 `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
+	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AuthenticateAdminRequest) Reset() {
+	*x = AuthenticateAdminRequest{}
+	mi := &file_link_v1_link_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AuthenticateAdminRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AuthenticateAdminRequest) ProtoMessage() {}
+
+func (x *AuthenticateAdminRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_link_v1_link_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AuthenticateAdminRequest.ProtoReflect.Descriptor instead.
+func (*AuthenticateAdminRequest) Descriptor() ([]byte, []int) {
+	return file_link_v1_link_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *AuthenticateAdminRequest) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
+func (x *AuthenticateAdminRequest) GetPassword() string {
+	if x != nil {
+		return x.Password
+	}
+	return ""
+}
+
+type AuthenticateAdminResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Admin         *AdminProfile          `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AuthenticateAdminResponse) Reset() {
+	*x = AuthenticateAdminResponse{}
+	mi := &file_link_v1_link_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AuthenticateAdminResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AuthenticateAdminResponse) ProtoMessage() {}
+
+func (x *AuthenticateAdminResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_link_v1_link_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AuthenticateAdminResponse.ProtoReflect.Descriptor instead.
+func (*AuthenticateAdminResponse) Descriptor() ([]byte, []int) {
+	return file_link_v1_link_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *AuthenticateAdminResponse) GetAdmin() *AdminProfile {
+	if x != nil {
+		return x.Admin
+	}
+	return nil
+}
+
+type GetAdminProfileRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AdminId       int64                  `protobuf:"varint,1,opt,name=admin_id,json=adminId,proto3" json:"admin_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetAdminProfileRequest) Reset() {
+	*x = GetAdminProfileRequest{}
+	mi := &file_link_v1_link_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetAdminProfileRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAdminProfileRequest) ProtoMessage() {}
+
+func (x *GetAdminProfileRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_link_v1_link_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAdminProfileRequest.ProtoReflect.Descriptor instead.
+func (*GetAdminProfileRequest) Descriptor() ([]byte, []int) {
+	return file_link_v1_link_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *GetAdminProfileRequest) GetAdminId() int64 {
+	if x != nil {
+		return x.AdminId
+	}
+	return 0
+}
+
+type GetAdminProfileResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Admin         *AdminProfile          `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetAdminProfileResponse) Reset() {
+	*x = GetAdminProfileResponse{}
+	mi := &file_link_v1_link_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetAdminProfileResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAdminProfileResponse) ProtoMessage() {}
+
+func (x *GetAdminProfileResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_link_v1_link_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAdminProfileResponse.ProtoReflect.Descriptor instead.
+func (*GetAdminProfileResponse) Descriptor() ([]byte, []int) {
+	return file_link_v1_link_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *GetAdminProfileResponse) GetAdmin() *AdminProfile {
+	if x != nil {
+		return x.Admin
+	}
+	return nil
+}
+
+type CreateShortLinkRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	OriginUrl     string                 `protobuf:"bytes,1,opt,name=origin_url,json=originUrl,proto3" json:"origin_url,omitempty"`
+	Code          string                 `protobuf:"bytes,2,opt,name=code,proto3" json:"code,omitempty"`
+	Title         string                 `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
+	Description   string                 `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
+	ExpireAt      string                 `protobuf:"bytes,5,opt,name=expire_at,json=expireAt,proto3" json:"expire_at,omitempty"`
+	CreatedBy     int64                  `protobuf:"varint,6,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateShortLinkRequest) Reset() {
+	*x = CreateShortLinkRequest{}
+	mi := &file_link_v1_link_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateShortLinkRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateShortLinkRequest) ProtoMessage() {}
+
+func (x *CreateShortLinkRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_link_v1_link_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateShortLinkRequest.ProtoReflect.Descriptor instead.
+func (*CreateShortLinkRequest) Descriptor() ([]byte, []int) {
+	return file_link_v1_link_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *CreateShortLinkRequest) GetOriginUrl() string {
+	if x != nil {
+		return x.OriginUrl
+	}
+	return ""
+}
+
+func (x *CreateShortLinkRequest) GetCode() string {
+	if x != nil {
+		return x.Code
+	}
+	return ""
+}
+
+func (x *CreateShortLinkRequest) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *CreateShortLinkRequest) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+func (x *CreateShortLinkRequest) GetExpireAt() string {
+	if x != nil {
+		return x.ExpireAt
+	}
+	return ""
+}
+
+func (x *CreateShortLinkRequest) GetCreatedBy() int64 {
+	if x != nil {
+		return x.CreatedBy
+	}
+	return 0
+}
+
+type ShortLink struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Code          string                 `protobuf:"bytes,2,opt,name=code,proto3" json:"code,omitempty"`
+	OriginUrl     string                 `protobuf:"bytes,3,opt,name=origin_url,json=originUrl,proto3" json:"origin_url,omitempty"`
+	Title         string                 `protobuf:"bytes,4,opt,name=title,proto3" json:"title,omitempty"`
+	Description   string                 `protobuf:"bytes,5,opt,name=description,proto3" json:"description,omitempty"`
+	Status        int64                  `protobuf:"varint,6,opt,name=status,proto3" json:"status,omitempty"`
+	ExpireAt      string                 `protobuf:"bytes,7,opt,name=expire_at,json=expireAt,proto3" json:"expire_at,omitempty"`
+	CreatedBy     int64                  `protobuf:"varint,8,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
+	CreatedAt     string                 `protobuf:"bytes,9,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt     string                 `protobuf:"bytes,10,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ShortLink) Reset() {
+	*x = ShortLink{}
+	mi := &file_link_v1_link_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ShortLink) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ShortLink) ProtoMessage() {}
+
+func (x *ShortLink) ProtoReflect() protoreflect.Message {
+	mi := &file_link_v1_link_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ShortLink.ProtoReflect.Descriptor instead.
+func (*ShortLink) Descriptor() ([]byte, []int) {
+	return file_link_v1_link_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *ShortLink) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *ShortLink) GetCode() string {
+	if x != nil {
+		return x.Code
+	}
+	return ""
+}
+
+func (x *ShortLink) GetOriginUrl() string {
+	if x != nil {
+		return x.OriginUrl
+	}
+	return ""
+}
+
+func (x *ShortLink) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *ShortLink) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+func (x *ShortLink) GetStatus() int64 {
+	if x != nil {
+		return x.Status
+	}
+	return 0
+}
+
+func (x *ShortLink) GetExpireAt() string {
+	if x != nil {
+		return x.ExpireAt
+	}
+	return ""
+}
+
+func (x *ShortLink) GetCreatedBy() int64 {
+	if x != nil {
+		return x.CreatedBy
+	}
+	return 0
+}
+
+func (x *ShortLink) GetCreatedAt() string {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return ""
+}
+
+func (x *ShortLink) GetUpdatedAt() string {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return ""
+}
+
+type ShortLinkSummary struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Code          string                 `protobuf:"bytes,2,opt,name=code,proto3" json:"code,omitempty"`
+	OriginUrl     string                 `protobuf:"bytes,3,opt,name=origin_url,json=originUrl,proto3" json:"origin_url,omitempty"`
+	Title         string                 `protobuf:"bytes,4,opt,name=title,proto3" json:"title,omitempty"`
+	Status        int64                  `protobuf:"varint,5,opt,name=status,proto3" json:"status,omitempty"`
+	ExpireAt      string                 `protobuf:"bytes,6,opt,name=expire_at,json=expireAt,proto3" json:"expire_at,omitempty"`
+	CreatedAt     string                 `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt     string                 `protobuf:"bytes,8,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ShortLinkSummary) Reset() {
+	*x = ShortLinkSummary{}
+	mi := &file_link_v1_link_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ShortLinkSummary) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ShortLinkSummary) ProtoMessage() {}
+
+func (x *ShortLinkSummary) ProtoReflect() protoreflect.Message {
+	mi := &file_link_v1_link_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ShortLinkSummary.ProtoReflect.Descriptor instead.
+func (*ShortLinkSummary) Descriptor() ([]byte, []int) {
+	return file_link_v1_link_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *ShortLinkSummary) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *ShortLinkSummary) GetCode() string {
+	if x != nil {
+		return x.Code
+	}
+	return ""
+}
+
+func (x *ShortLinkSummary) GetOriginUrl() string {
+	if x != nil {
+		return x.OriginUrl
+	}
+	return ""
+}
+
+func (x *ShortLinkSummary) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *ShortLinkSummary) GetStatus() int64 {
+	if x != nil {
+		return x.Status
+	}
+	return 0
+}
+
+func (x *ShortLinkSummary) GetExpireAt() string {
+	if x != nil {
+		return x.ExpireAt
+	}
+	return ""
+}
+
+func (x *ShortLinkSummary) GetCreatedAt() string {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return ""
+}
+
+func (x *ShortLinkSummary) GetUpdatedAt() string {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return ""
+}
+
+type CreateShortLinkResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Link          *ShortLink             `protobuf:"bytes,1,opt,name=link,proto3" json:"link,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateShortLinkResponse) Reset() {
+	*x = CreateShortLinkResponse{}
+	mi := &file_link_v1_link_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateShortLinkResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateShortLinkResponse) ProtoMessage() {}
+
+func (x *CreateShortLinkResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_link_v1_link_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateShortLinkResponse.ProtoReflect.Descriptor instead.
+func (*CreateShortLinkResponse) Descriptor() ([]byte, []int) {
+	return file_link_v1_link_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *CreateShortLinkResponse) GetLink() *ShortLink {
+	if x != nil {
+		return x.Link
+	}
+	return nil
+}
+
+type ListShortLinksRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Page          int64                  `protobuf:"varint,1,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      int64                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	Status        int64                  `protobuf:"varint,3,opt,name=status,proto3" json:"status,omitempty"`
+	Keyword       string                 `protobuf:"bytes,4,opt,name=keyword,proto3" json:"keyword,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListShortLinksRequest) Reset() {
+	*x = ListShortLinksRequest{}
+	mi := &file_link_v1_link_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListShortLinksRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListShortLinksRequest) ProtoMessage() {}
+
+func (x *ListShortLinksRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_link_v1_link_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListShortLinksRequest.ProtoReflect.Descriptor instead.
+func (*ListShortLinksRequest) Descriptor() ([]byte, []int) {
+	return file_link_v1_link_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *ListShortLinksRequest) GetPage() int64 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *ListShortLinksRequest) GetPageSize() int64 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *ListShortLinksRequest) GetStatus() int64 {
+	if x != nil {
+		return x.Status
+	}
+	return 0
+}
+
+func (x *ListShortLinksRequest) GetKeyword() string {
+	if x != nil {
+		return x.Keyword
+	}
+	return ""
+}
+
+type ListShortLinksResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Items         []*ShortLinkSummary    `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
+	Page          int64                  `protobuf:"varint,2,opt,name=page,proto3" json:"page,omitempty"`
+	PageSize      int64                  `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	Total         int64                  `protobuf:"varint,4,opt,name=total,proto3" json:"total,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListShortLinksResponse) Reset() {
+	*x = ListShortLinksResponse{}
+	mi := &file_link_v1_link_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListShortLinksResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListShortLinksResponse) ProtoMessage() {}
+
+func (x *ListShortLinksResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_link_v1_link_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListShortLinksResponse.ProtoReflect.Descriptor instead.
+func (*ListShortLinksResponse) Descriptor() ([]byte, []int) {
+	return file_link_v1_link_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *ListShortLinksResponse) GetItems() []*ShortLinkSummary {
+	if x != nil {
+		return x.Items
+	}
+	return nil
+}
+
+func (x *ListShortLinksResponse) GetPage() int64 {
+	if x != nil {
+		return x.Page
+	}
+	return 0
+}
+
+func (x *ListShortLinksResponse) GetPageSize() int64 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *ListShortLinksResponse) GetTotal() int64 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
+type GetShortLinkRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetShortLinkRequest) Reset() {
+	*x = GetShortLinkRequest{}
+	mi := &file_link_v1_link_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetShortLinkRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetShortLinkRequest) ProtoMessage() {}
+
+func (x *GetShortLinkRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_link_v1_link_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetShortLinkRequest.ProtoReflect.Descriptor instead.
+func (*GetShortLinkRequest) Descriptor() ([]byte, []int) {
+	return file_link_v1_link_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *GetShortLinkRequest) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+type GetShortLinkResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Link          *ShortLink             `protobuf:"bytes,1,opt,name=link,proto3" json:"link,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetShortLinkResponse) Reset() {
+	*x = GetShortLinkResponse{}
+	mi := &file_link_v1_link_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetShortLinkResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetShortLinkResponse) ProtoMessage() {}
+
+func (x *GetShortLinkResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_link_v1_link_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetShortLinkResponse.ProtoReflect.Descriptor instead.
+func (*GetShortLinkResponse) Descriptor() ([]byte, []int) {
+	return file_link_v1_link_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *GetShortLinkResponse) GetLink() *ShortLink {
+	if x != nil {
+		return x.Link
+	}
+	return nil
+}
+
+type UpdateShortLinkRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	OriginUrl     string                 `protobuf:"bytes,2,opt,name=origin_url,json=originUrl,proto3" json:"origin_url,omitempty"`
+	Title         string                 `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
+	Description   string                 `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
+	Status        int64                  `protobuf:"varint,5,opt,name=status,proto3" json:"status,omitempty"`
+	ExpireAt      string                 `protobuf:"bytes,6,opt,name=expire_at,json=expireAt,proto3" json:"expire_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateShortLinkRequest) Reset() {
+	*x = UpdateShortLinkRequest{}
+	mi := &file_link_v1_link_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateShortLinkRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateShortLinkRequest) ProtoMessage() {}
+
+func (x *UpdateShortLinkRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_link_v1_link_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateShortLinkRequest.ProtoReflect.Descriptor instead.
+func (*UpdateShortLinkRequest) Descriptor() ([]byte, []int) {
+	return file_link_v1_link_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *UpdateShortLinkRequest) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *UpdateShortLinkRequest) GetOriginUrl() string {
+	if x != nil {
+		return x.OriginUrl
+	}
+	return ""
+}
+
+func (x *UpdateShortLinkRequest) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *UpdateShortLinkRequest) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+func (x *UpdateShortLinkRequest) GetStatus() int64 {
+	if x != nil {
+		return x.Status
+	}
+	return 0
+}
+
+func (x *UpdateShortLinkRequest) GetExpireAt() string {
+	if x != nil {
+		return x.ExpireAt
+	}
+	return ""
+}
+
+type UpdateShortLinkResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Link          *ShortLink             `protobuf:"bytes,1,opt,name=link,proto3" json:"link,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateShortLinkResponse) Reset() {
+	*x = UpdateShortLinkResponse{}
+	mi := &file_link_v1_link_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateShortLinkResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateShortLinkResponse) ProtoMessage() {}
+
+func (x *UpdateShortLinkResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_link_v1_link_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateShortLinkResponse.ProtoReflect.Descriptor instead.
+func (*UpdateShortLinkResponse) Descriptor() ([]byte, []int) {
+	return file_link_v1_link_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *UpdateShortLinkResponse) GetLink() *ShortLink {
+	if x != nil {
+		return x.Link
+	}
+	return nil
+}
+
+type DeleteShortLinkRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteShortLinkRequest) Reset() {
+	*x = DeleteShortLinkRequest{}
+	mi := &file_link_v1_link_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteShortLinkRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteShortLinkRequest) ProtoMessage() {}
+
+func (x *DeleteShortLinkRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_link_v1_link_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteShortLinkRequest.ProtoReflect.Descriptor instead.
+func (*DeleteShortLinkRequest) Descriptor() ([]byte, []int) {
+	return file_link_v1_link_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *DeleteShortLinkRequest) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+type DeleteShortLinkResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Deleted       bool                   `protobuf:"varint,2,opt,name=deleted,proto3" json:"deleted,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteShortLinkResponse) Reset() {
+	*x = DeleteShortLinkResponse{}
+	mi := &file_link_v1_link_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteShortLinkResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteShortLinkResponse) ProtoMessage() {}
+
+func (x *DeleteShortLinkResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_link_v1_link_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteShortLinkResponse.ProtoReflect.Descriptor instead.
+func (*DeleteShortLinkResponse) Descriptor() ([]byte, []int) {
+	return file_link_v1_link_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *DeleteShortLinkResponse) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *DeleteShortLinkResponse) GetDeleted() bool {
+	if x != nil {
+		return x.Deleted
+	}
+	return false
+}
+
 var File_link_v1_link_proto protoreflect.FileDescriptor
 
 const file_link_v1_link_proto_rawDesc = "" +
@@ -117,9 +1161,99 @@ const file_link_v1_link_proto_rawDesc = "" +
 	"\fCheckRequest\"9\n" +
 	"\rCheckResponse\x12\x0e\n" +
 	"\x02ok\x18\x01 \x01(\bR\x02ok\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage2E\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\"q\n" +
+	"\fAdminProfile\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1a\n" +
+	"\busername\x18\x02 \x01(\tR\busername\x12\x16\n" +
+	"\x06status\x18\x03 \x01(\x03R\x06status\x12\x1d\n" +
+	"\n" +
+	"created_at\x18\x04 \x01(\tR\tcreatedAt\"R\n" +
+	"\x18AuthenticateAdminRequest\x12\x1a\n" +
+	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\"H\n" +
+	"\x19AuthenticateAdminResponse\x12+\n" +
+	"\x05admin\x18\x01 \x01(\v2\x15.link.v1.AdminProfileR\x05admin\"3\n" +
+	"\x16GetAdminProfileRequest\x12\x19\n" +
+	"\badmin_id\x18\x01 \x01(\x03R\aadminId\"F\n" +
+	"\x17GetAdminProfileResponse\x12+\n" +
+	"\x05admin\x18\x01 \x01(\v2\x15.link.v1.AdminProfileR\x05admin\"\xbf\x01\n" +
+	"\x16CreateShortLinkRequest\x12\x1d\n" +
+	"\n" +
+	"origin_url\x18\x01 \x01(\tR\toriginUrl\x12\x12\n" +
+	"\x04code\x18\x02 \x01(\tR\x04code\x12\x14\n" +
+	"\x05title\x18\x03 \x01(\tR\x05title\x12 \n" +
+	"\vdescription\x18\x04 \x01(\tR\vdescription\x12\x1b\n" +
+	"\texpire_at\x18\x05 \x01(\tR\bexpireAt\x12\x1d\n" +
+	"\n" +
+	"created_by\x18\x06 \x01(\x03R\tcreatedBy\"\x98\x02\n" +
+	"\tShortLink\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
+	"\x04code\x18\x02 \x01(\tR\x04code\x12\x1d\n" +
+	"\n" +
+	"origin_url\x18\x03 \x01(\tR\toriginUrl\x12\x14\n" +
+	"\x05title\x18\x04 \x01(\tR\x05title\x12 \n" +
+	"\vdescription\x18\x05 \x01(\tR\vdescription\x12\x16\n" +
+	"\x06status\x18\x06 \x01(\x03R\x06status\x12\x1b\n" +
+	"\texpire_at\x18\a \x01(\tR\bexpireAt\x12\x1d\n" +
+	"\n" +
+	"created_by\x18\b \x01(\x03R\tcreatedBy\x12\x1d\n" +
+	"\n" +
+	"created_at\x18\t \x01(\tR\tcreatedAt\x12\x1d\n" +
+	"\n" +
+	"updated_at\x18\n" +
+	" \x01(\tR\tupdatedAt\"\xde\x01\n" +
+	"\x10ShortLinkSummary\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
+	"\x04code\x18\x02 \x01(\tR\x04code\x12\x1d\n" +
+	"\n" +
+	"origin_url\x18\x03 \x01(\tR\toriginUrl\x12\x14\n" +
+	"\x05title\x18\x04 \x01(\tR\x05title\x12\x16\n" +
+	"\x06status\x18\x05 \x01(\x03R\x06status\x12\x1b\n" +
+	"\texpire_at\x18\x06 \x01(\tR\bexpireAt\x12\x1d\n" +
+	"\n" +
+	"created_at\x18\a \x01(\tR\tcreatedAt\x12\x1d\n" +
+	"\n" +
+	"updated_at\x18\b \x01(\tR\tupdatedAt\"A\n" +
+	"\x17CreateShortLinkResponse\x12&\n" +
+	"\x04link\x18\x01 \x01(\v2\x12.link.v1.ShortLinkR\x04link\"z\n" +
+	"\x15ListShortLinksRequest\x12\x12\n" +
+	"\x04page\x18\x01 \x01(\x03R\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x02 \x01(\x03R\bpageSize\x12\x16\n" +
+	"\x06status\x18\x03 \x01(\x03R\x06status\x12\x18\n" +
+	"\akeyword\x18\x04 \x01(\tR\akeyword\"\x90\x01\n" +
+	"\x16ListShortLinksResponse\x12/\n" +
+	"\x05items\x18\x01 \x03(\v2\x19.link.v1.ShortLinkSummaryR\x05items\x12\x12\n" +
+	"\x04page\x18\x02 \x01(\x03R\x04page\x12\x1b\n" +
+	"\tpage_size\x18\x03 \x01(\x03R\bpageSize\x12\x14\n" +
+	"\x05total\x18\x04 \x01(\x03R\x05total\"%\n" +
+	"\x13GetShortLinkRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\">\n" +
+	"\x14GetShortLinkResponse\x12&\n" +
+	"\x04link\x18\x01 \x01(\v2\x12.link.v1.ShortLinkR\x04link\"\xb4\x01\n" +
+	"\x16UpdateShortLinkRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1d\n" +
+	"\n" +
+	"origin_url\x18\x02 \x01(\tR\toriginUrl\x12\x14\n" +
+	"\x05title\x18\x03 \x01(\tR\x05title\x12 \n" +
+	"\vdescription\x18\x04 \x01(\tR\vdescription\x12\x16\n" +
+	"\x06status\x18\x05 \x01(\x03R\x06status\x12\x1b\n" +
+	"\texpire_at\x18\x06 \x01(\tR\bexpireAt\"A\n" +
+	"\x17UpdateShortLinkResponse\x12&\n" +
+	"\x04link\x18\x01 \x01(\v2\x12.link.v1.ShortLinkR\x04link\"(\n" +
+	"\x16DeleteShortLinkRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\"C\n" +
+	"\x17DeleteShortLinkResponse\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x18\n" +
+	"\adeleted\x18\x02 \x01(\bR\adeleted2\x99\x05\n" +
 	"\vLinkService\x126\n" +
-	"\x05Check\x12\x15.link.v1.CheckRequest\x1a\x16.link.v1.CheckResponseB9Z7github.com/aliaxy/zero-link/services/link-rpc/pb/linkv1b\x06proto3"
+	"\x05Check\x12\x15.link.v1.CheckRequest\x1a\x16.link.v1.CheckResponse\x12Z\n" +
+	"\x11AuthenticateAdmin\x12!.link.v1.AuthenticateAdminRequest\x1a\".link.v1.AuthenticateAdminResponse\x12T\n" +
+	"\x0fGetAdminProfile\x12\x1f.link.v1.GetAdminProfileRequest\x1a .link.v1.GetAdminProfileResponse\x12T\n" +
+	"\x0fCreateShortLink\x12\x1f.link.v1.CreateShortLinkRequest\x1a .link.v1.CreateShortLinkResponse\x12Q\n" +
+	"\x0eListShortLinks\x12\x1e.link.v1.ListShortLinksRequest\x1a\x1f.link.v1.ListShortLinksResponse\x12K\n" +
+	"\fGetShortLink\x12\x1c.link.v1.GetShortLinkRequest\x1a\x1d.link.v1.GetShortLinkResponse\x12T\n" +
+	"\x0fUpdateShortLink\x12\x1f.link.v1.UpdateShortLinkRequest\x1a .link.v1.UpdateShortLinkResponse\x12T\n" +
+	"\x0fDeleteShortLink\x12\x1f.link.v1.DeleteShortLinkRequest\x1a .link.v1.DeleteShortLinkResponseB9Z7github.com/aliaxy/zero-link/services/link-rpc/pb/linkv1b\x06proto3"
 
 var (
 	file_link_v1_link_proto_rawDescOnce sync.Once
@@ -133,19 +1267,56 @@ func file_link_v1_link_proto_rawDescGZIP() []byte {
 	return file_link_v1_link_proto_rawDescData
 }
 
-var file_link_v1_link_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_link_v1_link_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
 var file_link_v1_link_proto_goTypes = []any{
-	(*CheckRequest)(nil),  // 0: link.v1.CheckRequest
-	(*CheckResponse)(nil), // 1: link.v1.CheckResponse
+	(*CheckRequest)(nil),              // 0: link.v1.CheckRequest
+	(*CheckResponse)(nil),             // 1: link.v1.CheckResponse
+	(*AdminProfile)(nil),              // 2: link.v1.AdminProfile
+	(*AuthenticateAdminRequest)(nil),  // 3: link.v1.AuthenticateAdminRequest
+	(*AuthenticateAdminResponse)(nil), // 4: link.v1.AuthenticateAdminResponse
+	(*GetAdminProfileRequest)(nil),    // 5: link.v1.GetAdminProfileRequest
+	(*GetAdminProfileResponse)(nil),   // 6: link.v1.GetAdminProfileResponse
+	(*CreateShortLinkRequest)(nil),    // 7: link.v1.CreateShortLinkRequest
+	(*ShortLink)(nil),                 // 8: link.v1.ShortLink
+	(*ShortLinkSummary)(nil),          // 9: link.v1.ShortLinkSummary
+	(*CreateShortLinkResponse)(nil),   // 10: link.v1.CreateShortLinkResponse
+	(*ListShortLinksRequest)(nil),     // 11: link.v1.ListShortLinksRequest
+	(*ListShortLinksResponse)(nil),    // 12: link.v1.ListShortLinksResponse
+	(*GetShortLinkRequest)(nil),       // 13: link.v1.GetShortLinkRequest
+	(*GetShortLinkResponse)(nil),      // 14: link.v1.GetShortLinkResponse
+	(*UpdateShortLinkRequest)(nil),    // 15: link.v1.UpdateShortLinkRequest
+	(*UpdateShortLinkResponse)(nil),   // 16: link.v1.UpdateShortLinkResponse
+	(*DeleteShortLinkRequest)(nil),    // 17: link.v1.DeleteShortLinkRequest
+	(*DeleteShortLinkResponse)(nil),   // 18: link.v1.DeleteShortLinkResponse
 }
 var file_link_v1_link_proto_depIdxs = []int32{
-	0, // 0: link.v1.LinkService.Check:input_type -> link.v1.CheckRequest
-	1, // 1: link.v1.LinkService.Check:output_type -> link.v1.CheckResponse
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	2,  // 0: link.v1.AuthenticateAdminResponse.admin:type_name -> link.v1.AdminProfile
+	2,  // 1: link.v1.GetAdminProfileResponse.admin:type_name -> link.v1.AdminProfile
+	8,  // 2: link.v1.CreateShortLinkResponse.link:type_name -> link.v1.ShortLink
+	9,  // 3: link.v1.ListShortLinksResponse.items:type_name -> link.v1.ShortLinkSummary
+	8,  // 4: link.v1.GetShortLinkResponse.link:type_name -> link.v1.ShortLink
+	8,  // 5: link.v1.UpdateShortLinkResponse.link:type_name -> link.v1.ShortLink
+	0,  // 6: link.v1.LinkService.Check:input_type -> link.v1.CheckRequest
+	3,  // 7: link.v1.LinkService.AuthenticateAdmin:input_type -> link.v1.AuthenticateAdminRequest
+	5,  // 8: link.v1.LinkService.GetAdminProfile:input_type -> link.v1.GetAdminProfileRequest
+	7,  // 9: link.v1.LinkService.CreateShortLink:input_type -> link.v1.CreateShortLinkRequest
+	11, // 10: link.v1.LinkService.ListShortLinks:input_type -> link.v1.ListShortLinksRequest
+	13, // 11: link.v1.LinkService.GetShortLink:input_type -> link.v1.GetShortLinkRequest
+	15, // 12: link.v1.LinkService.UpdateShortLink:input_type -> link.v1.UpdateShortLinkRequest
+	17, // 13: link.v1.LinkService.DeleteShortLink:input_type -> link.v1.DeleteShortLinkRequest
+	1,  // 14: link.v1.LinkService.Check:output_type -> link.v1.CheckResponse
+	4,  // 15: link.v1.LinkService.AuthenticateAdmin:output_type -> link.v1.AuthenticateAdminResponse
+	6,  // 16: link.v1.LinkService.GetAdminProfile:output_type -> link.v1.GetAdminProfileResponse
+	10, // 17: link.v1.LinkService.CreateShortLink:output_type -> link.v1.CreateShortLinkResponse
+	12, // 18: link.v1.LinkService.ListShortLinks:output_type -> link.v1.ListShortLinksResponse
+	14, // 19: link.v1.LinkService.GetShortLink:output_type -> link.v1.GetShortLinkResponse
+	16, // 20: link.v1.LinkService.UpdateShortLink:output_type -> link.v1.UpdateShortLinkResponse
+	18, // 21: link.v1.LinkService.DeleteShortLink:output_type -> link.v1.DeleteShortLinkResponse
+	14, // [14:22] is the sub-list for method output_type
+	6,  // [6:14] is the sub-list for method input_type
+	6,  // [6:6] is the sub-list for extension type_name
+	6,  // [6:6] is the sub-list for extension extendee
+	0,  // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_link_v1_link_proto_init() }
@@ -159,7 +1330,7 @@ func file_link_v1_link_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_link_v1_link_proto_rawDesc), len(file_link_v1_link_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   19,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

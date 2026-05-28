@@ -11,6 +11,118 @@ message CheckResponse {
   string message = 2;
 }
 
+message AdminProfile {
+  int64 id = 1;
+  string username = 2;
+  int64 status = 3;
+  string created_at = 4;
+}
+
+message AuthenticateAdminRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message AuthenticateAdminResponse {
+  AdminProfile admin = 1;
+}
+
+message GetAdminProfileRequest {
+  int64 admin_id = 1;
+}
+
+message GetAdminProfileResponse {
+  AdminProfile admin = 1;
+}
+
+message CreateShortLinkRequest {
+  string origin_url = 1;
+  string code = 2;
+  string title = 3;
+  string description = 4;
+  string expire_at = 5;
+  int64 created_by = 6;
+}
+
+message ShortLink {
+  int64 id = 1;
+  string code = 2;
+  string origin_url = 3;
+  string title = 4;
+  string description = 5;
+  int64 status = 6;
+  string expire_at = 7;
+  int64 created_by = 8;
+  string created_at = 9;
+  string updated_at = 10;
+}
+
+message ShortLinkSummary {
+  int64 id = 1;
+  string code = 2;
+  string origin_url = 3;
+  string title = 4;
+  int64 status = 5;
+  string expire_at = 6;
+  string created_at = 7;
+  string updated_at = 8;
+}
+
+message CreateShortLinkResponse {
+  ShortLink link = 1;
+}
+
+message ListShortLinksRequest {
+  int64 page = 1;
+  int64 page_size = 2;
+  int64 status = 3;
+  string keyword = 4;
+}
+
+message ListShortLinksResponse {
+  repeated ShortLinkSummary items = 1;
+  int64 page = 2;
+  int64 page_size = 3;
+  int64 total = 4;
+}
+
+message GetShortLinkRequest {
+  int64 id = 1;
+}
+
+message GetShortLinkResponse {
+  ShortLink link = 1;
+}
+
+message UpdateShortLinkRequest {
+  int64 id = 1;
+  string origin_url = 2;
+  string title = 3;
+  string description = 4;
+  int64 status = 5;
+  string expire_at = 6;
+}
+
+message UpdateShortLinkResponse {
+  ShortLink link = 1;
+}
+
+message DeleteShortLinkRequest {
+  int64 id = 1;
+}
+
+message DeleteShortLinkResponse {
+  int64 id = 1;
+  bool deleted = 2;
+}
+
 service LinkService {
   rpc Check(CheckRequest) returns (CheckResponse);
+  rpc AuthenticateAdmin(AuthenticateAdminRequest) returns (AuthenticateAdminResponse);
+  rpc GetAdminProfile(GetAdminProfileRequest) returns (GetAdminProfileResponse);
+  rpc CreateShortLink(CreateShortLinkRequest) returns (CreateShortLinkResponse);
+  rpc ListShortLinks(ListShortLinksRequest) returns (ListShortLinksResponse);
+  rpc GetShortLink(GetShortLinkRequest) returns (GetShortLinkResponse);
+  rpc UpdateShortLink(UpdateShortLinkRequest) returns (UpdateShortLinkResponse);
+  rpc DeleteShortLink(DeleteShortLinkRequest) returns (DeleteShortLinkResponse);
 }

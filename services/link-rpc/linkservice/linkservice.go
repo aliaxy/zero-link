@@ -14,11 +14,35 @@ import (
 )
 
 type (
-	CheckRequest  = linkv1.CheckRequest
-	CheckResponse = linkv1.CheckResponse
+	AdminProfile              = linkv1.AdminProfile
+	AuthenticateAdminRequest  = linkv1.AuthenticateAdminRequest
+	AuthenticateAdminResponse = linkv1.AuthenticateAdminResponse
+	CheckRequest              = linkv1.CheckRequest
+	CheckResponse             = linkv1.CheckResponse
+	CreateShortLinkRequest    = linkv1.CreateShortLinkRequest
+	CreateShortLinkResponse   = linkv1.CreateShortLinkResponse
+	DeleteShortLinkRequest    = linkv1.DeleteShortLinkRequest
+	DeleteShortLinkResponse   = linkv1.DeleteShortLinkResponse
+	GetAdminProfileRequest    = linkv1.GetAdminProfileRequest
+	GetAdminProfileResponse   = linkv1.GetAdminProfileResponse
+	GetShortLinkRequest       = linkv1.GetShortLinkRequest
+	GetShortLinkResponse      = linkv1.GetShortLinkResponse
+	ListShortLinksRequest     = linkv1.ListShortLinksRequest
+	ListShortLinksResponse    = linkv1.ListShortLinksResponse
+	ShortLink                 = linkv1.ShortLink
+	ShortLinkSummary          = linkv1.ShortLinkSummary
+	UpdateShortLinkRequest    = linkv1.UpdateShortLinkRequest
+	UpdateShortLinkResponse   = linkv1.UpdateShortLinkResponse
 
 	LinkService interface {
 		Check(ctx context.Context, in *CheckRequest, opts ...grpc.CallOption) (*CheckResponse, error)
+		AuthenticateAdmin(ctx context.Context, in *AuthenticateAdminRequest, opts ...grpc.CallOption) (*AuthenticateAdminResponse, error)
+		GetAdminProfile(ctx context.Context, in *GetAdminProfileRequest, opts ...grpc.CallOption) (*GetAdminProfileResponse, error)
+		CreateShortLink(ctx context.Context, in *CreateShortLinkRequest, opts ...grpc.CallOption) (*CreateShortLinkResponse, error)
+		ListShortLinks(ctx context.Context, in *ListShortLinksRequest, opts ...grpc.CallOption) (*ListShortLinksResponse, error)
+		GetShortLink(ctx context.Context, in *GetShortLinkRequest, opts ...grpc.CallOption) (*GetShortLinkResponse, error)
+		UpdateShortLink(ctx context.Context, in *UpdateShortLinkRequest, opts ...grpc.CallOption) (*UpdateShortLinkResponse, error)
+		DeleteShortLink(ctx context.Context, in *DeleteShortLinkRequest, opts ...grpc.CallOption) (*DeleteShortLinkResponse, error)
 	}
 
 	defaultLinkService struct {
@@ -35,4 +59,39 @@ func NewLinkService(cli zrpc.Client) LinkService {
 func (m *defaultLinkService) Check(ctx context.Context, in *CheckRequest, opts ...grpc.CallOption) (*CheckResponse, error) {
 	client := linkv1.NewLinkServiceClient(m.cli.Conn())
 	return client.Check(ctx, in, opts...)
+}
+
+func (m *defaultLinkService) AuthenticateAdmin(ctx context.Context, in *AuthenticateAdminRequest, opts ...grpc.CallOption) (*AuthenticateAdminResponse, error) {
+	client := linkv1.NewLinkServiceClient(m.cli.Conn())
+	return client.AuthenticateAdmin(ctx, in, opts...)
+}
+
+func (m *defaultLinkService) GetAdminProfile(ctx context.Context, in *GetAdminProfileRequest, opts ...grpc.CallOption) (*GetAdminProfileResponse, error) {
+	client := linkv1.NewLinkServiceClient(m.cli.Conn())
+	return client.GetAdminProfile(ctx, in, opts...)
+}
+
+func (m *defaultLinkService) CreateShortLink(ctx context.Context, in *CreateShortLinkRequest, opts ...grpc.CallOption) (*CreateShortLinkResponse, error) {
+	client := linkv1.NewLinkServiceClient(m.cli.Conn())
+	return client.CreateShortLink(ctx, in, opts...)
+}
+
+func (m *defaultLinkService) ListShortLinks(ctx context.Context, in *ListShortLinksRequest, opts ...grpc.CallOption) (*ListShortLinksResponse, error) {
+	client := linkv1.NewLinkServiceClient(m.cli.Conn())
+	return client.ListShortLinks(ctx, in, opts...)
+}
+
+func (m *defaultLinkService) GetShortLink(ctx context.Context, in *GetShortLinkRequest, opts ...grpc.CallOption) (*GetShortLinkResponse, error) {
+	client := linkv1.NewLinkServiceClient(m.cli.Conn())
+	return client.GetShortLink(ctx, in, opts...)
+}
+
+func (m *defaultLinkService) UpdateShortLink(ctx context.Context, in *UpdateShortLinkRequest, opts ...grpc.CallOption) (*UpdateShortLinkResponse, error) {
+	client := linkv1.NewLinkServiceClient(m.cli.Conn())
+	return client.UpdateShortLink(ctx, in, opts...)
+}
+
+func (m *defaultLinkService) DeleteShortLink(ctx context.Context, in *DeleteShortLinkRequest, opts ...grpc.CallOption) (*DeleteShortLinkResponse, error) {
+	client := linkv1.NewLinkServiceClient(m.cli.Conn())
+	return client.DeleteShortLink(ctx, in, opts...)
 }

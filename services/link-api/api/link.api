@@ -2,7 +2,7 @@ syntax = "v1"
 
 info (
 	title:  "zero-link API"
-	desc:   "Health/readiness API skeleton"
+	desc:   "Health/readiness and Stage 3 management API"
 	author: "zero-link"
 )
 
@@ -16,10 +16,154 @@ type ReadyResponse {
 	Message string `json:"message"`
 }
 
+type ErrorResponse {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+}
+
+type AdminInfo {
+	Id        int64  `json:"id"`
+	Username  string `json:"username"`
+	Status    int64  `json:"status,optional"`
+	CreatedAt string `json:"created_at,optional"`
+}
+
+type LoginRequest {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type LoginData {
+	Token     string    `json:"token"`
+	ExpiresAt string    `json:"expires_at"`
+	Admin     AdminInfo `json:"admin"`
+}
+
+type LoginResponse {
+	Code    string    `json:"code"`
+	Message string    `json:"message"`
+	Data    LoginData `json:"data"`
+}
+
+type ProfileResponse {
+	Code    string    `json:"code"`
+	Message string    `json:"message"`
+	Data    AdminInfo `json:"data"`
+}
+
+type CreateShortLinkRequest {
+	OriginUrl   string `json:"origin_url"`
+	Code        string `json:"code,optional"`
+	Title       string `json:"title,optional"`
+	Description string `json:"description,optional"`
+	ExpireAt    string `json:"expire_at,optional"`
+}
+
+type ShortLinkInfo {
+	Id          int64  `json:"id"`
+	Code        string `json:"code"`
+	OriginUrl   string `json:"origin_url"`
+	Title       string `json:"title"`
+	Description string `json:"description,optional"`
+	Status      int64  `json:"status"`
+	ExpireAt    string `json:"expire_at,optional"`
+	CreatedBy   int64  `json:"created_by,optional"`
+	CreatedAt   string `json:"created_at"`
+	UpdatedAt   string `json:"updated_at"`
+}
+
+type ShortLinkSummary {
+	Id        int64  `json:"id"`
+	Code      string `json:"code"`
+	OriginUrl string `json:"origin_url"`
+	Title     string `json:"title"`
+	Status    int64  `json:"status"`
+	ExpireAt  string `json:"expire_at,optional"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
+}
+
+type ShortLinkResponse {
+	Code    string        `json:"code"`
+	Message string        `json:"message"`
+	Data    ShortLinkInfo `json:"data"`
+}
+
+type ListShortLinksRequest {
+	Page     int64  `form:"page,optional"`
+	PageSize int64  `form:"page_size,optional"`
+	Status   int64  `form:"status,optional"`
+	Keyword  string `form:"keyword,optional"`
+}
+
+type ListShortLinksData {
+	Items    []ShortLinkSummary `json:"items"`
+	Page     int64              `json:"page"`
+	PageSize int64              `json:"page_size"`
+	Total    int64              `json:"total"`
+}
+
+type ListShortLinksResponse {
+	Code    string             `json:"code"`
+	Message string             `json:"message"`
+	Data    ListShortLinksData `json:"data"`
+}
+
+type LinkIdRequest {
+	Id int64 `path:"id"`
+}
+
+type UpdateShortLinkRequest {
+	Id          int64  `path:"id"`
+	OriginUrl   string `json:"origin_url,optional"`
+	Title       string `json:"title,optional"`
+	Description string `json:"description,optional"`
+	Status      int64  `json:"status,optional"`
+	ExpireAt    string `json:"expire_at,optional"`
+}
+
+type DeleteShortLinkData {
+	Id      int64 `json:"id"`
+	Deleted bool  `json:"deleted"`
+}
+
+type DeleteShortLinkResponse {
+	Code    string              `json:"code"`
+	Message string              `json:"message"`
+	Data    DeleteShortLinkData `json:"data"`
+}
+
 service link-api {
 	@handler HealthHandler
 	get /healthz returns (HealthResponse)
 
 	@handler ReadyHandler
 	get /readyz returns (ReadyResponse)
+
+	@handler LoginHandler
+	post /admin/login (LoginRequest) returns (LoginResponse)
 }
+
+@server (
+	middleware: AuthMiddleware
+)
+service link-api {
+	@handler ProfileHandler
+	get /admin/profile returns (ProfileResponse)
+
+	@handler CreateShortLinkHandler
+	post /admin/links (CreateShortLinkRequest) returns (ShortLinkResponse)
+
+	@handler ListShortLinksHandler
+	get /admin/links (ListShortLinksRequest) returns (ListShortLinksResponse)
+
+	@handler GetShortLinkHandler
+	get /admin/links/:id (LinkIdRequest) returns (ShortLinkResponse)
+
+	@handler UpdateShortLinkHandler
+	patch /admin/links/:id (UpdateShortLinkRequest) returns (ShortLinkResponse)
+
+	@handler DeleteShortLinkHandler
+	delete /admin/links/:id (LinkIdRequest) returns (DeleteShortLinkResponse)
+}
+

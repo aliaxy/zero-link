@@ -27,3 +27,38 @@ func (s *LinkServiceServer) Check(ctx context.Context, in *linkv1.CheckRequest) 
 	l := logic.NewCheckLogic(ctx, s.svcCtx)
 	return l.Check(in)
 }
+
+func (s *LinkServiceServer) AuthenticateAdmin(ctx context.Context, in *linkv1.AuthenticateAdminRequest) (*linkv1.AuthenticateAdminResponse, error) {
+	l := logic.NewAuthenticateAdminLogic(ctx, s.svcCtx)
+	return l.AuthenticateAdmin(in)
+}
+
+func (s *LinkServiceServer) GetAdminProfile(ctx context.Context, in *linkv1.GetAdminProfileRequest) (*linkv1.GetAdminProfileResponse, error) {
+	l := logic.NewGetAdminProfileLogic(ctx, s.svcCtx)
+	return l.GetAdminProfile(in)
+}
+
+func (s *LinkServiceServer) CreateShortLink(ctx context.Context, in *linkv1.CreateShortLinkRequest) (*linkv1.CreateShortLinkResponse, error) {
+	l := logic.NewCreateShortLinkLogic(ctx, s.svcCtx)
+	return l.CreateShortLink(in)
+}
+
+func (s *LinkServiceServer) ListShortLinks(ctx context.Context, in *linkv1.ListShortLinksRequest) (*linkv1.ListShortLinksResponse, error) {
+	l := logic.NewListShortLinksLogic(ctx, s.svcCtx)
+	return l.ListShortLinks(in)
+}
+
+func (s *LinkServiceServer) GetShortLink(ctx context.Context, in *linkv1.GetShortLinkRequest) (*linkv1.GetShortLinkResponse, error) {
+	l := logic.NewGetShortLinkLogic(ctx, s.svcCtx)
+	return l.GetShortLink(in)
+}
+
+func (s *LinkServiceServer) UpdateShortLink(ctx context.Context, in *linkv1.UpdateShortLinkRequest) (*linkv1.UpdateShortLinkResponse, error) {
+	l := logic.NewUpdateShortLinkLogic(ctx, s.svcCtx)
+	return l.UpdateShortLink(in)
+}
+
+func (s *LinkServiceServer) DeleteShortLink(ctx context.Context, in *linkv1.DeleteShortLinkRequest) (*linkv1.DeleteShortLinkResponse, error) {
+	l := logic.NewDeleteShortLinkLogic(ctx, s.svcCtx)
+	return l.DeleteShortLink(in)
+}
