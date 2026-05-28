@@ -2,11 +2,8 @@
 
 ## Goal
 
-Track the current zero-link implementation state and define the next safe handoff point. The project has
-completed Stage 3 backend management and has begun Stage 4 redirect and cache work.
-
-Stage 3 covers administrator authentication and short-link management only. Stage 4 adds redirect serving,
-Redis cache lookup and invalidation via the goctl cached model, and the `GET /{code}` route.
+Track the current zero-link implementation state and define the next safe handoff point. Stages 1–4 are
+complete. The project is ready to begin Stage 5 analytics.
 
 ## Source Documents
 
@@ -42,14 +39,15 @@ Stage 2 is complete. The transport skeleton includes:
 - API readiness logic that calls the RPC readiness method.
 - RPC readiness logic that validates configured MySQL and Redis endpoints with simple connectivity checks.
 
-Stage 4 is in progress. Work completed so far:
+Stage 4 redirect and cache is complete. The implementation includes:
 
-- `ResolveShortLink` RPC method added to proto and generated.
-- goctl cached model (`--cache`) wired for `AdminUserModel` and `ShortLinkModel`.
-- `CacheRedis` config field added to link-rpc config and example yaml.
-- `ErrPermissionDenied` and `ErrGone` domain errors added and mapped to gRPC status codes.
+- `ResolveShortLink` RPC with goctl two-level Redis cached model (`FindOneByCode`).
+- `CacheRedis` config wired to `AdminUserModel` and `ShortLinkModel`.
+- `ErrPermissionDenied` and `ErrGone` domain errors mapped to gRPC `PermissionDenied` and `FailedPrecondition`.
+- Cache invalidation on `Update` and `SoftDelete` via goctl `ExecCtx` with id and code keys.
+- `GET /{code}` route returning 302/404/403/410 without JSON envelope.
 
-Stage 3 backend management is implemented. The current implementation includes:
+Stage 3 backend management is complete. The implementation includes:
 
 - API contracts and handlers for administrator login, profile, and short-link management.
 - RPC contracts and logic for administrator authentication and short-link management.
@@ -112,7 +110,7 @@ The Stage 3 management HTTP contracts are documented in `docs/06-api-design.md` 
 Implementation notes:
 
 - `GET /healthz` and `GET /readyz` remain available.
-- `GET /{code}` is still deferred.
+- `GET /{code}` is implemented and returns 302/404/403/410.
 - `GET /admin/links/{id}/stats` is still deferred.
 - All management routes except login require Bearer token authentication.
 - API logic owns HTTP parsing, response envelopes, JWT creation, and JWT validation.
@@ -133,7 +131,7 @@ The Stage 3 RPC contracts are documented in `docs/06-api-design.md` and implemen
 Implementation notes:
 
 - The existing `Check` readiness method remains available.
-- `ResolveShortLink` proto contract is generated; business logic is in progress (Stage 4).
+- `ResolveShortLink` is implemented with Redis cache lookup and status/expiry validation.
 - `RecordVisit` and `GetLinkStats` remain deferred.
 - Proto `go_package` uses an absolute import path without an explicit Go package alias.
 - goctl-generated package names, client directories, and exported client identifiers are the source of truth.
@@ -189,7 +187,7 @@ link, copy the returned ID into `linkId` before running detail, update, or delet
 
 ## Current Verification
 
-Run before merging Stage 3 management changes:
+Run before merging changes:
 
 ```bash
 make test
@@ -198,33 +196,25 @@ docker compose -f deploy/docker-compose.infra.yml config --quiet
 go test -race ./...
 ```
 
-## Stage 3 Acceptance
+## Stage 4 Acceptance
 
-Stage 3 management implementation is accepted when:
+Stage 4 redirect and cache implementation is accepted when:
 
-- `POST /admin/login` succeeds for an active administrator.
-- Login rejects invalid credentials and inactive administrators.
-- Authenticated profile retrieval works.
-- Management APIs reject missing or invalid Bearer tokens.
-- Short-link creation supports generated and valid custom codes.
-- Invalid URLs, reserved codes, invalid codes, invalid expiration values, and duplicate custom codes are rejected with stable envelope errors.
-- Short-link listing supports pagination and management filters.
-- Short-link detail retrieval hides missing and soft-deleted links.
-- Short-link update changes mutable fields and keeps code immutable.
-- Short-link delete soft deletes and hides the link from normal management reads.
-- Unit tests and integration tests cover the Stage 3 scenarios in `docs/12-testing-strategy.md`.
-- Redirect serving, Redis redirect cache, analytics, and management UI remain deferred.
+- Active links redirect with `302 Found`.
+- Missing and soft-deleted links return `404 Not Found`.
+- Disabled links return `403 Forbidden`.
+- Expired links return `410 Gone`.
+- Redis cache is populated on first resolve and invalidated on update and soft delete.
+- Analytics and management UI remain deferred.
 
 ## Next Handoff
 
-Stage 4 remaining work:
+Stage 5 analytics work:
 
-- Implement `ResolveShortLink` business logic (Redis cache lookup via `FindOneByCode`, status and expiry checks).
-- Add best-effort cache invalidation in `UpdateShortLink` and `DeleteShortLink` logic.
-- Add `GET /{code}` route in link-api with `RedirectHandler` and `RedirectLogic`.
-- Map gRPC status codes to HTTP redirect responses (302, 404, 403, 410).
-
-Keep analytics and management UI deferred to their dedicated stages.
+- Add `RecordVisit` RPC method and visit event storage.
+- Add `GetLinkStats` RPC method for daily stat aggregation.
+- Add `GET /admin/links/{id}/stats` HTTP endpoint.
+- Keep management UI deferred to Stage 6.
 
 ## Git And Commit Rules
 

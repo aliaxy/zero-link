@@ -105,6 +105,8 @@ Risks:
 
 Goal: deliver fast and correct redirects.
 
+Status: complete.
+
 Outputs:
 
 - `GET /{code}` route.
