@@ -29,6 +29,8 @@ type (
 	GetShortLinkResponse      = linkv1.GetShortLinkResponse
 	ListShortLinksRequest     = linkv1.ListShortLinksRequest
 	ListShortLinksResponse    = linkv1.ListShortLinksResponse
+	ResolveShortLinkRequest   = linkv1.ResolveShortLinkRequest
+	ResolveShortLinkResponse  = linkv1.ResolveShortLinkResponse
 	ShortLink                 = linkv1.ShortLink
 	ShortLinkSummary          = linkv1.ShortLinkSummary
 	UpdateShortLinkRequest    = linkv1.UpdateShortLinkRequest
@@ -43,6 +45,7 @@ type (
 		GetShortLink(ctx context.Context, in *GetShortLinkRequest, opts ...grpc.CallOption) (*GetShortLinkResponse, error)
 		UpdateShortLink(ctx context.Context, in *UpdateShortLinkRequest, opts ...grpc.CallOption) (*UpdateShortLinkResponse, error)
 		DeleteShortLink(ctx context.Context, in *DeleteShortLinkRequest, opts ...grpc.CallOption) (*DeleteShortLinkResponse, error)
+		ResolveShortLink(ctx context.Context, in *ResolveShortLinkRequest, opts ...grpc.CallOption) (*ResolveShortLinkResponse, error)
 	}
 
 	defaultLinkService struct {
@@ -94,4 +97,9 @@ func (m *defaultLinkService) UpdateShortLink(ctx context.Context, in *UpdateShor
 func (m *defaultLinkService) DeleteShortLink(ctx context.Context, in *DeleteShortLinkRequest, opts ...grpc.CallOption) (*DeleteShortLinkResponse, error) {
 	client := linkv1.NewLinkServiceClient(m.cli.Conn())
 	return client.DeleteShortLink(ctx, in, opts...)
+}
+
+func (m *defaultLinkService) ResolveShortLink(ctx context.Context, in *ResolveShortLinkRequest, opts ...grpc.CallOption) (*ResolveShortLinkResponse, error) {
+	client := linkv1.NewLinkServiceClient(m.cli.Conn())
+	return client.ResolveShortLink(ctx, in, opts...)
 }

@@ -27,6 +27,7 @@ const (
 	LinkService_GetShortLink_FullMethodName      = "/link.v1.LinkService/GetShortLink"
 	LinkService_UpdateShortLink_FullMethodName   = "/link.v1.LinkService/UpdateShortLink"
 	LinkService_DeleteShortLink_FullMethodName   = "/link.v1.LinkService/DeleteShortLink"
+	LinkService_ResolveShortLink_FullMethodName  = "/link.v1.LinkService/ResolveShortLink"
 )
 
 // LinkServiceClient is the client API for LinkService service.
@@ -41,6 +42,7 @@ type LinkServiceClient interface {
 	GetShortLink(ctx context.Context, in *GetShortLinkRequest, opts ...grpc.CallOption) (*GetShortLinkResponse, error)
 	UpdateShortLink(ctx context.Context, in *UpdateShortLinkRequest, opts ...grpc.CallOption) (*UpdateShortLinkResponse, error)
 	DeleteShortLink(ctx context.Context, in *DeleteShortLinkRequest, opts ...grpc.CallOption) (*DeleteShortLinkResponse, error)
+	ResolveShortLink(ctx context.Context, in *ResolveShortLinkRequest, opts ...grpc.CallOption) (*ResolveShortLinkResponse, error)
 }
 
 type linkServiceClient struct {
@@ -131,6 +133,16 @@ func (c *linkServiceClient) DeleteShortLink(ctx context.Context, in *DeleteShort
 	return out, nil
 }
 
+func (c *linkServiceClient) ResolveShortLink(ctx context.Context, in *ResolveShortLinkRequest, opts ...grpc.CallOption) (*ResolveShortLinkResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ResolveShortLinkResponse)
+	err := c.cc.Invoke(ctx, LinkService_ResolveShortLink_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // LinkServiceServer is the server API for LinkService service.
 // All implementations must embed UnimplementedLinkServiceServer
 // for forward compatibility.
@@ -143,6 +155,7 @@ type LinkServiceServer interface {
 	GetShortLink(context.Context, *GetShortLinkRequest) (*GetShortLinkResponse, error)
 	UpdateShortLink(context.Context, *UpdateShortLinkRequest) (*UpdateShortLinkResponse, error)
 	DeleteShortLink(context.Context, *DeleteShortLinkRequest) (*DeleteShortLinkResponse, error)
+	ResolveShortLink(context.Context, *ResolveShortLinkRequest) (*ResolveShortLinkResponse, error)
 	mustEmbedUnimplementedLinkServiceServer()
 }
 
@@ -176,6 +189,9 @@ func (UnimplementedLinkServiceServer) UpdateShortLink(context.Context, *UpdateSh
 }
 func (UnimplementedLinkServiceServer) DeleteShortLink(context.Context, *DeleteShortLinkRequest) (*DeleteShortLinkResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeleteShortLink not implemented")
+}
+func (UnimplementedLinkServiceServer) ResolveShortLink(context.Context, *ResolveShortLinkRequest) (*ResolveShortLinkResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ResolveShortLink not implemented")
 }
 func (UnimplementedLinkServiceServer) mustEmbedUnimplementedLinkServiceServer() {}
 func (UnimplementedLinkServiceServer) testEmbeddedByValue()                     {}
@@ -342,6 +358,24 @@ func _LinkService_DeleteShortLink_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _LinkService_ResolveShortLink_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ResolveShortLinkRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LinkServiceServer).ResolveShortLink(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: LinkService_ResolveShortLink_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LinkServiceServer).ResolveShortLink(ctx, req.(*ResolveShortLinkRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // LinkService_ServiceDesc is the grpc.ServiceDesc for LinkService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -380,6 +414,10 @@ var LinkService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteShortLink",
 			Handler:    _LinkService_DeleteShortLink_Handler,
+		},
+		{
+			MethodName: "ResolveShortLink",
+			Handler:    _LinkService_ResolveShortLink_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

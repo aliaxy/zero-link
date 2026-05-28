@@ -116,6 +116,14 @@ message DeleteShortLinkResponse {
   bool deleted = 2;
 }
 
+message ResolveShortLinkRequest {
+  string code = 1;
+}
+
+message ResolveShortLinkResponse {
+  string origin_url = 1;
+}
+
 service LinkService {
   rpc Check(CheckRequest) returns (CheckResponse);
   rpc AuthenticateAdmin(AuthenticateAdminRequest) returns (AuthenticateAdminResponse);
@@ -125,4 +133,5 @@ service LinkService {
   rpc GetShortLink(GetShortLinkRequest) returns (GetShortLinkResponse);
   rpc UpdateShortLink(UpdateShortLinkRequest) returns (UpdateShortLinkResponse);
   rpc DeleteShortLink(DeleteShortLinkRequest) returns (DeleteShortLinkResponse);
+  rpc ResolveShortLink(ResolveShortLinkRequest) returns (ResolveShortLinkResponse);
 }

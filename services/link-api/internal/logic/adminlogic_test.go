@@ -109,6 +109,17 @@ func (f fakeLinkService) DeleteShortLink(
 	return f.deleteResp, nil
 }
 
+func (f fakeLinkService) ResolveShortLink(
+	_ context.Context,
+	_ *linkservice.ResolveShortLinkRequest,
+	_ ...grpc.CallOption,
+) (*linkservice.ResolveShortLinkResponse, error) {
+	if f.err != nil {
+		return nil, f.err
+	}
+	return nil, nil
+}
+
 func TestLoginLogic_Login(t *testing.T) {
 	tokenManager := auth.NewTokenManager(auth.Config{
 		Secret:          "local-test-secret",

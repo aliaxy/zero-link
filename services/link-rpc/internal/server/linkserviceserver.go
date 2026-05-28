@@ -62,3 +62,8 @@ func (s *LinkServiceServer) DeleteShortLink(ctx context.Context, in *linkv1.Dele
 	l := logic.NewDeleteShortLinkLogic(ctx, s.svcCtx)
 	return l.DeleteShortLink(in)
 }
+
+func (s *LinkServiceServer) ResolveShortLink(ctx context.Context, in *linkv1.ResolveShortLinkRequest) (*linkv1.ResolveShortLinkResponse, error) {
+	l := logic.NewResolveShortLinkLogic(ctx, s.svcCtx)
+	return l.ResolveShortLink(in)
+}

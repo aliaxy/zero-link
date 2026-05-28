@@ -1153,6 +1153,94 @@ func (x *DeleteShortLinkResponse) GetDeleted() bool {
 	return false
 }
 
+type ResolveShortLinkRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Code          string                 `protobuf:"bytes,1,opt,name=code,proto3" json:"code,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ResolveShortLinkRequest) Reset() {
+	*x = ResolveShortLinkRequest{}
+	mi := &file_link_v1_link_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResolveShortLinkRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResolveShortLinkRequest) ProtoMessage() {}
+
+func (x *ResolveShortLinkRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_link_v1_link_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResolveShortLinkRequest.ProtoReflect.Descriptor instead.
+func (*ResolveShortLinkRequest) Descriptor() ([]byte, []int) {
+	return file_link_v1_link_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *ResolveShortLinkRequest) GetCode() string {
+	if x != nil {
+		return x.Code
+	}
+	return ""
+}
+
+type ResolveShortLinkResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	OriginUrl     string                 `protobuf:"bytes,1,opt,name=origin_url,json=originUrl,proto3" json:"origin_url,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ResolveShortLinkResponse) Reset() {
+	*x = ResolveShortLinkResponse{}
+	mi := &file_link_v1_link_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResolveShortLinkResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResolveShortLinkResponse) ProtoMessage() {}
+
+func (x *ResolveShortLinkResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_link_v1_link_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResolveShortLinkResponse.ProtoReflect.Descriptor instead.
+func (*ResolveShortLinkResponse) Descriptor() ([]byte, []int) {
+	return file_link_v1_link_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *ResolveShortLinkResponse) GetOriginUrl() string {
+	if x != nil {
+		return x.OriginUrl
+	}
+	return ""
+}
+
 var File_link_v1_link_proto protoreflect.FileDescriptor
 
 const file_link_v1_link_proto_rawDesc = "" +
@@ -1244,7 +1332,12 @@ const file_link_v1_link_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\"C\n" +
 	"\x17DeleteShortLinkResponse\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x18\n" +
-	"\adeleted\x18\x02 \x01(\bR\adeleted2\x99\x05\n" +
+	"\adeleted\x18\x02 \x01(\bR\adeleted\"-\n" +
+	"\x17ResolveShortLinkRequest\x12\x12\n" +
+	"\x04code\x18\x01 \x01(\tR\x04code\"9\n" +
+	"\x18ResolveShortLinkResponse\x12\x1d\n" +
+	"\n" +
+	"origin_url\x18\x01 \x01(\tR\toriginUrl2\xf2\x05\n" +
 	"\vLinkService\x126\n" +
 	"\x05Check\x12\x15.link.v1.CheckRequest\x1a\x16.link.v1.CheckResponse\x12Z\n" +
 	"\x11AuthenticateAdmin\x12!.link.v1.AuthenticateAdminRequest\x1a\".link.v1.AuthenticateAdminResponse\x12T\n" +
@@ -1253,7 +1346,8 @@ const file_link_v1_link_proto_rawDesc = "" +
 	"\x0eListShortLinks\x12\x1e.link.v1.ListShortLinksRequest\x1a\x1f.link.v1.ListShortLinksResponse\x12K\n" +
 	"\fGetShortLink\x12\x1c.link.v1.GetShortLinkRequest\x1a\x1d.link.v1.GetShortLinkResponse\x12T\n" +
 	"\x0fUpdateShortLink\x12\x1f.link.v1.UpdateShortLinkRequest\x1a .link.v1.UpdateShortLinkResponse\x12T\n" +
-	"\x0fDeleteShortLink\x12\x1f.link.v1.DeleteShortLinkRequest\x1a .link.v1.DeleteShortLinkResponseB9Z7github.com/aliaxy/zero-link/services/link-rpc/pb/linkv1b\x06proto3"
+	"\x0fDeleteShortLink\x12\x1f.link.v1.DeleteShortLinkRequest\x1a .link.v1.DeleteShortLinkResponse\x12W\n" +
+	"\x10ResolveShortLink\x12 .link.v1.ResolveShortLinkRequest\x1a!.link.v1.ResolveShortLinkResponseB9Z7github.com/aliaxy/zero-link/services/link-rpc/pb/linkv1b\x06proto3"
 
 var (
 	file_link_v1_link_proto_rawDescOnce sync.Once
@@ -1267,7 +1361,7 @@ func file_link_v1_link_proto_rawDescGZIP() []byte {
 	return file_link_v1_link_proto_rawDescData
 }
 
-var file_link_v1_link_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
+var file_link_v1_link_proto_msgTypes = make([]protoimpl.MessageInfo, 21)
 var file_link_v1_link_proto_goTypes = []any{
 	(*CheckRequest)(nil),              // 0: link.v1.CheckRequest
 	(*CheckResponse)(nil),             // 1: link.v1.CheckResponse
@@ -1288,6 +1382,8 @@ var file_link_v1_link_proto_goTypes = []any{
 	(*UpdateShortLinkResponse)(nil),   // 16: link.v1.UpdateShortLinkResponse
 	(*DeleteShortLinkRequest)(nil),    // 17: link.v1.DeleteShortLinkRequest
 	(*DeleteShortLinkResponse)(nil),   // 18: link.v1.DeleteShortLinkResponse
+	(*ResolveShortLinkRequest)(nil),   // 19: link.v1.ResolveShortLinkRequest
+	(*ResolveShortLinkResponse)(nil),  // 20: link.v1.ResolveShortLinkResponse
 }
 var file_link_v1_link_proto_depIdxs = []int32{
 	2,  // 0: link.v1.AuthenticateAdminResponse.admin:type_name -> link.v1.AdminProfile
@@ -1304,16 +1400,18 @@ var file_link_v1_link_proto_depIdxs = []int32{
 	13, // 11: link.v1.LinkService.GetShortLink:input_type -> link.v1.GetShortLinkRequest
 	15, // 12: link.v1.LinkService.UpdateShortLink:input_type -> link.v1.UpdateShortLinkRequest
 	17, // 13: link.v1.LinkService.DeleteShortLink:input_type -> link.v1.DeleteShortLinkRequest
-	1,  // 14: link.v1.LinkService.Check:output_type -> link.v1.CheckResponse
-	4,  // 15: link.v1.LinkService.AuthenticateAdmin:output_type -> link.v1.AuthenticateAdminResponse
-	6,  // 16: link.v1.LinkService.GetAdminProfile:output_type -> link.v1.GetAdminProfileResponse
-	10, // 17: link.v1.LinkService.CreateShortLink:output_type -> link.v1.CreateShortLinkResponse
-	12, // 18: link.v1.LinkService.ListShortLinks:output_type -> link.v1.ListShortLinksResponse
-	14, // 19: link.v1.LinkService.GetShortLink:output_type -> link.v1.GetShortLinkResponse
-	16, // 20: link.v1.LinkService.UpdateShortLink:output_type -> link.v1.UpdateShortLinkResponse
-	18, // 21: link.v1.LinkService.DeleteShortLink:output_type -> link.v1.DeleteShortLinkResponse
-	14, // [14:22] is the sub-list for method output_type
-	6,  // [6:14] is the sub-list for method input_type
+	19, // 14: link.v1.LinkService.ResolveShortLink:input_type -> link.v1.ResolveShortLinkRequest
+	1,  // 15: link.v1.LinkService.Check:output_type -> link.v1.CheckResponse
+	4,  // 16: link.v1.LinkService.AuthenticateAdmin:output_type -> link.v1.AuthenticateAdminResponse
+	6,  // 17: link.v1.LinkService.GetAdminProfile:output_type -> link.v1.GetAdminProfileResponse
+	10, // 18: link.v1.LinkService.CreateShortLink:output_type -> link.v1.CreateShortLinkResponse
+	12, // 19: link.v1.LinkService.ListShortLinks:output_type -> link.v1.ListShortLinksResponse
+	14, // 20: link.v1.LinkService.GetShortLink:output_type -> link.v1.GetShortLinkResponse
+	16, // 21: link.v1.LinkService.UpdateShortLink:output_type -> link.v1.UpdateShortLinkResponse
+	18, // 22: link.v1.LinkService.DeleteShortLink:output_type -> link.v1.DeleteShortLinkResponse
+	20, // 23: link.v1.LinkService.ResolveShortLink:output_type -> link.v1.ResolveShortLinkResponse
+	15, // [15:24] is the sub-list for method output_type
+	6,  // [6:15] is the sub-list for method input_type
 	6,  // [6:6] is the sub-list for extension type_name
 	6,  // [6:6] is the sub-list for extension extendee
 	0,  // [0:6] is the sub-list for field type_name
@@ -1330,7 +1428,7 @@ func file_link_v1_link_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_link_v1_link_proto_rawDesc), len(file_link_v1_link_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   19,
+			NumMessages:   21,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
