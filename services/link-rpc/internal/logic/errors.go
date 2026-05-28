@@ -21,6 +21,10 @@ func rpcError(err error) error {
 		return status.Error(codes.NotFound, err.Error())
 	case errors.Is(err, domain.ErrConflict):
 		return status.Error(codes.AlreadyExists, err.Error())
+	case errors.Is(err, domain.ErrPermissionDenied):
+		return status.Error(codes.PermissionDenied, err.Error())
+	case errors.Is(err, domain.ErrGone):
+		return status.Error(codes.FailedPrecondition, err.Error())
 	default:
 		return status.Error(codes.Internal, "internal error")
 	}

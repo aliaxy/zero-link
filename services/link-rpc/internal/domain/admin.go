@@ -23,6 +23,10 @@ var (
 	ErrNotFound = errors.New("not found")
 	// ErrConflict reports a duplicate management resource.
 	ErrConflict = errors.New("conflict")
+	// ErrPermissionDenied reports a disabled short link that cannot redirect.
+	ErrPermissionDenied = errors.New("permission denied")
+	// ErrGone reports an expired short link that can no longer redirect.
+	ErrGone = errors.New("gone")
 )
 
 // AdminFinder finds administrator records by username.

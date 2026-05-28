@@ -1,7 +1,10 @@
 // Package config defines link-rpc runtime configuration.
 package config
 
-import "github.com/zeromicro/go-zero/zrpc"
+import (
+	"github.com/zeromicro/go-zero/core/stores/cache"
+	"github.com/zeromicro/go-zero/zrpc"
+)
 
 // MySQLConfig contains the MySQL dependency settings used by readiness checks.
 type MySQLConfig struct {
@@ -26,4 +29,5 @@ type DependenciesConfig struct {
 type Config struct {
 	zrpc.RpcServerConf
 	Dependencies DependenciesConfig
+	CacheRedis   cache.CacheConf
 }

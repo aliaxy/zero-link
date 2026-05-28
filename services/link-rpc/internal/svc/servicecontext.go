@@ -23,7 +23,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	return &ServiceContext{
 		Config:         c,
 		DB:             db,
-		AdminUserModel: model.NewAdminUserModel(db),
-		ShortLinkModel: model.NewShortLinkModel(db),
+		AdminUserModel: model.NewAdminUserModel(db, c.CacheRedis),
+		ShortLinkModel: model.NewShortLinkModel(db, c.CacheRedis),
 	}
 }

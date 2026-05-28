@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/zeromicro/go-zero/core/stores/cache"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 )
 
@@ -34,24 +35,26 @@ type (
 
 	customShortLinkModel struct {
 		*defaultShortLinkModel
+		cacheConf cache.CacheConf
 	}
 )
 
 // NewShortLinkModel returns a model for the database table.
-func NewShortLinkModel(conn sqlx.SqlConn) ShortLinkModel {
+func NewShortLinkModel(conn sqlx.SqlConn, c cache.CacheConf) ShortLinkModel {
 	return &customShortLinkModel{
-		defaultShortLinkModel: newShortLinkModel(conn),
+		defaultShortLinkModel: newShortLinkModel(conn, c),
+		cacheConf:             c,
 	}
 }
 
 func (m *customShortLinkModel) withSession(session sqlx.Session) ShortLinkModel {
-	return NewShortLinkModel(sqlx.NewSqlConnFromSession(session))
+	return NewShortLinkModel(sqlx.NewSqlConnFromSession(session), m.cacheConf)
 }
 
 func (m *customShortLinkModel) FindOneNotDeleted(ctx context.Context, id int64) (*ShortLink, error) {
 	query := fmt.Sprintf("select %s from %s where `id` = ? and `deleted_at` is null limit 1", shortLinkRows, m.table)
 	var resp ShortLink
-	err := m.conn.QueryRowCtx(ctx, &resp, query, id)
+	err := m.QueryRowNoCacheCtx(ctx, &resp, query, id)
 	switch err {
 	case nil:
 		return &resp, nil
@@ -67,7 +70,7 @@ func (m *customShortLinkModel) List(ctx context.Context, filter ShortLinkListFil
 
 	countQuery := fmt.Sprintf("select count(*) from %s %s", m.table, where)
 	var total int64
-	if err := m.conn.QueryRowCtx(ctx, &total, countQuery, args...); err != nil {
+	if err := m.QueryRowNoCacheCtx(ctx, &total, countQuery, args...); err != nil {
 		return nil, 0, err
 	}
 
@@ -81,7 +84,7 @@ func (m *customShortLinkModel) List(ctx context.Context, filter ShortLinkListFil
 	)
 
 	var links []*ShortLink
-	if err := m.conn.QueryRowsCtx(ctx, &links, query, args...); err != nil {
+	if err := m.QueryRowsNoCacheCtx(ctx, &links, query, args...); err != nil {
 		return nil, 0, err
 	}
 
@@ -89,8 +92,18 @@ func (m *customShortLinkModel) List(ctx context.Context, filter ShortLinkListFil
 }
 
 func (m *customShortLinkModel) SoftDelete(ctx context.Context, id int64, deletedAt time.Time) error {
-	query := fmt.Sprintf("update %s set `deleted_at` = ? where `id` = ? and `deleted_at` is null", m.table)
-	result, err := m.conn.ExecCtx(ctx, query, sql.NullTime{Time: deletedAt, Valid: true}, id)
+	data, err := m.FindOne(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	idKey := fmt.Sprintf("%s%v", cacheShortLinkIdPrefix, id)
+	codeKey := fmt.Sprintf("%s%v", cacheShortLinkCodePrefix, data.Code)
+
+	result, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (sql.Result, error) {
+		query := fmt.Sprintf("update %s set `deleted_at` = ? where `id` = ? and `deleted_at` is null", m.table)
+		return conn.ExecCtx(ctx, query, sql.NullTime{Time: deletedAt, Valid: true}, id)
+	}, idKey, codeKey)
 	if err != nil {
 		return err
 	}
