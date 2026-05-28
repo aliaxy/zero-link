@@ -36,7 +36,7 @@ func (l *LoginLogic) Login(req *types.LoginRequest) (resp *types.LoginResponse, 
 		Password: req.Password,
 	})
 	if err != nil {
-		return nil, err
+		return nil, fromRPCError(err)
 	}
 
 	token, expiresAt, err := l.svcCtx.TokenManager.Create(adminSubjectFromRPC(rpcResp.Admin))

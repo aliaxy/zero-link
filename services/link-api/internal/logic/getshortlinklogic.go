@@ -35,7 +35,7 @@ func (l *GetShortLinkLogic) GetShortLink(req *types.LinkIdRequest) (resp *types.
 		Id: req.Id,
 	})
 	if err != nil {
-		return nil, err
+		return nil, fromRPCError(err)
 	}
 
 	return okShortLinkResponse(rpcResp.Link), nil

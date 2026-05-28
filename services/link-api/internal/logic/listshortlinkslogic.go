@@ -40,7 +40,7 @@ func (l *ListShortLinksLogic) ListShortLinks(
 		Keyword:  req.Keyword,
 	})
 	if err != nil {
-		return nil, err
+		return nil, fromRPCError(err)
 	}
 
 	items := make([]types.ShortLinkSummary, 0, len(rpcResp.Items))

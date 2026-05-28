@@ -41,7 +41,7 @@ func (l *ProfileLogic) Profile() (resp *types.ProfileResponse, err error) {
 		AdminId: subject.ID,
 	})
 	if err != nil {
-		return nil, err
+		return nil, fromRPCError(err)
 	}
 
 	return &types.ProfileResponse{

@@ -37,7 +37,7 @@ func (l *DeleteShortLinkLogic) DeleteShortLink(
 		Id: req.Id,
 	})
 	if err != nil {
-		return nil, err
+		return nil, fromRPCError(err)
 	}
 
 	return &types.DeleteShortLinkResponse{

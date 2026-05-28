@@ -48,7 +48,7 @@ func (l *CreateShortLinkLogic) CreateShortLink(
 		CreatedBy:   subject.ID,
 	})
 	if err != nil {
-		return nil, err
+		return nil, fromRPCError(err)
 	}
 
 	return okShortLinkResponse(rpcResp.Link), nil

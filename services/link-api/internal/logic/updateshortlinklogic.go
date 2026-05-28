@@ -42,7 +42,7 @@ func (l *UpdateShortLinkLogic) UpdateShortLink(
 		ExpireAt:    req.ExpireAt,
 	})
 	if err != nil {
-		return nil, err
+		return nil, fromRPCError(err)
 	}
 
 	return okShortLinkResponse(rpcResp.Link), nil
