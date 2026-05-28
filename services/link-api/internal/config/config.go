@@ -9,8 +9,15 @@ import (
 	"github.com/zeromicro/go-zero/zrpc"
 )
 
+// AuthConfig contains management JWT settings.
+type AuthConfig struct {
+	Secret          string
+	TokenTTLSeconds int64
+}
+
 // Config contains the HTTP server and upstream RPC client settings.
 type Config struct {
 	rest.RestConf
+	Auth    AuthConfig
 	LinkRPC zrpc.RpcClientConf
 }
