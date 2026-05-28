@@ -9,3 +9,8 @@ Dependencies:
     DataSource: zerolink:zerolink@tcp(127.0.0.1:3306)/zero_link?charset=utf8mb4&parseTime=true&loc=Local
   Redis:
     Endpoint: 127.0.0.1:6379
+
+Middlewares:
+  Trace: false
+  Prometheus: false
+  Metrics: false

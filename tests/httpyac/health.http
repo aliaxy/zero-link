@@ -1,0 +1,5 @@
+### healthz
+GET {{baseUrl}}/healthz
+
+### readyz
+GET {{baseUrl}}/readyz
