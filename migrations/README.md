@@ -1,6 +1,6 @@
 # Migrations
 
-This directory contains versioned SQL migrations managed by `golang-migrate`.
+Versioned SQL migrations managed by `golang-migrate`.
 
 ## Local Usage
 
@@ -23,19 +23,22 @@ Roll back the latest local migration step with:
 make migrate-down
 ```
 
-## Stage 3 Initial Schema
+## Versions
 
-`000001_stage3_initial_schema` creates:
+### 000001 — Stage 3 Initial Schema
 
-- `admin_user`
-- `short_link`
+Creates `admin_user` and `short_link`.
 
-It also seeds a local/dev administrator:
+Seeds a local/dev administrator:
 
 - Username: `admin`
 - Password: `zerolink`
 
-The migration stores only the bcrypt password hash. The plaintext password is documented here for local development and verification.
+The migration stores only the bcrypt password hash. The plaintext password is documented here for local development only.
+
+### 000002 — Stage 5 Analytics
+
+Creates `visit_event` and `link_daily_stat`.
 
 ## Policy
 
