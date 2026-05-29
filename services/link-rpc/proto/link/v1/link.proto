@@ -124,6 +124,33 @@ message ResolveShortLinkResponse {
   string origin_url = 1;
 }
 
+message RecordVisitRequest {
+  string code       = 1;
+  string visited_at = 2;
+  string ip         = 3;
+  string user_agent = 4;
+  string referer    = 5;
+}
+
+message RecordVisitResponse {}
+
+message GetLinkStatsRequest {
+  int64  link_id = 1;
+  string from    = 2;
+  string to      = 3;
+}
+
+message DailyStat {
+  string stat_date = 1;
+  int64  pv        = 2;
+  int64  uv        = 3;
+}
+
+message GetLinkStatsResponse {
+  int64             link_id = 1;
+  repeated DailyStat items  = 2;
+}
+
 service LinkService {
   rpc Check(CheckRequest) returns (CheckResponse);
   rpc AuthenticateAdmin(AuthenticateAdminRequest) returns (AuthenticateAdminResponse);
@@ -134,4 +161,6 @@ service LinkService {
   rpc UpdateShortLink(UpdateShortLinkRequest) returns (UpdateShortLinkResponse);
   rpc DeleteShortLink(DeleteShortLinkRequest) returns (DeleteShortLinkResponse);
   rpc ResolveShortLink(ResolveShortLinkRequest) returns (ResolveShortLinkResponse);
+  rpc RecordVisit(RecordVisitRequest) returns (RecordVisitResponse);
+  rpc GetLinkStats(GetLinkStatsRequest) returns (GetLinkStatsResponse);
 }

@@ -13,7 +13,10 @@ import (
 	"google.golang.org/grpc"
 )
 
+// fakeLinkService embeds the LinkService interface so only the methods
+// exercised by a specific test need to be overridden.
 type fakeLinkService struct {
+	linkservice.LinkService
 	authResp    *linkservice.AuthenticateAdminResponse
 	profileResp *linkservice.GetAdminProfileResponse
 	createResp  *linkservice.CreateShortLinkResponse
@@ -23,14 +26,6 @@ type fakeLinkService struct {
 	deleteResp  *linkservice.DeleteShortLinkResponse
 	resolveResp *linkservice.ResolveShortLinkResponse
 	err         error
-}
-
-func (f fakeLinkService) Check(
-	_ context.Context,
-	_ *linkservice.CheckRequest,
-	_ ...grpc.CallOption,
-) (*linkservice.CheckResponse, error) {
-	return nil, nil
 }
 
 func (f fakeLinkService) AuthenticateAdmin(

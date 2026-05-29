@@ -21,14 +21,19 @@ type (
 	CheckResponse             = linkv1.CheckResponse
 	CreateShortLinkRequest    = linkv1.CreateShortLinkRequest
 	CreateShortLinkResponse   = linkv1.CreateShortLinkResponse
+	DailyStat                 = linkv1.DailyStat
 	DeleteShortLinkRequest    = linkv1.DeleteShortLinkRequest
 	DeleteShortLinkResponse   = linkv1.DeleteShortLinkResponse
 	GetAdminProfileRequest    = linkv1.GetAdminProfileRequest
 	GetAdminProfileResponse   = linkv1.GetAdminProfileResponse
+	GetLinkStatsRequest       = linkv1.GetLinkStatsRequest
+	GetLinkStatsResponse      = linkv1.GetLinkStatsResponse
 	GetShortLinkRequest       = linkv1.GetShortLinkRequest
 	GetShortLinkResponse      = linkv1.GetShortLinkResponse
 	ListShortLinksRequest     = linkv1.ListShortLinksRequest
 	ListShortLinksResponse    = linkv1.ListShortLinksResponse
+	RecordVisitRequest        = linkv1.RecordVisitRequest
+	RecordVisitResponse       = linkv1.RecordVisitResponse
 	ResolveShortLinkRequest   = linkv1.ResolveShortLinkRequest
 	ResolveShortLinkResponse  = linkv1.ResolveShortLinkResponse
 	ShortLink                 = linkv1.ShortLink
@@ -46,6 +51,8 @@ type (
 		UpdateShortLink(ctx context.Context, in *UpdateShortLinkRequest, opts ...grpc.CallOption) (*UpdateShortLinkResponse, error)
 		DeleteShortLink(ctx context.Context, in *DeleteShortLinkRequest, opts ...grpc.CallOption) (*DeleteShortLinkResponse, error)
 		ResolveShortLink(ctx context.Context, in *ResolveShortLinkRequest, opts ...grpc.CallOption) (*ResolveShortLinkResponse, error)
+		RecordVisit(ctx context.Context, in *RecordVisitRequest, opts ...grpc.CallOption) (*RecordVisitResponse, error)
+		GetLinkStats(ctx context.Context, in *GetLinkStatsRequest, opts ...grpc.CallOption) (*GetLinkStatsResponse, error)
 	}
 
 	defaultLinkService struct {
@@ -102,4 +109,14 @@ func (m *defaultLinkService) DeleteShortLink(ctx context.Context, in *DeleteShor
 func (m *defaultLinkService) ResolveShortLink(ctx context.Context, in *ResolveShortLinkRequest, opts ...grpc.CallOption) (*ResolveShortLinkResponse, error) {
 	client := linkv1.NewLinkServiceClient(m.cli.Conn())
 	return client.ResolveShortLink(ctx, in, opts...)
+}
+
+func (m *defaultLinkService) RecordVisit(ctx context.Context, in *RecordVisitRequest, opts ...grpc.CallOption) (*RecordVisitResponse, error) {
+	client := linkv1.NewLinkServiceClient(m.cli.Conn())
+	return client.RecordVisit(ctx, in, opts...)
+}
+
+func (m *defaultLinkService) GetLinkStats(ctx context.Context, in *GetLinkStatsRequest, opts ...grpc.CallOption) (*GetLinkStatsResponse, error) {
+	client := linkv1.NewLinkServiceClient(m.cli.Conn())
+	return client.GetLinkStats(ctx, in, opts...)
 }

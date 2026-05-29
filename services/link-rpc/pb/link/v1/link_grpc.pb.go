@@ -28,6 +28,8 @@ const (
 	LinkService_UpdateShortLink_FullMethodName   = "/link.v1.LinkService/UpdateShortLink"
 	LinkService_DeleteShortLink_FullMethodName   = "/link.v1.LinkService/DeleteShortLink"
 	LinkService_ResolveShortLink_FullMethodName  = "/link.v1.LinkService/ResolveShortLink"
+	LinkService_RecordVisit_FullMethodName       = "/link.v1.LinkService/RecordVisit"
+	LinkService_GetLinkStats_FullMethodName      = "/link.v1.LinkService/GetLinkStats"
 )
 
 // LinkServiceClient is the client API for LinkService service.
@@ -43,6 +45,8 @@ type LinkServiceClient interface {
 	UpdateShortLink(ctx context.Context, in *UpdateShortLinkRequest, opts ...grpc.CallOption) (*UpdateShortLinkResponse, error)
 	DeleteShortLink(ctx context.Context, in *DeleteShortLinkRequest, opts ...grpc.CallOption) (*DeleteShortLinkResponse, error)
 	ResolveShortLink(ctx context.Context, in *ResolveShortLinkRequest, opts ...grpc.CallOption) (*ResolveShortLinkResponse, error)
+	RecordVisit(ctx context.Context, in *RecordVisitRequest, opts ...grpc.CallOption) (*RecordVisitResponse, error)
+	GetLinkStats(ctx context.Context, in *GetLinkStatsRequest, opts ...grpc.CallOption) (*GetLinkStatsResponse, error)
 }
 
 type linkServiceClient struct {
@@ -143,6 +147,26 @@ func (c *linkServiceClient) ResolveShortLink(ctx context.Context, in *ResolveSho
 	return out, nil
 }
 
+func (c *linkServiceClient) RecordVisit(ctx context.Context, in *RecordVisitRequest, opts ...grpc.CallOption) (*RecordVisitResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RecordVisitResponse)
+	err := c.cc.Invoke(ctx, LinkService_RecordVisit_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *linkServiceClient) GetLinkStats(ctx context.Context, in *GetLinkStatsRequest, opts ...grpc.CallOption) (*GetLinkStatsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetLinkStatsResponse)
+	err := c.cc.Invoke(ctx, LinkService_GetLinkStats_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // LinkServiceServer is the server API for LinkService service.
 // All implementations must embed UnimplementedLinkServiceServer
 // for forward compatibility.
@@ -156,6 +180,8 @@ type LinkServiceServer interface {
 	UpdateShortLink(context.Context, *UpdateShortLinkRequest) (*UpdateShortLinkResponse, error)
 	DeleteShortLink(context.Context, *DeleteShortLinkRequest) (*DeleteShortLinkResponse, error)
 	ResolveShortLink(context.Context, *ResolveShortLinkRequest) (*ResolveShortLinkResponse, error)
+	RecordVisit(context.Context, *RecordVisitRequest) (*RecordVisitResponse, error)
+	GetLinkStats(context.Context, *GetLinkStatsRequest) (*GetLinkStatsResponse, error)
 	mustEmbedUnimplementedLinkServiceServer()
 }
 
@@ -192,6 +218,12 @@ func (UnimplementedLinkServiceServer) DeleteShortLink(context.Context, *DeleteSh
 }
 func (UnimplementedLinkServiceServer) ResolveShortLink(context.Context, *ResolveShortLinkRequest) (*ResolveShortLinkResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ResolveShortLink not implemented")
+}
+func (UnimplementedLinkServiceServer) RecordVisit(context.Context, *RecordVisitRequest) (*RecordVisitResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method RecordVisit not implemented")
+}
+func (UnimplementedLinkServiceServer) GetLinkStats(context.Context, *GetLinkStatsRequest) (*GetLinkStatsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetLinkStats not implemented")
 }
 func (UnimplementedLinkServiceServer) mustEmbedUnimplementedLinkServiceServer() {}
 func (UnimplementedLinkServiceServer) testEmbeddedByValue()                     {}
@@ -376,6 +408,42 @@ func _LinkService_ResolveShortLink_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _LinkService_RecordVisit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RecordVisitRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LinkServiceServer).RecordVisit(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: LinkService_RecordVisit_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LinkServiceServer).RecordVisit(ctx, req.(*RecordVisitRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _LinkService_GetLinkStats_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetLinkStatsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LinkServiceServer).GetLinkStats(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: LinkService_GetLinkStats_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LinkServiceServer).GetLinkStats(ctx, req.(*GetLinkStatsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // LinkService_ServiceDesc is the grpc.ServiceDesc for LinkService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -418,6 +486,14 @@ var LinkService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ResolveShortLink",
 			Handler:    _LinkService_ResolveShortLink_Handler,
+		},
+		{
+			MethodName: "RecordVisit",
+			Handler:    _LinkService_RecordVisit_Handler,
+		},
+		{
+			MethodName: "GetLinkStats",
+			Handler:    _LinkService_GetLinkStats_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
