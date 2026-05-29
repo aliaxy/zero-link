@@ -6,5 +6,9 @@ Auth:
   Secret: replace-with-local-management-jwt-secret
   TokenTTLSeconds: 86400
 
+Cors:
+  AllowOrigins:
+    - "http://localhost:5173"
+
 LinkRPC:
   Target: 127.0.0.1:9090

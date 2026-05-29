@@ -10,6 +10,7 @@ import (
 
 	"github.com/aliaxy/zero-link/services/link-api/internal/config"
 	"github.com/aliaxy/zero-link/services/link-api/internal/handler"
+	"github.com/aliaxy/zero-link/services/link-api/internal/middleware"
 	"github.com/aliaxy/zero-link/services/link-api/internal/response"
 	"github.com/aliaxy/zero-link/services/link-api/internal/svc"
 
@@ -29,6 +30,8 @@ func main() {
 
 	server := rest.MustNewServer(c.RestConf)
 	defer server.Stop()
+
+	server.Use(middleware.NewCorsMiddleware(c.Cors.AllowOrigins).Handle)
 
 	ctx := svc.NewServiceContext(c)
 	handler.RegisterHandlers(server, ctx)
