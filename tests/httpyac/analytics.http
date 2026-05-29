@@ -1,0 +1,13 @@
+### redirect — active link (expects 302)
+# @name redirect
+GET {{baseUrl}}/{{linkCode}}
+
+### link-stats — daily PV/UV for a link
+# @name linkStats
+GET {{baseUrl}}/admin/links/{{linkId}}/stats
+Authorization: Bearer {{token}}
+
+### link-stats — with explicit date range
+# @name linkStatsRange
+GET {{baseUrl}}/admin/links/{{linkId}}/stats?from=2026-05-01&to=2026-05-29
+Authorization: Bearer {{token}}

@@ -18,6 +18,12 @@ type CreateShortLinkRequest struct {
 	ExpireAt    string `json:"expire_at,optional"`
 }
 
+type DailyStatItem struct {
+	StatDate string `json:"stat_date"`
+	Pv       int64  `json:"pv"`
+	Uv       int64  `json:"uv"`
+}
+
 type DeleteShortLinkData struct {
 	Id      int64 `json:"id"`
 	Deleted bool  `json:"deleted"`
@@ -32,6 +38,23 @@ type DeleteShortLinkResponse struct {
 type ErrorResponse struct {
 	Code    string `json:"code"`
 	Message string `json:"message"`
+}
+
+type GetLinkStatsData struct {
+	LinkId int64           `json:"link_id"`
+	Items  []DailyStatItem `json:"items"`
+}
+
+type GetLinkStatsRequest struct {
+	Id   int64  `path:"id"`
+	From string `form:"from,optional"`
+	To   string `form:"to,optional"`
+}
+
+type GetLinkStatsResponse struct {
+	Code    string           `json:"code"`
+	Message string           `json:"message"`
+	Data    GetLinkStatsData `json:"data"`
 }
 
 type HealthResponse struct {

@@ -13,7 +13,10 @@ import (
 	"google.golang.org/grpc"
 )
 
+// fakeLinkService embeds the LinkService interface so only the methods
+// exercised by a specific test need to be overridden.
 type fakeLinkService struct {
+	linkservice.LinkService
 	authResp    *linkservice.AuthenticateAdminResponse
 	profileResp *linkservice.GetAdminProfileResponse
 	createResp  *linkservice.CreateShortLinkResponse
@@ -22,15 +25,9 @@ type fakeLinkService struct {
 	updateResp  *linkservice.UpdateShortLinkResponse
 	deleteResp  *linkservice.DeleteShortLinkResponse
 	resolveResp *linkservice.ResolveShortLinkResponse
+	visitResp   *linkservice.RecordVisitResponse
+	statsResp   *linkservice.GetLinkStatsResponse
 	err         error
-}
-
-func (f fakeLinkService) Check(
-	_ context.Context,
-	_ *linkservice.CheckRequest,
-	_ ...grpc.CallOption,
-) (*linkservice.CheckResponse, error) {
-	return nil, nil
 }
 
 func (f fakeLinkService) AuthenticateAdmin(
@@ -119,6 +116,28 @@ func (f fakeLinkService) ResolveShortLink(
 		return nil, f.err
 	}
 	return f.resolveResp, nil
+}
+
+func (f fakeLinkService) RecordVisit(
+	_ context.Context,
+	_ *linkservice.RecordVisitRequest,
+	_ ...grpc.CallOption,
+) (*linkservice.RecordVisitResponse, error) {
+	if f.err != nil {
+		return nil, f.err
+	}
+	return f.visitResp, nil
+}
+
+func (f fakeLinkService) GetLinkStats(
+	_ context.Context,
+	_ *linkservice.GetLinkStatsRequest,
+	_ ...grpc.CallOption,
+) (*linkservice.GetLinkStatsResponse, error) {
+	if f.err != nil {
+		return nil, f.err
+	}
+	return f.statsResp, nil
 }
 
 func TestLoginLogic_Login(t *testing.T) {

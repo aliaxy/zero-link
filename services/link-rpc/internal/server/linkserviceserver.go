@@ -67,3 +67,13 @@ func (s *LinkServiceServer) ResolveShortLink(ctx context.Context, in *linkv1.Res
 	l := logic.NewResolveShortLinkLogic(ctx, s.svcCtx)
 	return l.ResolveShortLink(in)
 }
+
+func (s *LinkServiceServer) RecordVisit(ctx context.Context, in *linkv1.RecordVisitRequest) (*linkv1.RecordVisitResponse, error) {
+	l := logic.NewRecordVisitLogic(ctx, s.svcCtx)
+	return l.RecordVisit(in)
+}
+
+func (s *LinkServiceServer) GetLinkStats(ctx context.Context, in *linkv1.GetLinkStatsRequest) (*linkv1.GetLinkStatsResponse, error) {
+	l := logic.NewGetLinkStatsLogic(ctx, s.svcCtx)
+	return l.GetLinkStats(in)
+}

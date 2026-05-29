@@ -1,20 +1,22 @@
 # zero-link
 
-zero-link is a go-zero-oriented short-link system. Stage 2 API/RPC skeleton development is complete, and the Stage 3 backend management implementation is now in place.
+zero-link is a go-zero-oriented short-link system. Stages 1–5 are complete.
 
 ## Current Stage
 
-Stage 3 keeps the Stage 2 transport skeleton in place while adding administrator authentication and MySQL-backed short-link management:
+Stage 5 adds analytics on top of the Stage 4 redirect and Stage 3 management foundation:
 
 - MySQL and Redis are provided by `deploy/docker-compose.infra.yml`.
-- `link-api` exposes `GET /healthz` and `GET /readyz`.
-- `link-rpc` exposes readiness checks used by the API.
+- `link-api` exposes `GET /healthz`, `GET /readyz`, `GET /{code}` redirect, and management + analytics APIs.
+- `link-rpc` exposes readiness, administrator auth, short-link management, redirect resolution, visit recording, and stats query.
 - Stage 3 migrations create `admin_user` and `short_link`.
-- Generated MySQL models are wired into `link-rpc` service context.
-- Administrator login and profile APIs are implemented with JWT-based authentication.
+- Stage 5 migrations create `visit_event` and `link_daily_stat`.
+- `GET /{code}` returns 302/404/403/410; `AnalyticsMiddleware` fires a non-blocking `RecordVisit` RPC goroutine on every 302.
+- `GET /admin/links/{id}/stats` returns daily PV/UV for a short link within a date range.
+- Administrator login and profile APIs use JWT-based authentication.
 - Authenticated short-link create, list, detail, update, and soft-delete management APIs are implemented.
 - Local HTTP smoke request assets are available under `tests/httpyac/`.
-- Redirect APIs, Redis redirect cache behavior, analytics, and the management UI are still deferred.
+- Management UI is deferred to Stage 6.
 - `go.mod` is initialized with `github.com/aliaxy/zero-link`.
 
 ## Requirements
@@ -48,7 +50,7 @@ make run-rpc
 make run-api
 ```
 
-Apply the current Stage 3 schema when local MySQL is running:
+Apply the current Stage 5 schema when local MySQL is running:
 
 ```bash
 make migrate-up

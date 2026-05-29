@@ -25,9 +25,15 @@ type DependenciesConfig struct {
 	Redis RedisConfig
 }
 
+// AnalyticsConfig contains analytics-specific settings.
+type AnalyticsConfig struct {
+	IPSalt string
+}
+
 // Config contains the RPC server and dependency settings.
 type Config struct {
 	zrpc.RpcServerConf
 	Dependencies DependenciesConfig
 	CacheRedis   cache.CacheConf
+	Analytics    AnalyticsConfig
 }

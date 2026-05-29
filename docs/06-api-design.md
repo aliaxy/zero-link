@@ -5,9 +5,9 @@
 - Management APIs return JSON.
 - Redirect APIs return HTTP redirects or simple browser-facing error pages.
 - Internal technical errors are logged server-side and exposed as stable public error codes.
-- Stage 3 management APIs use `Authorization: Bearer <jwt>` authentication.
-- All Stage 3 management APIs except login require administrator authentication.
-- Stage 3 does not add redirect serving, Redis redirect cache behavior, analytics APIs, or the management UI.
+- Management APIs use `Authorization: Bearer <jwt>` authentication.
+- All management APIs except login require administrator authentication.
+- The management UI is deferred to Stage 6.
 
 ## Response Envelope
 
@@ -59,7 +59,7 @@ Configuration rules:
 - Token claims include the administrator ID and username.
 - Management handlers must reject missing, malformed, expired, or invalid bearer tokens before calling business RPC methods.
 
-## Stage 3 Management HTTP API
+## Management HTTP API
 
 ### POST /admin/login
 
@@ -273,8 +273,7 @@ Rules:
 
 - `code` is immutable and must not be accepted as an update field.
 - Mutable fields are `origin_url`, `title`, `description`, `status`, and `expire_at`.
-- Updating a link only changes MySQL state in Stage 3.
-- Redirect cache invalidation is documented for Stage 4 and must not be implemented in Stage 3.
+- Updating a link invalidates the Redis cache for both the id and code keys.
 
 Errors:
 
@@ -303,7 +302,7 @@ Rules:
 
 - Deletion sets `deleted_at`.
 - Soft-deleted links are hidden from normal management list and detail reads.
-- Redirect behavior for deleted links is deferred until Stage 4.
+- Soft-deleted links return `404 Not Found` on redirect.
 
 Errors:
 
@@ -311,9 +310,9 @@ Errors:
 - `NOT_FOUND` for missing or already soft-deleted links.
 - `UNAUTHENTICATED` for missing or invalid bearer token.
 
-## Stage 3 RPC Methods
+## RPC Methods
 
-Stage 3 RPC methods support administrator authentication and short-link management only. API handlers own HTTP parsing, response envelopes, and JWT creation or validation. RPC logic owns credential verification, data validation shared with management operations, and MySQL-backed mutations.
+API handlers own HTTP parsing, response envelopes, and JWT creation or validation. RPC logic owns credential verification, data validation, MySQL-backed mutations, and analytics recording.
 
 ### AuthenticateAdmin
 
@@ -353,51 +352,76 @@ Fetches non-deleted link details by ID.
 
 ### UpdateShortLink
 
-Updates mutable link fields. Cache invalidation behavior is deferred until Stage 4.
+Updates mutable link fields and invalidates the Redis cache for the updated link.
 
 ### DeleteShortLink
 
 Soft deletes a short link by setting `deleted_at`.
 
-## Deferred Management APIs
-
-The following management APIs are deferred until later stages.
+## Analytics HTTP API
 
 ### GET /admin/links/{id}/stats
 
+Returns daily PV/UV statistics for a short link within a date range.
+
+Authentication:
+
+- Required.
+
 Query parameters:
 
-- `from`
-- `to`
+- `from`: optional start date in `2006-01-02` format, defaults to 30 days ago.
+- `to`: optional end date in `2006-01-02` format, defaults to today.
 
-Returns totals and daily trend data.
+Response data:
 
-## Deferred Redirect API
+```json
+{
+  "link_id": 1001,
+  "items": [
+    {
+      "stat_date": "2026-05-15",
+      "pv": 42,
+      "uv": 7
+    }
+  ]
+}
+```
 
-Redirect serving is deferred until Stage 4. Do not add this route during Stage 3.
+Errors:
+
+- `INVALID_ARGUMENT` for invalid date range (from > to, or range exceeds 90 days).
+- `UNAUTHENTICATED` for missing or invalid bearer token.
+
+## Redirect API
 
 ### GET /{code}
 
-Future results:
+Results:
 
 - `302 Found` with `Location` for active links.
-- `404 Not Found` for missing or deleted links.
+- `404 Not Found` for missing or soft-deleted links.
 - `403 Forbidden` for disabled links.
 - `410 Gone` for expired links.
 
-## Deferred RPC Methods
+Notes:
+
+- `AnalyticsMiddleware` fires a non-blocking `RecordVisit` RPC goroutine after every 302 response.
+- Non-302 responses are not recorded.
+
+## Analytics RPC Methods
 
 ### ResolveShortLink
 
-Resolves a code into redirect data and domain status.
+Resolves a code into redirect data and domain status using a Redis-cached model.
 
 ### RecordVisit
 
-Records a visit event. Failure must be observable but should not block redirects.
+Records a visit event. Accepts raw IP and hashes it server-side with HMAC-SHA256. Failure is logged but does not block redirects.
 
 ### GetLinkStats
 
-Returns aggregate statistics for a link and time range.
+Returns daily PV/UV rows for a link between two dates. Defaults to the last 30 days; maximum range is 90 days.
 
 ## Health Checks
 
@@ -411,6 +435,8 @@ Returns readiness. It checks dependencies needed to serve traffic, including RPC
 
 ## Generation Boundary
 
-Stage 3 management API and RPC contracts have generated go-zero skeleton code. Future contract changes
-must update the `.api` or `.proto` source first, then run the approved `goctl` generation commands from
-the repository root. Do not handwrite generated service code.
+Stage 5 API and RPC contracts have generated go-zero skeleton code. Future contract changes must update
+the `.api` or `.proto` source first, then run the approved `goctl` generation commands from the repository
+root. Do not handwrite generated service code.
+
+API generation must use `--style gozero` to match the existing camelCase file naming convention.

@@ -1,5 +1,7 @@
-### healthz
+### healthz - check health status
+# @name healthz
 GET {{baseUrl}}/healthz
 
-### readyz
+### readyz - check readiness status
+# @name readyz
 GET {{baseUrl}}/readyz

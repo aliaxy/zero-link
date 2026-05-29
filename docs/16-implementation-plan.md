@@ -2,8 +2,8 @@
 
 ## Goal
 
-Track the current zero-link implementation state and define the next safe handoff point. Stages 1–4 are
-complete. The project is ready to begin Stage 5 analytics.
+Track the current zero-link implementation state and define the next safe handoff point. Stages 1–5 are
+complete. The project is ready to begin Stage 6 management UI.
 
 ## Source Documents
 
@@ -38,6 +38,16 @@ Stage 2 is complete. The transport skeleton includes:
 - RPC readiness method `LinkService.Check`.
 - API readiness logic that calls the RPC readiness method.
 - RPC readiness logic that validates configured MySQL and Redis endpoints with simple connectivity checks.
+
+Stage 5 analytics is complete. The implementation includes:
+
+- `visit_event` and `link_daily_stat` MySQL tables under `migrations/000002_stage5_analytics`.
+- `VisitEventModel` and `LinkDailyStatModel` (goctl-generated plain sqlx models, no Redis cache).
+- `RecordVisit` RPC: IP hashing (HMAC-SHA256 + salt), device detection, visit event insert, daily PV upsert.
+- `GetLinkStats` RPC: date range validation (default 30 days, max 90 days), daily stat query.
+- `AnalyticsMiddleware` in `link-api`: wraps redirect route via `statusRecorder`, fires goroutine on 302 only with 3s timeout context; non-302 responses are ignored.
+- `GET /admin/links/{id}/stats` endpoint returning daily PV/UV in standard envelope.
+- `Analytics.IPSalt` config in `link-rpc` only; never exposed to `link-api`.
 
 Stage 4 redirect and cache is complete. The implementation includes:
 
@@ -96,8 +106,7 @@ Public contract decisions:
 
 ## Implemented HTTP API
 
-The Stage 3 management HTTP contracts are documented in `docs/06-api-design.md` and implemented in
-`services/link-api/`.
+The HTTP contracts are documented in `docs/06-api-design.md` and implemented in `services/link-api/`.
 
 - `POST /admin/login`
 - `GET /admin/profile`
@@ -106,19 +115,19 @@ The Stage 3 management HTTP contracts are documented in `docs/06-api-design.md` 
 - `GET /admin/links/{id}`
 - `PATCH /admin/links/{id}`
 - `DELETE /admin/links/{id}`
+- `GET /admin/links/{id}/stats`
 
 Implementation notes:
 
 - `GET /healthz` and `GET /readyz` remain available.
-- `GET /{code}` is implemented and returns 302/404/403/410.
-- `GET /admin/links/{id}/stats` is still deferred.
+- `GET /{code}` returns 302/404/403/410 and is wrapped by `AnalyticsMiddleware`.
 - All management routes except login require Bearer token authentication.
 - API logic owns HTTP parsing, response envelopes, JWT creation, and JWT validation.
 - RPC logic owns credential verification, shared validation rules, and MySQL-backed business data.
 
 ## Implemented RPC API
 
-The Stage 3 RPC contracts are documented in `docs/06-api-design.md` and implemented in `services/link-rpc/`.
+The RPC contracts are documented in `docs/06-api-design.md` and implemented in `services/link-rpc/`.
 
 - `AuthenticateAdmin`
 - `GetAdminProfile`
@@ -127,12 +136,16 @@ The Stage 3 RPC contracts are documented in `docs/06-api-design.md` and implemen
 - `GetShortLink`
 - `UpdateShortLink`
 - `DeleteShortLink`
+- `ResolveShortLink`
+- `RecordVisit`
+- `GetLinkStats`
 
 Implementation notes:
 
 - The existing `Check` readiness method remains available.
-- `ResolveShortLink` is implemented with Redis cache lookup and status/expiry validation.
-- `RecordVisit` and `GetLinkStats` remain deferred.
+- `ResolveShortLink` uses Redis cache lookup and status/expiry validation.
+- `RecordVisit` hashes the raw IP server-side and inserts a `visit_event` row, then upserts `link_daily_stat`.
+- `GetLinkStats` validates the date range and queries `link_daily_stat` between the given dates.
 - Proto `go_package` uses an absolute import path without an explicit Go package alias.
 - goctl-generated package names, client directories, and exported client identifiers are the source of truth.
 - The services use generated go-zero `ServiceContext` wiring.
@@ -140,8 +153,17 @@ Implementation notes:
 
 ## Generation Boundary
 
-Stage 3 contracts have been generated. Future API or RPC contract changes must update the source contract
+Stage 5 contracts have been generated. Future API or RPC contract changes must update the source contract
 first, then run go-zero generation from the repository root. Do not handwrite generated go-zero service files.
+
+API generation must use `--style gozero` to match the existing camelCase file naming convention:
+
+```bash
+goctl api go \
+  --api services/link-api/api/link.api \
+  --dir services/link-api \
+  --style gozero
+```
 
 RPC generation command:
 
@@ -196,25 +218,23 @@ docker compose -f deploy/docker-compose.infra.yml config --quiet
 go test -race ./...
 ```
 
-## Stage 4 Acceptance
+## Stage 5 Acceptance
 
-Stage 4 redirect and cache implementation is accepted when:
+Stage 5 analytics implementation is accepted when:
 
-- Active links redirect with `302 Found`.
-- Missing and soft-deleted links return `404 Not Found`.
-- Disabled links return `403 Forbidden`.
-- Expired links return `410 Gone`.
-- Redis cache is populated on first resolve and invalidated on update and soft delete.
-- Analytics and management UI remain deferred.
+- `GET /{code}` on an active link fires a `RecordVisit` RPC call asynchronously.
+- `visit_event` table receives one row per redirect.
+- `link_daily_stat` row for today shows `pv: 1` after the first redirect.
+- `GET /admin/links/{id}/stats` returns the daily stats in the standard envelope.
+- Analytics RPC failure does not block or error the redirect response.
 
 ## Next Handoff
 
-Stage 5 analytics work:
+Stage 6 management UI work:
 
-- Add `RecordVisit` RPC method and visit event storage.
-- Add `GetLinkStats` RPC method for daily stat aggregation.
-- Add `GET /admin/links/{id}/stats` HTTP endpoint.
-- Keep management UI deferred to Stage 6.
+- Embed an admin SPA under `web/admin/`.
+- Login page, link list, create/edit form, link detail and stats view.
+- Keep observability, rate limiting, and Docker Compose application services deferred to Stage 7/8.
 
 ## Git And Commit Rules
 

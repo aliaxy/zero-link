@@ -20,7 +20,8 @@ Suggested local variables use the `local` environment:
     "adminUsername": "admin",
     "adminPassword": "zerolink",
     "token": "replace-with-login-token",
-    "linkId": 1
+    "linkId": 1,
+    "linkCode": "replace-with-short-code"
   }
 }
 ```
@@ -36,8 +37,9 @@ Run every request in a file:
 ```bash
 httpyac send tests/httpyac/health.http -e local --all
 httpyac send tests/httpyac/admin.http -e local --all
+httpyac send tests/httpyac/analytics.http -e local --all
 ```
 
 After login, copy the returned token into `http-client.private.env.json` before running authenticated
-management requests. After creating a link, copy the returned ID into `linkId` before running detail,
-update, or delete requests.
+management requests. After creating a link, copy the returned `id` into `linkId` and the returned
+`code` into `linkCode` before running detail, update, delete, redirect, or stats requests.
