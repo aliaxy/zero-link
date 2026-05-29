@@ -1,4 +1,5 @@
-package logic
+// Package admin contains link-api management request logic.
+package admin
 
 import (
 	"time"

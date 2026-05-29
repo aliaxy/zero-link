@@ -1,4 +1,4 @@
-package logic
+package admin
 
 import "github.com/aliaxy/zero-link/services/link-api/internal/response"
 

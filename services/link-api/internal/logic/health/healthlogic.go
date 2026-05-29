@@ -1,8 +1,8 @@
 // Code scaffolded by goctl. Safe to edit.
 // goctl 1.9.2
 
-// Package logic contains link-api request logic.
-package logic
+// Package health contains link-api liveness and readiness logic.
+package health
 
 import (
 	"context"
@@ -14,6 +14,8 @@ import (
 )
 
 // HealthLogic handles API liveness checks.
+//
+//nolint:revive // goctl convention: type name matches handler name
 type HealthLogic struct {
 	logx.Logger
 	ctx    context.Context

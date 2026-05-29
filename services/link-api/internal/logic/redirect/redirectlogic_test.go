@@ -1,4 +1,4 @@
-package logic
+package redirect
 
 import (
 	"context"
@@ -8,9 +8,27 @@ import (
 	"github.com/aliaxy/zero-link/services/link-api/internal/types"
 	"github.com/aliaxy/zero-link/services/link-rpc/linkservice"
 
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
+
+type fakeRedirectLinkService struct {
+	linkservice.LinkService
+	resolveResp *linkservice.ResolveShortLinkResponse
+	err         error
+}
+
+func (f fakeRedirectLinkService) ResolveShortLink(
+	_ context.Context,
+	_ *linkservice.ResolveShortLinkRequest,
+	_ ...grpc.CallOption,
+) (*linkservice.ResolveShortLinkResponse, error) {
+	if f.err != nil {
+		return nil, f.err
+	}
+	return f.resolveResp, nil
+}
 
 func newRedirectLogic(svc *svc.ServiceContext) *RedirectLogic {
 	return NewRedirectLogic(context.Background(), svc)
@@ -18,7 +36,7 @@ func newRedirectLogic(svc *svc.ServiceContext) *RedirectLogic {
 
 func TestRedirectLogic_Success(t *testing.T) {
 	svcCtx := &svc.ServiceContext{
-		LinkRPC: fakeLinkService{
+		LinkRPC: fakeRedirectLinkService{
 			resolveResp: &linkservice.ResolveShortLinkResponse{OriginUrl: "https://example.com"},
 		},
 	}
@@ -33,7 +51,7 @@ func TestRedirectLogic_Success(t *testing.T) {
 
 func TestRedirectLogic_NotFound(t *testing.T) {
 	svcCtx := &svc.ServiceContext{
-		LinkRPC: fakeLinkService{err: status.Error(codes.NotFound, "not found")},
+		LinkRPC: fakeRedirectLinkService{err: status.Error(codes.NotFound, "not found")},
 	}
 	_, err := newRedirectLogic(svcCtx).Redirect(&types.RedirectRequest{Code: "missing"})
 	if status.Code(err) != codes.NotFound {
@@ -43,7 +61,7 @@ func TestRedirectLogic_NotFound(t *testing.T) {
 
 func TestRedirectLogic_Disabled(t *testing.T) {
 	svcCtx := &svc.ServiceContext{
-		LinkRPC: fakeLinkService{err: status.Error(codes.PermissionDenied, "disabled")},
+		LinkRPC: fakeRedirectLinkService{err: status.Error(codes.PermissionDenied, "disabled")},
 	}
 	_, err := newRedirectLogic(svcCtx).Redirect(&types.RedirectRequest{Code: "abc123"})
 	if status.Code(err) != codes.PermissionDenied {
@@ -53,7 +71,7 @@ func TestRedirectLogic_Disabled(t *testing.T) {
 
 func TestRedirectLogic_Expired(t *testing.T) {
 	svcCtx := &svc.ServiceContext{
-		LinkRPC: fakeLinkService{err: status.Error(codes.FailedPrecondition, "expired")},
+		LinkRPC: fakeRedirectLinkService{err: status.Error(codes.FailedPrecondition, "expired")},
 	}
 	_, err := newRedirectLogic(svcCtx).Redirect(&types.RedirectRequest{Code: "abc123"})
 	if status.Code(err) != codes.FailedPrecondition {

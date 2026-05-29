@@ -1,7 +1,7 @@
 // Code scaffolded by goctl. Safe to edit.
 // goctl 1.9.2
 
-package logic
+package admin
 
 import (
 	"context"
@@ -30,7 +30,7 @@ func NewGetLinkStatsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetL
 }
 
 // GetLinkStats returns daily PV/UV stats for a short link within a date range.
-func (l *GetLinkStatsLogic) GetLinkStats(req *types.GetLinkStatsRequest) (*types.GetLinkStatsResponse, error) {
+func (l *GetLinkStatsLogic) GetLinkStats(req *types.GetLinkStatsRequest) (resp *types.GetLinkStatsResponse, err error) {
 	rpcResp, err := l.svcCtx.LinkRPC.GetLinkStats(l.ctx, &linkservice.GetLinkStatsRequest{
 		LinkId: req.Id,
 		From:   req.From,

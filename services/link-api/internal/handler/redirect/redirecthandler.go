@@ -1,33 +1,35 @@
 // Code scaffolded by goctl. Safe to edit.
 // goctl 1.9.2
 
-package handler
+// Package redirect contains link-api short-link redirect handlers.
+package redirect
 
 import (
 	"net/http"
 
-	"github.com/aliaxy/zero-link/services/link-api/internal/logic"
-	"github.com/aliaxy/zero-link/services/link-api/internal/response"
+	"github.com/aliaxy/zero-link/services/link-api/internal/logic/redirect"
 	"github.com/aliaxy/zero-link/services/link-api/internal/svc"
 	"github.com/aliaxy/zero-link/services/link-api/internal/types"
 	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
-// RedirectHandler handles short-link redirect requests.
+// RedirectHandler handles GET /:code.
+//
+//nolint:revive // goctl convention: type name matches handler name
 func RedirectHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req types.RedirectRequest
 		if err := httpx.Parse(r, &req); err != nil {
-			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+			httpx.ErrorCtx(r.Context(), w, err)
 			return
 		}
 
-		l := logic.NewRedirectLogic(r.Context(), svcCtx)
+		l := redirect.NewRedirectLogic(r.Context(), svcCtx)
 		resp, err := l.Redirect(&req)
 		if err != nil {
-			response.RedirectError(w, err)
-			return
+			httpx.ErrorCtx(r.Context(), w, err)
+		} else {
+			httpx.OkJsonCtx(r.Context(), w, resp)
 		}
-		http.Redirect(w, r, resp.OriginUrl, http.StatusFound)
 	}
 }

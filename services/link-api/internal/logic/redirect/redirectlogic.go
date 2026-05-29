@@ -1,7 +1,7 @@
 // Code scaffolded by goctl. Safe to edit.
 // goctl 1.9.2
 
-package logic
+package redirect
 
 import (
 	"context"
@@ -14,6 +14,8 @@ import (
 )
 
 // RedirectLogic handles short-link redirect requests.
+//
+//nolint:revive
 type RedirectLogic struct {
 	logx.Logger
 	ctx    context.Context

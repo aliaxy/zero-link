@@ -1,4 +1,4 @@
-package logic
+package admin
 
 import (
 	"context"
