@@ -28,7 +28,7 @@
           @change="fetchLinks"
         >
           <el-option label="Active" :value="1" />
-          <el-option label="Disabled" :value="0" />
+          <el-option label="Disabled" :value="2" />
         </el-select>
       </div>
     </el-card>

@@ -17,13 +17,13 @@ const isExpired = computed(() =>
 
 const tagType = computed(() => {
   if (isExpired.value) return 'info'
-  if (props.status !== 1) return 'danger'
+  if (props.status === 2) return 'danger'
   return 'success'
 })
 
 const label = computed(() => {
   if (isExpired.value) return 'Expired'
-  if (props.status !== 1) return 'Disabled'
+  if (props.status === 2) return 'Disabled'
   return 'Active'
 })
 </script>

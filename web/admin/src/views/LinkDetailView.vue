@@ -81,7 +81,7 @@
           <el-form-item label="Status">
             <el-select v-model="form.status" style="width: 100%">
               <el-option label="Active" :value="1" />
-              <el-option label="Disabled" :value="0" />
+              <el-option label="Disabled" :value="2" />
             </el-select>
           </el-form-item>
 
