@@ -1,10 +1,10 @@
 # zero-link
 
-zero-link is a go-zero-oriented short-link system. Stages 1–5 are complete.
+zero-link is a go-zero-oriented short-link system. Stages 1–6 are complete.
 
 ## Current Stage
 
-Stage 5 adds analytics on top of the Stage 4 redirect and Stage 3 management foundation:
+Stage 6 adds a Vue 3 + Vite + Element Plus admin SPA on top of the Stage 5 analytics and Stage 4 redirect foundation:
 
 - MySQL and Redis are provided by `deploy/docker-compose.infra.yml`.
 - `link-api` exposes `GET /healthz`, `GET /readyz`, `GET /{code}` redirect, and management + analytics APIs.
@@ -15,17 +15,22 @@ Stage 5 adds analytics on top of the Stage 4 redirect and Stage 3 management fou
 - `GET /admin/links/{id}/stats` returns daily PV/UV for a short link within a date range.
 - Administrator login and profile APIs use JWT-based authentication.
 - Authenticated short-link create, list, detail, update, and soft-delete management APIs are implemented.
+- Admin SPA under `web/admin/` provides login, link management, and analytics views.
 - Local HTTP smoke request assets are available under `tests/httpyac/`.
-- Management UI is deferred to Stage 6.
 - `go.mod` is initialized with `github.com/aliaxy/zero-link`.
 
 ## Requirements
 
 - Go 1.26 or newer.
+- Node.js 22 and pnpm (included in the Nix development shell).
 - Docker with Compose support.
 - Optional: Nix development shell from `flake.nix`.
 
-If `go` is not available in your normal shell, enter the Nix development environment first.
+If `go`, `node`, or `pnpm` are not available in your normal shell, enter the Nix development environment first:
+
+```bash
+nix develop
+```
 
 ## Local Development
 
@@ -35,28 +40,33 @@ Create local configuration from the committed examples:
 cp .env.example .env.local
 cp etc/link-api.example.yaml etc/link-api-local.yaml
 cp etc/link-rpc.example.yaml etc/link-rpc-local.yaml
+cp web/admin/.env.example web/admin/.env.local
 ```
 
 The `*.example.*` files are committed templates. The `*.local.*` files are for machine-local values and are ignored by Git.
 
+Start infrastructure:
+
 ```bash
 make infra-up
+make migrate-up
 ```
 
-Run the generated services locally:
+Run backend services:
 
 ```bash
 make run-rpc
 make run-api
 ```
 
-Apply the current Stage 5 schema when local MySQL is running:
+Run the admin UI dev server:
 
 ```bash
-make migrate-up
+make web-install
+make web-dev
 ```
 
-Run local HTTP smoke requests from `tests/httpyac/` after the API, RPC, and local dependencies are running.
+Open `http://localhost:5173` and sign in with the seeded administrator (`admin` / `zerolink`).
 
 Validate the current repository:
 

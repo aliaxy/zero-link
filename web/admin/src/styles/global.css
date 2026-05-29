@@ -1,0 +1,107 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--color-label);
+  background: var(--color-bg);
+}
+
+/* Page transitions */
+.page-enter-active,
+.page-leave-active {
+  transition: opacity var(--duration-base) var(--ease-out),
+              transform var(--duration-base) var(--ease-out);
+}
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(6px);
+}
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+/* Monospace code spans */
+.mono {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: -0.01em;
+}
+
+/* Truncate with ellipsis */
+.truncate {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Element Plus refinements */
+.el-card {
+  border: 1px solid var(--color-separator) !important;
+  box-shadow: var(--shadow-card) !important;
+}
+
+.el-table {
+  --el-table-border-color: var(--color-separator);
+  --el-table-header-bg-color: #f9f9fb;
+  --el-table-header-text-color: var(--color-label-secondary);
+  --el-table-row-hover-bg-color: rgba(0, 122, 255, 0.03);
+  font-size: 14px;
+}
+
+.el-table th {
+  font-weight: 500;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.el-button--primary {
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.el-input__wrapper {
+  box-shadow: 0 0 0 1px rgba(60, 60, 67, 0.2) !important;
+  transition: box-shadow var(--duration-fast) var(--ease-out) !important;
+}
+
+.el-input__wrapper:hover {
+  box-shadow: 0 0 0 1px rgba(60, 60, 67, 0.35) !important;
+}
+
+.el-input__wrapper.is-focus {
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2) !important;
+}
+
+.el-pagination {
+  justify-content: flex-end;
+  padding: 16px 0 4px;
+}
+
+.el-drawer__header {
+  border-bottom: 1px solid var(--color-separator);
+  padding-bottom: 16px;
+  margin-bottom: 0;
+}
+
+.el-tag {
+  border-radius: 20px;
+  font-weight: 500;
+  font-size: 12px;
+}

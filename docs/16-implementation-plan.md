@@ -2,8 +2,8 @@
 
 ## Goal
 
-Track the current zero-link implementation state and define the next safe handoff point. Stages 1–5 are
-complete. The project is ready to begin Stage 6 management UI.
+Track the current zero-link implementation state and define the next safe handoff point. Stages 1–6 are
+complete. The project is ready to begin Stage 7 testing, observability, and security hardening.
 
 ## Source Documents
 
@@ -20,6 +20,20 @@ This plan is derived from:
 - `AGENTS.md`
 
 ## Current Status
+
+Stage 6 management UI is complete. The implementation includes:
+
+- Vue 3 + Vite + Element Plus admin SPA under `web/admin/`.
+- Apple HIG aesthetic: frosted glass sidebar, system blue accent, Geist Variable font.
+- Login page with JWT stored in localStorage; 401 auto-redirect via axios interceptor.
+- Links list with keyword search, status filter, row-click to detail, and action buttons.
+- Link create/edit via `LinkFormDrawer` with client-side validation (URL format, code pattern, reserved words).
+- Link detail view with copy short URL and navigate to stats.
+- Stats view with ECharts dual-axis PV/UV line chart, summary cards, date range picker, and data table.
+- CORS middleware in `link-api` applied globally via `server.Use()` with configurable `AllowOrigins`.
+- Vite dev proxy: `/api/*` strips prefix and forwards to `link-api`; `/:code` regex proxy forwards short link codes to `link-api` for redirect.
+- Makefile targets: `web-install`, `web-dev`, `web-build`, `web-preview`.
+- `web/admin/.env.example` documents `VITE_API_BASE_URL`, `VITE_API_TARGET`, `VITE_SHORT_LINK_BASE`.
 
 Stage 1 is complete. The repository foundation includes:
 
@@ -228,13 +242,26 @@ Stage 5 analytics implementation is accepted when:
 - `GET /admin/links/{id}/stats` returns the daily stats in the standard envelope.
 - Analytics RPC failure does not block or error the redirect response.
 
+## Stage 6 Acceptance
+
+Stage 6 management UI is accepted when:
+
+- Administrator can log in and is redirected to the links list.
+- Unauthenticated access redirects to the login page.
+- Administrator can create, list, view, edit, and soft-delete short links.
+- Disabled links return 403 when accessed via short URL.
+- Stats view displays daily PV/UV chart and summary cards for a given date range.
+- Short link codes proxy correctly to link-api (`/:code` → 302) through the Vite dev server.
+
 ## Next Handoff
 
-Stage 6 management UI work:
+Stage 7 testing, observability, and security hardening:
 
-- Embed an admin SPA under `web/admin/`.
-- Login page, link list, create/edit form, link detail and stats view.
-- Keep observability, rate limiting, and Docker Compose application services deferred to Stage 7/8.
+- Unit and integration tests for Go services.
+- Structured logs and metrics.
+- Rate limiting on redirect and management routes.
+- Security review fixes.
+- Keep Docker Compose application services deferred to Stage 8.
 
 ## Git And Commit Rules
 

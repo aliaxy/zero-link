@@ -7,7 +7,7 @@ MIGRATE ?= migrate
 -include .env.local
 export
 
-.PHONY: infra-up infra-down migrate-up migrate-down run-api run-rpc test test-integration lint fmt install-hooks
+.PHONY: infra-up infra-down migrate-up migrate-down run-api run-rpc test test-integration lint fmt install-hooks web-install web-dev web-build web-preview
 
 infra-up:
 	$(DOCKER_COMPOSE) -f $(INFRA_COMPOSE) up -d
@@ -58,6 +58,18 @@ fmt:
 	else \
 		echo "No Go files to format."; \
 	fi
+
+web-install:
+	cd web/admin && pnpm install
+
+web-dev:
+	cd web/admin && pnpm dev
+
+web-build:
+	cd web/admin && pnpm build
+
+web-preview:
+	cd web/admin && pnpm preview
 
 install-hooks:
 	chmod +x .githooks/commit-msg

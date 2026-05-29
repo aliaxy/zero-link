@@ -15,9 +15,15 @@ type AuthConfig struct {
 	TokenTTLSeconds int64
 }
 
+// CorsConfig holds allowed origins for cross-origin requests.
+type CorsConfig struct {
+	AllowOrigins []string
+}
+
 // Config contains the HTTP server and upstream RPC client settings.
 type Config struct {
 	rest.RestConf
 	Auth    AuthConfig
+	Cors    CorsConfig
 	LinkRPC zrpc.RpcClientConf
 }
