@@ -1,11 +1,13 @@
 // Code scaffolded by goctl. Safe to edit.
 // goctl 1.9.2
 
+// Package redirect contains link-api short-link redirect logic.
 package redirect
 
 import (
 	"context"
 
+	"github.com/aliaxy/zero-link/services/link-api/internal/apierror"
 	"github.com/aliaxy/zero-link/services/link-api/internal/svc"
 	"github.com/aliaxy/zero-link/services/link-api/internal/types"
 	"github.com/aliaxy/zero-link/services/link-rpc/linkservice"
@@ -37,7 +39,7 @@ func (l *RedirectLogic) Redirect(req *types.RedirectRequest) (*types.RedirectRes
 		Code: req.Code,
 	})
 	if err != nil {
-		return nil, fromRPCError(err)
+		return nil, apierror.FromRPCError(err)
 	}
 	return &types.RedirectResponse{OriginUrl: resp.OriginUrl}, nil
 }

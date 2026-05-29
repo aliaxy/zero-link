@@ -6,6 +6,8 @@ package admin
 import (
 	"context"
 
+	"github.com/aliaxy/zero-link/services/link-api/internal/apierror"
+	"github.com/aliaxy/zero-link/services/link-api/internal/convert"
 	"github.com/aliaxy/zero-link/services/link-api/internal/middleware"
 	"github.com/aliaxy/zero-link/services/link-api/internal/svc"
 	"github.com/aliaxy/zero-link/services/link-api/internal/types"
@@ -36,7 +38,7 @@ func (l *CreateShortLinkLogic) CreateShortLink(
 ) (resp *types.ShortLinkResponse, err error) {
 	subject, ok := middleware.AdminSubjectFromContext(l.ctx)
 	if !ok {
-		return nil, errUnauthenticated()
+		return nil, apierror.ErrUnauthenticated
 	}
 
 	rpcResp, err := l.svcCtx.LinkRPC.CreateShortLink(l.ctx, &linkservice.CreateShortLinkRequest{
@@ -48,8 +50,8 @@ func (l *CreateShortLinkLogic) CreateShortLink(
 		CreatedBy:   subject.ID,
 	})
 	if err != nil {
-		return nil, fromRPCError(err)
+		return nil, apierror.FromRPCError(err)
 	}
 
-	return okShortLinkResponse(rpcResp.Link), nil
+	return convert.OkShortLinkResponse(rpcResp.Link), nil
 }

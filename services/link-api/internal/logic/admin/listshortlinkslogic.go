@@ -6,6 +6,8 @@ package admin
 import (
 	"context"
 
+	"github.com/aliaxy/zero-link/services/link-api/internal/apierror"
+	"github.com/aliaxy/zero-link/services/link-api/internal/convert"
 	"github.com/aliaxy/zero-link/services/link-api/internal/svc"
 	"github.com/aliaxy/zero-link/services/link-api/internal/types"
 	"github.com/aliaxy/zero-link/services/link-rpc/linkservice"
@@ -40,12 +42,12 @@ func (l *ListShortLinksLogic) ListShortLinks(
 		Keyword:  req.Keyword,
 	})
 	if err != nil {
-		return nil, fromRPCError(err)
+		return nil, apierror.FromRPCError(err)
 	}
 
 	items := make([]types.ShortLinkSummary, 0, len(rpcResp.Items))
 	for _, item := range rpcResp.Items {
-		items = append(items, shortLinkSummaryFromRPC(item))
+		items = append(items, convert.ShortLinkSummaryFromRPC(item))
 	}
 
 	return &types.ListShortLinksResponse{

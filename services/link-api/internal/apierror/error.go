@@ -1,5 +1,5 @@
-// Package response centralizes link-api response mapping.
-package response
+// Package apierror centralizes link-api error mapping.
+package apierror
 
 import (
 	"context"
@@ -56,6 +56,13 @@ func RedirectError(w http.ResponseWriter, err error) {
 		return
 	}
 	http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+}
+
+// FromRPCError passes an RPC error through to the framework's ErrorHandler.
+// link-rpc wraps all domain errors in gRPC status codes via rpcError();
+// apierror.ErrorHandler translates those codes to HTTP envelopes.
+func FromRPCError(err error) error {
+	return err
 }
 
 func grpcError(st *status.Status) (int, ErrorEnvelope) {

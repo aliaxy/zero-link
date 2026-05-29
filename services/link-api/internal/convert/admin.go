@@ -1,17 +1,14 @@
-// Package admin contains link-api management request logic.
-package admin
+// Package convert translates link-rpc protobuf types to link-api types.
+package convert
 
 import (
-	"time"
-
 	"github.com/aliaxy/zero-link/services/link-api/internal/auth"
 	"github.com/aliaxy/zero-link/services/link-api/internal/types"
 	"github.com/aliaxy/zero-link/services/link-rpc/linkservice"
 )
 
-const timeFormat = time.RFC3339
-
-func adminSubjectFromRPC(admin *linkservice.AdminProfile) auth.AdminSubject {
+// AdminSubjectFromRPC converts an RPC AdminProfile to an auth subject.
+func AdminSubjectFromRPC(admin *linkservice.AdminProfile) auth.AdminSubject {
 	if admin == nil {
 		return auth.AdminSubject{}
 	}
@@ -21,7 +18,8 @@ func adminSubjectFromRPC(admin *linkservice.AdminProfile) auth.AdminSubject {
 	}
 }
 
-func adminInfoFromRPC(admin *linkservice.AdminProfile) types.AdminInfo {
+// AdminInfoFromRPC converts an RPC AdminProfile to an API AdminInfo.
+func AdminInfoFromRPC(admin *linkservice.AdminProfile) types.AdminInfo {
 	if admin == nil {
 		return types.AdminInfo{}
 	}

@@ -1,11 +1,15 @@
 // Code scaffolded by goctl. Safe to edit.
 // goctl 1.9.2
 
+// Package admin contains link-api management request logic.
 package admin
 
 import (
 	"context"
+	"time"
 
+	"github.com/aliaxy/zero-link/services/link-api/internal/apierror"
+	"github.com/aliaxy/zero-link/services/link-api/internal/convert"
 	"github.com/aliaxy/zero-link/services/link-api/internal/svc"
 	"github.com/aliaxy/zero-link/services/link-api/internal/types"
 	"github.com/aliaxy/zero-link/services/link-rpc/linkservice"
@@ -36,10 +40,10 @@ func (l *LoginLogic) Login(req *types.LoginRequest) (resp *types.LoginResponse, 
 		Password: req.Password,
 	})
 	if err != nil {
-		return nil, fromRPCError(err)
+		return nil, apierror.FromRPCError(err)
 	}
 
-	token, expiresAt, err := l.svcCtx.TokenManager.Create(adminSubjectFromRPC(rpcResp.Admin))
+	token, expiresAt, err := l.svcCtx.TokenManager.Create(convert.AdminSubjectFromRPC(rpcResp.Admin))
 	if err != nil {
 		return nil, err
 	}
@@ -49,8 +53,8 @@ func (l *LoginLogic) Login(req *types.LoginRequest) (resp *types.LoginResponse, 
 		Message: "ok",
 		Data: types.LoginData{
 			Token:     token,
-			ExpiresAt: expiresAt.Format(timeFormat),
-			Admin:     adminInfoFromRPC(rpcResp.Admin),
+			ExpiresAt: expiresAt.Format(time.RFC3339),
+			Admin:     convert.AdminInfoFromRPC(rpcResp.Admin),
 		},
 	}, nil
 }

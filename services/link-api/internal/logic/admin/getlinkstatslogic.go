@@ -6,6 +6,7 @@ package admin
 import (
 	"context"
 
+	"github.com/aliaxy/zero-link/services/link-api/internal/apierror"
 	"github.com/aliaxy/zero-link/services/link-api/internal/svc"
 	"github.com/aliaxy/zero-link/services/link-api/internal/types"
 	"github.com/aliaxy/zero-link/services/link-rpc/linkservice"
@@ -30,14 +31,16 @@ func NewGetLinkStatsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetL
 }
 
 // GetLinkStats returns daily PV/UV stats for a short link within a date range.
-func (l *GetLinkStatsLogic) GetLinkStats(req *types.GetLinkStatsRequest) (resp *types.GetLinkStatsResponse, err error) {
+func (l *GetLinkStatsLogic) GetLinkStats(
+	req *types.GetLinkStatsRequest,
+) (resp *types.GetLinkStatsResponse, err error) {
 	rpcResp, err := l.svcCtx.LinkRPC.GetLinkStats(l.ctx, &linkservice.GetLinkStatsRequest{
 		LinkId: req.Id,
 		From:   req.From,
 		To:     req.To,
 	})
 	if err != nil {
-		return nil, fromRPCError(err)
+		return nil, apierror.FromRPCError(err)
 	}
 
 	items := make([]types.DailyStatItem, 0, len(rpcResp.Items))

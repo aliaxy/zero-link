@@ -1,11 +1,12 @@
-package admin
+package convert
 
 import (
 	"github.com/aliaxy/zero-link/services/link-api/internal/types"
 	"github.com/aliaxy/zero-link/services/link-rpc/linkservice"
 )
 
-func shortLinkInfoFromRPC(link *linkservice.ShortLink) types.ShortLinkInfo {
+// ShortLinkInfoFromRPC converts an RPC ShortLink to an API ShortLinkInfo.
+func ShortLinkInfoFromRPC(link *linkservice.ShortLink) types.ShortLinkInfo {
 	if link == nil {
 		return types.ShortLinkInfo{}
 	}
@@ -23,7 +24,8 @@ func shortLinkInfoFromRPC(link *linkservice.ShortLink) types.ShortLinkInfo {
 	}
 }
 
-func shortLinkSummaryFromRPC(link *linkservice.ShortLinkSummary) types.ShortLinkSummary {
+// ShortLinkSummaryFromRPC converts an RPC ShortLinkSummary to an API ShortLinkSummary.
+func ShortLinkSummaryFromRPC(link *linkservice.ShortLinkSummary) types.ShortLinkSummary {
 	if link == nil {
 		return types.ShortLinkSummary{}
 	}
@@ -39,10 +41,11 @@ func shortLinkSummaryFromRPC(link *linkservice.ShortLinkSummary) types.ShortLink
 	}
 }
 
-func okShortLinkResponse(link *linkservice.ShortLink) *types.ShortLinkResponse {
+// OkShortLinkResponse builds a success ShortLinkResponse from an RPC ShortLink.
+func OkShortLinkResponse(link *linkservice.ShortLink) *types.ShortLinkResponse {
 	return &types.ShortLinkResponse{
 		Code:    "OK",
 		Message: "ok",
-		Data:    shortLinkInfoFromRPC(link),
+		Data:    ShortLinkInfoFromRPC(link),
 	}
 }

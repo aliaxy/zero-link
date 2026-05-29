@@ -6,6 +6,8 @@ package admin
 import (
 	"context"
 
+	"github.com/aliaxy/zero-link/services/link-api/internal/apierror"
+	"github.com/aliaxy/zero-link/services/link-api/internal/convert"
 	"github.com/aliaxy/zero-link/services/link-api/internal/svc"
 	"github.com/aliaxy/zero-link/services/link-api/internal/types"
 	"github.com/aliaxy/zero-link/services/link-rpc/linkservice"
@@ -35,8 +37,8 @@ func (l *GetShortLinkLogic) GetShortLink(req *types.LinkIdRequest) (resp *types.
 		Id: req.Id,
 	})
 	if err != nil {
-		return nil, fromRPCError(err)
+		return nil, apierror.FromRPCError(err)
 	}
 
-	return okShortLinkResponse(rpcResp.Link), nil
+	return convert.OkShortLinkResponse(rpcResp.Link), nil
 }

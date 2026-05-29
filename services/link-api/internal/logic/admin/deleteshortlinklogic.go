@@ -6,6 +6,7 @@ package admin
 import (
 	"context"
 
+	"github.com/aliaxy/zero-link/services/link-api/internal/apierror"
 	"github.com/aliaxy/zero-link/services/link-api/internal/svc"
 	"github.com/aliaxy/zero-link/services/link-api/internal/types"
 	"github.com/aliaxy/zero-link/services/link-rpc/linkservice"
@@ -37,7 +38,7 @@ func (l *DeleteShortLinkLogic) DeleteShortLink(
 		Id: req.Id,
 	})
 	if err != nil {
-		return nil, fromRPCError(err)
+		return nil, apierror.FromRPCError(err)
 	}
 
 	return &types.DeleteShortLinkResponse{

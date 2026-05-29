@@ -8,10 +8,10 @@ import (
 	"flag"
 	"fmt"
 
+	"github.com/aliaxy/zero-link/services/link-api/internal/apierror"
 	"github.com/aliaxy/zero-link/services/link-api/internal/config"
 	"github.com/aliaxy/zero-link/services/link-api/internal/handler"
 	"github.com/aliaxy/zero-link/services/link-api/internal/middleware"
-	"github.com/aliaxy/zero-link/services/link-api/internal/response"
 	"github.com/aliaxy/zero-link/services/link-api/internal/svc"
 
 	"github.com/zeromicro/go-zero/core/conf"
@@ -26,7 +26,7 @@ func main() {
 
 	var c config.Config
 	conf.MustLoad(*configFile, &c)
-	httpx.SetErrorHandlerCtx(response.ErrorHandler)
+	httpx.SetErrorHandlerCtx(apierror.ErrorHandler)
 
 	server := rest.MustNewServer(c.RestConf)
 	defer server.Stop()

@@ -6,6 +6,8 @@ package admin
 import (
 	"context"
 
+	"github.com/aliaxy/zero-link/services/link-api/internal/apierror"
+	"github.com/aliaxy/zero-link/services/link-api/internal/convert"
 	"github.com/aliaxy/zero-link/services/link-api/internal/middleware"
 	"github.com/aliaxy/zero-link/services/link-api/internal/svc"
 	"github.com/aliaxy/zero-link/services/link-api/internal/types"
@@ -34,19 +36,19 @@ func NewProfileLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ProfileLo
 func (l *ProfileLogic) Profile() (resp *types.ProfileResponse, err error) {
 	subject, ok := middleware.AdminSubjectFromContext(l.ctx)
 	if !ok {
-		return nil, errUnauthenticated()
+		return nil, apierror.ErrUnauthenticated
 	}
 
 	rpcResp, err := l.svcCtx.LinkRPC.GetAdminProfile(l.ctx, &linkservice.GetAdminProfileRequest{
 		AdminId: subject.ID,
 	})
 	if err != nil {
-		return nil, fromRPCError(err)
+		return nil, apierror.FromRPCError(err)
 	}
 
 	return &types.ProfileResponse{
 		Code:    "OK",
 		Message: "ok",
-		Data:    adminInfoFromRPC(rpcResp.Admin),
+		Data:    convert.AdminInfoFromRPC(rpcResp.Admin),
 	}, nil
 }
