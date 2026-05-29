@@ -75,15 +75,15 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="Expires" width="120">
+        <el-table-column label="Expires" width="150">
           <template #default="{ row }">
-            <span class="text-secondary">{{ row.expire_at ? formatDate(row.expire_at) : '—' }}</span>
+            <span class="text-secondary nowrap">{{ row.expire_at ? formatDate(row.expire_at) : '—' }}</span>
           </template>
         </el-table-column>
 
-        <el-table-column label="Created" width="110">
+        <el-table-column label="Created" width="150">
           <template #default="{ row }">
-            <span class="text-secondary">{{ formatDate(row.created_at) }}</span>
+            <span class="text-secondary nowrap">{{ formatDate(row.created_at) }}</span>
           </template>
         </el-table-column>
 
@@ -282,6 +282,10 @@ onMounted(fetchLinks)
 .text-secondary {
   color: var(--color-label-secondary);
   font-size: 13px;
+}
+
+.nowrap {
+  white-space: nowrap;
 }
 
 .row-actions {
