@@ -45,7 +45,9 @@ func (m *customLinkDailyStatModel) UpsertPV(ctx context.Context, linkID int64, s
 	return err
 }
 
-func (m *customLinkDailyStatModel) FindByLinkIDAndDateRange(ctx context.Context, linkID int64, from, to time.Time) ([]*LinkDailyStat, error) {
+func (m *customLinkDailyStatModel) FindByLinkIDAndDateRange(
+	ctx context.Context, linkID int64, from, to time.Time,
+) ([]*LinkDailyStat, error) {
 	query := fmt.Sprintf(
 		"select %s from %s where `link_id` = ? and `stat_date` between ? and ? order by `stat_date` asc",
 		linkDailyStatRows, m.table,
