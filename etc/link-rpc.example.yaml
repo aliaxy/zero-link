@@ -14,6 +14,9 @@ CacheRedis:
   - Host: 127.0.0.1:6379
     Type: node
 
+Analytics:
+  IPSalt: replace-with-production-ip-salt
+
 Middlewares:
   Trace: false
   Prometheus: false
