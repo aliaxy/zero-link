@@ -1,4 +1,4 @@
-### login
+### login - admin login
 # @name login
 POST {{baseUrl}}/admin/login
 Content-Type: application/json
@@ -8,15 +8,17 @@ Content-Type: application/json
   "password": "{{adminPassword}}"
 }
 
-### profile
+### profile - get admin profile
+# @name profile
 GET {{baseUrl}}/admin/profile
 Authorization: Bearer {{token}}
 
-### list-links
+### list-links - get all links
+# @name listLinks
 GET {{baseUrl}}/admin/links
 Authorization: Bearer {{token}}
 
-### create-link
+### create-link - create a new link
 # @name createLink
 POST {{baseUrl}}/admin/links
 Authorization: Bearer {{token}}
@@ -26,11 +28,13 @@ Content-Type: application/json
   "origin_url": "https://example.com"
 }
 
-### get-link
+### get-link - get a link by id
+# @name getLink
 GET {{baseUrl}}/admin/links/{{linkId}}
 Authorization: Bearer {{token}}
 
-### update-link
+### update-link - update a link by id
+# @name updateLink
 PATCH {{baseUrl}}/admin/links/{{linkId}}
 Authorization: Bearer {{token}}
 Content-Type: application/json
@@ -40,6 +44,7 @@ Content-Type: application/json
   "title": "Baidu"
 }
 
-### delete-link
+### delete-link - delete a link by id
+# @name deleteLink
 DELETE {{baseUrl}}/admin/links/{{linkId}}
 Authorization: Bearer {{token}}
