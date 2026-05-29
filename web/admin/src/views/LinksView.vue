@@ -57,6 +57,7 @@
                 target="_blank"
                 rel="noopener"
                 class="url-cell truncate"
+                @click.stop
               >{{ row.origin_url }}</a>
             </el-tooltip>
           </template>
