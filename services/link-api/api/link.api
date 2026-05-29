@@ -164,19 +164,28 @@ type GetLinkStatsResponse {
 	Data    GetLinkStatsData `json:"data"`
 }
 
+@server (
+	group: health
+)
 service link-api {
 	@handler HealthHandler
 	get /healthz returns (HealthResponse)
 
 	@handler ReadyHandler
 	get /readyz returns (ReadyResponse)
+}
 
+@server (
+	group: admin
+)
+service link-api {
 	@handler LoginHandler
 	post /admin/login (LoginRequest) returns (LoginResponse)
 }
 
 @server (
 	middleware: AnalyticsMiddleware
+	group:      redirect
 )
 service link-api {
 	@handler RedirectHandler
@@ -185,6 +194,7 @@ service link-api {
 
 @server (
 	middleware: AuthMiddleware
+	group:      admin
 )
 service link-api {
 	@handler ProfileHandler

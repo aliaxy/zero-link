@@ -6,6 +6,9 @@ package handler
 import (
 	"net/http"
 
+	admin "github.com/aliaxy/zero-link/services/link-api/internal/handler/admin"
+	health "github.com/aliaxy/zero-link/services/link-api/internal/handler/health"
+	redirect "github.com/aliaxy/zero-link/services/link-api/internal/handler/redirect"
 	"github.com/aliaxy/zero-link/services/link-api/internal/svc"
 
 	"github.com/zeromicro/go-zero/rest"
@@ -17,17 +20,65 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			{
 				Method:  http.MethodPost,
 				Path:    "/admin/login",
-				Handler: LoginHandler(serverCtx),
+				Handler: admin.LoginHandler(serverCtx),
 			},
+		},
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.AuthMiddleware},
+			[]rest.Route{
+				{
+					Method:  http.MethodPost,
+					Path:    "/admin/links",
+					Handler: admin.CreateShortLinkHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodGet,
+					Path:    "/admin/links",
+					Handler: admin.ListShortLinksHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodGet,
+					Path:    "/admin/links/:id",
+					Handler: admin.GetShortLinkHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPatch,
+					Path:    "/admin/links/:id",
+					Handler: admin.UpdateShortLinkHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodDelete,
+					Path:    "/admin/links/:id",
+					Handler: admin.DeleteShortLinkHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodGet,
+					Path:    "/admin/links/:id/stats",
+					Handler: admin.GetLinkStatsHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodGet,
+					Path:    "/admin/profile",
+					Handler: admin.ProfileHandler(serverCtx),
+				},
+			}...,
+		),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
 			{
 				Method:  http.MethodGet,
 				Path:    "/healthz",
-				Handler: HealthHandler(serverCtx),
+				Handler: health.HealthHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodGet,
 				Path:    "/readyz",
-				Handler: ReadyHandler(serverCtx),
+				Handler: health.ReadyHandler(serverCtx),
 			},
 		},
 	)
@@ -39,50 +90,7 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				{
 					Method:  http.MethodGet,
 					Path:    "/:code",
-					Handler: RedirectHandler(serverCtx),
-				},
-			}...,
-		),
-	)
-
-	server.AddRoutes(
-		rest.WithMiddlewares(
-			[]rest.Middleware{serverCtx.AuthMiddleware},
-			[]rest.Route{
-				{
-					Method:  http.MethodPost,
-					Path:    "/admin/links",
-					Handler: CreateShortLinkHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodGet,
-					Path:    "/admin/links",
-					Handler: ListShortLinksHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodGet,
-					Path:    "/admin/links/:id",
-					Handler: GetShortLinkHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPatch,
-					Path:    "/admin/links/:id",
-					Handler: UpdateShortLinkHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodDelete,
-					Path:    "/admin/links/:id",
-					Handler: DeleteShortLinkHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodGet,
-					Path:    "/admin/links/:id/stats",
-					Handler: GetLinkStatsHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodGet,
-					Path:    "/admin/profile",
-					Handler: ProfileHandler(serverCtx),
+					Handler: redirect.RedirectHandler(serverCtx),
 				},
 			}...,
 		),
