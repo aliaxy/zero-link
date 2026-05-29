@@ -1,12 +1,12 @@
 # RPC Contracts
 
-This directory contains protobuf files.
+This directory contains protobuf source files for `link-rpc`.
 
-The current protobuf contract includes only a readiness RPC contract. Stage 3 database foundation exists, but business RPC methods are reserved for the next Stage 3 implementation pass.
+Proto files live under versioned package directories (`link/v1`) and use absolute `go_package` values without explicit Go package aliases.
 
-Proto files live under versioned package directories, such as `link/v1`, and should use absolute `go_package` values without explicit Go package aliases.
+## Regenerate
 
-RPC generation should be run from the repository root:
+Run from the repository root:
 
 ```bash
 goctl rpc protoc services/link-rpc/proto/link/v1/link.proto \
@@ -18,4 +18,4 @@ goctl rpc protoc services/link-rpc/proto/link/v1/link.proto \
   --proto_path=services/link-rpc/proto
 ```
 
-Accept goctl's generated package, directory, and client names as the source of truth.
+Accept goctl's generated package names, client directories, and exported client identifiers as the source of truth.
