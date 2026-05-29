@@ -1,0 +1,45 @@
+### login
+# @name login
+POST {{baseUrl}}/admin/login
+Content-Type: application/json
+
+{
+  "username": "{{adminUsername}}",
+  "password": "{{adminPassword}}"
+}
+
+### profile
+GET {{baseUrl}}/admin/profile
+Authorization: Bearer {{token}}
+
+### list-links
+GET {{baseUrl}}/admin/links
+Authorization: Bearer {{token}}
+
+### create-link
+# @name createLink
+POST {{baseUrl}}/admin/links
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "origin_url": "https://example.com"
+}
+
+### get-link
+GET {{baseUrl}}/admin/links/{{linkId}}
+Authorization: Bearer {{token}}
+
+### update-link
+PATCH {{baseUrl}}/admin/links/{{linkId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "origin_url": "https://www.baidu.com",
+  "title": "Baidu"
+}
+
+### delete-link
+DELETE {{baseUrl}}/admin/links/{{linkId}}
+Authorization: Bearer {{token}}

@@ -78,6 +78,8 @@ Risks:
 
 Goal: create and manage short links.
 
+Status: backend management API/RPC implementation and local HTTP smoke request assets are in place.
+
 Outputs:
 
 - Administrator login.
@@ -86,6 +88,7 @@ Outputs:
 - View link details.
 - Update mutable fields.
 - Soft delete.
+- Local httpyac smoke requests for health and management flows.
 
 Acceptance:
 
@@ -101,6 +104,8 @@ Risks:
 ## Stage 4: Redirect And Cache
 
 Goal: deliver fast and correct redirects.
+
+Status: complete.
 
 Outputs:
 

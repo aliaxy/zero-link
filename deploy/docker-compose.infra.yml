@@ -6,6 +6,7 @@ services:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_0900_ai_ci
     environment:
+      TZ: Asia/Shanghai
       MYSQL_DATABASE: zero_link
       MYSQL_USER: zerolink
       MYSQL_PASSWORD: zerolink
@@ -15,7 +16,11 @@ services:
     volumes:
       - zero-link-mysql-data:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uzerolink -pzerolink --silent"]
+      test:
+        [
+          "CMD-SHELL",
+          "mysqladmin ping -h 127.0.0.1 -uzerolink -pzerolink --silent",
+        ]
       interval: 5s
       timeout: 3s
       retries: 20

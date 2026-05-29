@@ -104,9 +104,9 @@ Deferred E2E steps:
 - Confirm statistics appear.
 - Complete the workflow through the management UI.
 
-## Documentation Review Checks
+## Documentation And Smoke Asset Checks
 
-Before Stage 3 implementation starts, the documentation-only specification pass is accepted when:
+Stage 3 documentation and smoke assets are accepted when:
 
 - Every Stage 3 HTTP endpoint documents authentication, request shape, response shape, and error behavior.
 - Every Stage 3 RPC method has a matching management use case.
@@ -115,11 +115,13 @@ Before Stage 3 implementation starts, the documentation-only specification pass 
 - Short-code generation and custom-code validation rules are documented.
 - Duplicate custom codes map to `CONFLICT`.
 - Redirect serving, Redis redirect cache, analytics, and management UI remain explicitly out of scope.
-- The implementation handoff says `goctl` generation must be explicitly run in the next implementation pass after specification review.
+- HTTP smoke requests live under `tests/httpyac/`.
+- `tests/httpyac/http-client.example.env.json` documents the `local` httpyac environment.
+- `tests/httpyac/http-client.private.env.json` stores local passwords, bearer tokens, and generated IDs and must not be committed.
 
 ## Race And Leak Detection
 
-- Run `go test -race ./...` in CI once the Stage 3 implementation is in place.
+- Run `go test -race ./...` before merging Stage 3 implementation changes.
 - Use goroutine leak detection if analytics workers or background queues are introduced.
 - Background workers must accept context cancellation and shut down cleanly.
 

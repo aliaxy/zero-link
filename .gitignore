@@ -2,6 +2,7 @@
 .env
 .env.local
 etc/*-local.yaml
+tests/httpyac/*.private.env.json
 .direnv/
 .cache/
 

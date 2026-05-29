@@ -36,12 +36,14 @@ func TestCheckLogic_Check(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			logic := NewCheckLogic(context.Background(), svc.NewServiceContext(config.Config{
-				Dependencies: config.DependenciesConfig{
-					MySQL: config.MySQLConfig{Endpoint: tt.mysql},
-					Redis: config.RedisConfig{Endpoint: tt.redis},
+			logic := NewCheckLogic(context.Background(), &svc.ServiceContext{
+				Config: config.Config{
+					Dependencies: config.DependenciesConfig{
+						MySQL: config.MySQLConfig{Endpoint: tt.mysql},
+						Redis: config.RedisConfig{Endpoint: tt.redis},
+					},
 				},
-			}))
+			})
 
 			got, err := logic.Check(&linkv1.CheckRequest{})
 			if err != nil {

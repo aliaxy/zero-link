@@ -19,7 +19,15 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	LinkService_Check_FullMethodName = "/link.v1.LinkService/Check"
+	LinkService_Check_FullMethodName             = "/link.v1.LinkService/Check"
+	LinkService_AuthenticateAdmin_FullMethodName = "/link.v1.LinkService/AuthenticateAdmin"
+	LinkService_GetAdminProfile_FullMethodName   = "/link.v1.LinkService/GetAdminProfile"
+	LinkService_CreateShortLink_FullMethodName   = "/link.v1.LinkService/CreateShortLink"
+	LinkService_ListShortLinks_FullMethodName    = "/link.v1.LinkService/ListShortLinks"
+	LinkService_GetShortLink_FullMethodName      = "/link.v1.LinkService/GetShortLink"
+	LinkService_UpdateShortLink_FullMethodName   = "/link.v1.LinkService/UpdateShortLink"
+	LinkService_DeleteShortLink_FullMethodName   = "/link.v1.LinkService/DeleteShortLink"
+	LinkService_ResolveShortLink_FullMethodName  = "/link.v1.LinkService/ResolveShortLink"
 )
 
 // LinkServiceClient is the client API for LinkService service.
@@ -27,6 +35,14 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type LinkServiceClient interface {
 	Check(ctx context.Context, in *CheckRequest, opts ...grpc.CallOption) (*CheckResponse, error)
+	AuthenticateAdmin(ctx context.Context, in *AuthenticateAdminRequest, opts ...grpc.CallOption) (*AuthenticateAdminResponse, error)
+	GetAdminProfile(ctx context.Context, in *GetAdminProfileRequest, opts ...grpc.CallOption) (*GetAdminProfileResponse, error)
+	CreateShortLink(ctx context.Context, in *CreateShortLinkRequest, opts ...grpc.CallOption) (*CreateShortLinkResponse, error)
+	ListShortLinks(ctx context.Context, in *ListShortLinksRequest, opts ...grpc.CallOption) (*ListShortLinksResponse, error)
+	GetShortLink(ctx context.Context, in *GetShortLinkRequest, opts ...grpc.CallOption) (*GetShortLinkResponse, error)
+	UpdateShortLink(ctx context.Context, in *UpdateShortLinkRequest, opts ...grpc.CallOption) (*UpdateShortLinkResponse, error)
+	DeleteShortLink(ctx context.Context, in *DeleteShortLinkRequest, opts ...grpc.CallOption) (*DeleteShortLinkResponse, error)
+	ResolveShortLink(ctx context.Context, in *ResolveShortLinkRequest, opts ...grpc.CallOption) (*ResolveShortLinkResponse, error)
 }
 
 type linkServiceClient struct {
@@ -47,11 +63,99 @@ func (c *linkServiceClient) Check(ctx context.Context, in *CheckRequest, opts ..
 	return out, nil
 }
 
+func (c *linkServiceClient) AuthenticateAdmin(ctx context.Context, in *AuthenticateAdminRequest, opts ...grpc.CallOption) (*AuthenticateAdminResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AuthenticateAdminResponse)
+	err := c.cc.Invoke(ctx, LinkService_AuthenticateAdmin_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *linkServiceClient) GetAdminProfile(ctx context.Context, in *GetAdminProfileRequest, opts ...grpc.CallOption) (*GetAdminProfileResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetAdminProfileResponse)
+	err := c.cc.Invoke(ctx, LinkService_GetAdminProfile_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *linkServiceClient) CreateShortLink(ctx context.Context, in *CreateShortLinkRequest, opts ...grpc.CallOption) (*CreateShortLinkResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateShortLinkResponse)
+	err := c.cc.Invoke(ctx, LinkService_CreateShortLink_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *linkServiceClient) ListShortLinks(ctx context.Context, in *ListShortLinksRequest, opts ...grpc.CallOption) (*ListShortLinksResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListShortLinksResponse)
+	err := c.cc.Invoke(ctx, LinkService_ListShortLinks_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *linkServiceClient) GetShortLink(ctx context.Context, in *GetShortLinkRequest, opts ...grpc.CallOption) (*GetShortLinkResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetShortLinkResponse)
+	err := c.cc.Invoke(ctx, LinkService_GetShortLink_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *linkServiceClient) UpdateShortLink(ctx context.Context, in *UpdateShortLinkRequest, opts ...grpc.CallOption) (*UpdateShortLinkResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateShortLinkResponse)
+	err := c.cc.Invoke(ctx, LinkService_UpdateShortLink_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *linkServiceClient) DeleteShortLink(ctx context.Context, in *DeleteShortLinkRequest, opts ...grpc.CallOption) (*DeleteShortLinkResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteShortLinkResponse)
+	err := c.cc.Invoke(ctx, LinkService_DeleteShortLink_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *linkServiceClient) ResolveShortLink(ctx context.Context, in *ResolveShortLinkRequest, opts ...grpc.CallOption) (*ResolveShortLinkResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ResolveShortLinkResponse)
+	err := c.cc.Invoke(ctx, LinkService_ResolveShortLink_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // LinkServiceServer is the server API for LinkService service.
 // All implementations must embed UnimplementedLinkServiceServer
 // for forward compatibility.
 type LinkServiceServer interface {
 	Check(context.Context, *CheckRequest) (*CheckResponse, error)
+	AuthenticateAdmin(context.Context, *AuthenticateAdminRequest) (*AuthenticateAdminResponse, error)
+	GetAdminProfile(context.Context, *GetAdminProfileRequest) (*GetAdminProfileResponse, error)
+	CreateShortLink(context.Context, *CreateShortLinkRequest) (*CreateShortLinkResponse, error)
+	ListShortLinks(context.Context, *ListShortLinksRequest) (*ListShortLinksResponse, error)
+	GetShortLink(context.Context, *GetShortLinkRequest) (*GetShortLinkResponse, error)
+	UpdateShortLink(context.Context, *UpdateShortLinkRequest) (*UpdateShortLinkResponse, error)
+	DeleteShortLink(context.Context, *DeleteShortLinkRequest) (*DeleteShortLinkResponse, error)
+	ResolveShortLink(context.Context, *ResolveShortLinkRequest) (*ResolveShortLinkResponse, error)
 	mustEmbedUnimplementedLinkServiceServer()
 }
 
@@ -64,6 +168,30 @@ type UnimplementedLinkServiceServer struct{}
 
 func (UnimplementedLinkServiceServer) Check(context.Context, *CheckRequest) (*CheckResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method Check not implemented")
+}
+func (UnimplementedLinkServiceServer) AuthenticateAdmin(context.Context, *AuthenticateAdminRequest) (*AuthenticateAdminResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method AuthenticateAdmin not implemented")
+}
+func (UnimplementedLinkServiceServer) GetAdminProfile(context.Context, *GetAdminProfileRequest) (*GetAdminProfileResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetAdminProfile not implemented")
+}
+func (UnimplementedLinkServiceServer) CreateShortLink(context.Context, *CreateShortLinkRequest) (*CreateShortLinkResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateShortLink not implemented")
+}
+func (UnimplementedLinkServiceServer) ListShortLinks(context.Context, *ListShortLinksRequest) (*ListShortLinksResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListShortLinks not implemented")
+}
+func (UnimplementedLinkServiceServer) GetShortLink(context.Context, *GetShortLinkRequest) (*GetShortLinkResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetShortLink not implemented")
+}
+func (UnimplementedLinkServiceServer) UpdateShortLink(context.Context, *UpdateShortLinkRequest) (*UpdateShortLinkResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpdateShortLink not implemented")
+}
+func (UnimplementedLinkServiceServer) DeleteShortLink(context.Context, *DeleteShortLinkRequest) (*DeleteShortLinkResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteShortLink not implemented")
+}
+func (UnimplementedLinkServiceServer) ResolveShortLink(context.Context, *ResolveShortLinkRequest) (*ResolveShortLinkResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ResolveShortLink not implemented")
 }
 func (UnimplementedLinkServiceServer) mustEmbedUnimplementedLinkServiceServer() {}
 func (UnimplementedLinkServiceServer) testEmbeddedByValue()                     {}
@@ -104,6 +232,150 @@ func _LinkService_Check_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _LinkService_AuthenticateAdmin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AuthenticateAdminRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LinkServiceServer).AuthenticateAdmin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: LinkService_AuthenticateAdmin_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LinkServiceServer).AuthenticateAdmin(ctx, req.(*AuthenticateAdminRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _LinkService_GetAdminProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAdminProfileRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LinkServiceServer).GetAdminProfile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: LinkService_GetAdminProfile_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LinkServiceServer).GetAdminProfile(ctx, req.(*GetAdminProfileRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _LinkService_CreateShortLink_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateShortLinkRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LinkServiceServer).CreateShortLink(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: LinkService_CreateShortLink_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LinkServiceServer).CreateShortLink(ctx, req.(*CreateShortLinkRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _LinkService_ListShortLinks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListShortLinksRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LinkServiceServer).ListShortLinks(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: LinkService_ListShortLinks_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LinkServiceServer).ListShortLinks(ctx, req.(*ListShortLinksRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _LinkService_GetShortLink_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetShortLinkRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LinkServiceServer).GetShortLink(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: LinkService_GetShortLink_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LinkServiceServer).GetShortLink(ctx, req.(*GetShortLinkRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _LinkService_UpdateShortLink_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateShortLinkRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LinkServiceServer).UpdateShortLink(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: LinkService_UpdateShortLink_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LinkServiceServer).UpdateShortLink(ctx, req.(*UpdateShortLinkRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _LinkService_DeleteShortLink_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteShortLinkRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LinkServiceServer).DeleteShortLink(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: LinkService_DeleteShortLink_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LinkServiceServer).DeleteShortLink(ctx, req.(*DeleteShortLinkRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _LinkService_ResolveShortLink_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ResolveShortLinkRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LinkServiceServer).ResolveShortLink(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: LinkService_ResolveShortLink_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LinkServiceServer).ResolveShortLink(ctx, req.(*ResolveShortLinkRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // LinkService_ServiceDesc is the grpc.ServiceDesc for LinkService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -114,6 +386,38 @@ var LinkService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Check",
 			Handler:    _LinkService_Check_Handler,
+		},
+		{
+			MethodName: "AuthenticateAdmin",
+			Handler:    _LinkService_AuthenticateAdmin_Handler,
+		},
+		{
+			MethodName: "GetAdminProfile",
+			Handler:    _LinkService_GetAdminProfile_Handler,
+		},
+		{
+			MethodName: "CreateShortLink",
+			Handler:    _LinkService_CreateShortLink_Handler,
+		},
+		{
+			MethodName: "ListShortLinks",
+			Handler:    _LinkService_ListShortLinks_Handler,
+		},
+		{
+			MethodName: "GetShortLink",
+			Handler:    _LinkService_GetShortLink_Handler,
+		},
+		{
+			MethodName: "UpdateShortLink",
+			Handler:    _LinkService_UpdateShortLink_Handler,
+		},
+		{
+			MethodName: "DeleteShortLink",
+			Handler:    _LinkService_DeleteShortLink_Handler,
+		},
+		{
+			MethodName: "ResolveShortLink",
+			Handler:    _LinkService_ResolveShortLink_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

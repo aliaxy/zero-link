@@ -3,12 +3,137 @@
 
 package types
 
+type AdminInfo struct {
+	Id        int64  `json:"id"`
+	Username  string `json:"username"`
+	Status    int64  `json:"status,optional"`
+	CreatedAt string `json:"created_at,optional"`
+}
+
+type CreateShortLinkRequest struct {
+	OriginUrl   string `json:"origin_url"`
+	Code        string `json:"code,optional"`
+	Title       string `json:"title,optional"`
+	Description string `json:"description,optional"`
+	ExpireAt    string `json:"expire_at,optional"`
+}
+
+type DeleteShortLinkData struct {
+	Id      int64 `json:"id"`
+	Deleted bool  `json:"deleted"`
+}
+
+type DeleteShortLinkResponse struct {
+	Code    string              `json:"code"`
+	Message string              `json:"message"`
+	Data    DeleteShortLinkData `json:"data"`
+}
+
+type ErrorResponse struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+}
+
 type HealthResponse struct {
 	Status  string `json:"status"`
 	Message string `json:"message"`
 }
 
+type LinkIdRequest struct {
+	Id int64 `path:"id"`
+}
+
+type ListShortLinksData struct {
+	Items    []ShortLinkSummary `json:"items"`
+	Page     int64              `json:"page"`
+	PageSize int64              `json:"page_size"`
+	Total    int64              `json:"total"`
+}
+
+type ListShortLinksRequest struct {
+	Page     int64  `form:"page,optional"`
+	PageSize int64  `form:"page_size,optional"`
+	Status   int64  `form:"status,optional"`
+	Keyword  string `form:"keyword,optional"`
+}
+
+type ListShortLinksResponse struct {
+	Code    string             `json:"code"`
+	Message string             `json:"message"`
+	Data    ListShortLinksData `json:"data"`
+}
+
+type LoginData struct {
+	Token     string    `json:"token"`
+	ExpiresAt string    `json:"expires_at"`
+	Admin     AdminInfo `json:"admin"`
+}
+
+type LoginRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type LoginResponse struct {
+	Code    string    `json:"code"`
+	Message string    `json:"message"`
+	Data    LoginData `json:"data"`
+}
+
+type ProfileResponse struct {
+	Code    string    `json:"code"`
+	Message string    `json:"message"`
+	Data    AdminInfo `json:"data"`
+}
+
 type ReadyResponse struct {
 	Status  string `json:"status"`
 	Message string `json:"message"`
+}
+
+type RedirectRequest struct {
+	Code string `path:"code"`
+}
+
+type RedirectResponse struct {
+	OriginUrl string `json:"origin_url"`
+}
+
+type ShortLinkInfo struct {
+	Id          int64  `json:"id"`
+	Code        string `json:"code"`
+	OriginUrl   string `json:"origin_url"`
+	Title       string `json:"title"`
+	Description string `json:"description,optional"`
+	Status      int64  `json:"status"`
+	ExpireAt    string `json:"expire_at,optional"`
+	CreatedBy   int64  `json:"created_by,optional"`
+	CreatedAt   string `json:"created_at"`
+	UpdatedAt   string `json:"updated_at"`
+}
+
+type ShortLinkResponse struct {
+	Code    string        `json:"code"`
+	Message string        `json:"message"`
+	Data    ShortLinkInfo `json:"data"`
+}
+
+type ShortLinkSummary struct {
+	Id        int64  `json:"id"`
+	Code      string `json:"code"`
+	OriginUrl string `json:"origin_url"`
+	Title     string `json:"title"`
+	Status    int64  `json:"status"`
+	ExpireAt  string `json:"expire_at,optional"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
+}
+
+type UpdateShortLinkRequest struct {
+	Id          int64  `path:"id"`
+	OriginUrl   string `json:"origin_url,optional"`
+	Title       string `json:"title,optional"`
+	Description string `json:"description,optional"`
+	Status      int64  `json:"status,optional"`
+	ExpireAt    string `json:"expire_at,optional"`
 }

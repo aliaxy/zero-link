@@ -12,6 +12,8 @@ import (
 	"time"
 
 	"github.com/zeromicro/go-zero/core/stores/builder"
+	"github.com/zeromicro/go-zero/core/stores/cache"
+	"github.com/zeromicro/go-zero/core/stores/sqlc"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 	"github.com/zeromicro/go-zero/core/stringx"
 )
@@ -21,6 +23,9 @@ var (
 	shortLinkRows                = strings.Join(shortLinkFieldNames, ",")
 	shortLinkRowsExpectAutoSet   = strings.Join(stringx.Remove(shortLinkFieldNames, "`id`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), ",")
 	shortLinkRowsWithPlaceHolder = strings.Join(stringx.Remove(shortLinkFieldNames, "`id`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), "=?,") + "=?"
+
+	cacheShortLinkIdPrefix   = "cache:shortLink:id:"
+	cacheShortLinkCodePrefix = "cache:shortLink:code:"
 )
 
 type (
@@ -33,7 +38,7 @@ type (
 	}
 
 	defaultShortLinkModel struct {
-		conn  sqlx.SqlConn
+		sqlc.CachedConn
 		table string
 	}
 
@@ -52,27 +57,39 @@ type (
 	}
 )
 
-func newShortLinkModel(conn sqlx.SqlConn) *defaultShortLinkModel {
+func newShortLinkModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) *defaultShortLinkModel {
 	return &defaultShortLinkModel{
-		conn:  conn,
-		table: "`short_link`",
+		CachedConn: sqlc.NewConn(conn, c, opts...),
+		table:      "`short_link`",
 	}
 }
 
 func (m *defaultShortLinkModel) Delete(ctx context.Context, id int64) error {
-	query := fmt.Sprintf("delete from %s where `id` = ?", m.table)
-	_, err := m.conn.ExecCtx(ctx, query, id)
+	data, err := m.FindOne(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	shortLinkCodeKey := fmt.Sprintf("%s%v", cacheShortLinkCodePrefix, data.Code)
+	shortLinkIdKey := fmt.Sprintf("%s%v", cacheShortLinkIdPrefix, id)
+	_, err = m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
+		query := fmt.Sprintf("delete from %s where `id` = ?", m.table)
+		return conn.ExecCtx(ctx, query, id)
+	}, shortLinkCodeKey, shortLinkIdKey)
 	return err
 }
 
 func (m *defaultShortLinkModel) FindOne(ctx context.Context, id int64) (*ShortLink, error) {
-	query := fmt.Sprintf("select %s from %s where `id` = ? limit 1", shortLinkRows, m.table)
+	shortLinkIdKey := fmt.Sprintf("%s%v", cacheShortLinkIdPrefix, id)
 	var resp ShortLink
-	err := m.conn.QueryRowCtx(ctx, &resp, query, id)
+	err := m.QueryRowCtx(ctx, &resp, shortLinkIdKey, func(ctx context.Context, conn sqlx.SqlConn, v any) error {
+		query := fmt.Sprintf("select %s from %s where `id` = ? limit 1", shortLinkRows, m.table)
+		return conn.QueryRowCtx(ctx, v, query, id)
+	})
 	switch err {
 	case nil:
 		return &resp, nil
-	case sqlx.ErrNotFound:
+	case sqlc.ErrNotFound:
 		return nil, ErrNotFound
 	default:
 		return nil, err
@@ -80,13 +97,19 @@ func (m *defaultShortLinkModel) FindOne(ctx context.Context, id int64) (*ShortLi
 }
 
 func (m *defaultShortLinkModel) FindOneByCode(ctx context.Context, code string) (*ShortLink, error) {
+	shortLinkCodeKey := fmt.Sprintf("%s%v", cacheShortLinkCodePrefix, code)
 	var resp ShortLink
-	query := fmt.Sprintf("select %s from %s where `code` = ? limit 1", shortLinkRows, m.table)
-	err := m.conn.QueryRowCtx(ctx, &resp, query, code)
+	err := m.QueryRowIndexCtx(ctx, &resp, shortLinkCodeKey, m.formatPrimary, func(ctx context.Context, conn sqlx.SqlConn, v any) (i any, e error) {
+		query := fmt.Sprintf("select %s from %s where `code` = ? limit 1", shortLinkRows, m.table)
+		if err := conn.QueryRowCtx(ctx, &resp, query, code); err != nil {
+			return nil, err
+		}
+		return resp.Id, nil
+	}, m.queryPrimary)
 	switch err {
 	case nil:
 		return &resp, nil
-	case sqlx.ErrNotFound:
+	case sqlc.ErrNotFound:
 		return nil, ErrNotFound
 	default:
 		return nil, err
@@ -94,15 +117,37 @@ func (m *defaultShortLinkModel) FindOneByCode(ctx context.Context, code string) 
 }
 
 func (m *defaultShortLinkModel) Insert(ctx context.Context, data *ShortLink) (sql.Result, error) {
-	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?)", m.table, shortLinkRowsExpectAutoSet)
-	ret, err := m.conn.ExecCtx(ctx, query, data.Code, data.OriginUrl, data.Title, data.Description, data.Status, data.ExpireAt, data.CreatedBy, data.DeletedAt)
+	shortLinkCodeKey := fmt.Sprintf("%s%v", cacheShortLinkCodePrefix, data.Code)
+	shortLinkIdKey := fmt.Sprintf("%s%v", cacheShortLinkIdPrefix, data.Id)
+	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
+		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?)", m.table, shortLinkRowsExpectAutoSet)
+		return conn.ExecCtx(ctx, query, data.Code, data.OriginUrl, data.Title, data.Description, data.Status, data.ExpireAt, data.CreatedBy, data.DeletedAt)
+	}, shortLinkCodeKey, shortLinkIdKey)
 	return ret, err
 }
 
 func (m *defaultShortLinkModel) Update(ctx context.Context, newData *ShortLink) error {
-	query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, shortLinkRowsWithPlaceHolder)
-	_, err := m.conn.ExecCtx(ctx, query, newData.Code, newData.OriginUrl, newData.Title, newData.Description, newData.Status, newData.ExpireAt, newData.CreatedBy, newData.DeletedAt, newData.Id)
+	data, err := m.FindOne(ctx, newData.Id)
+	if err != nil {
+		return err
+	}
+
+	shortLinkCodeKey := fmt.Sprintf("%s%v", cacheShortLinkCodePrefix, data.Code)
+	shortLinkIdKey := fmt.Sprintf("%s%v", cacheShortLinkIdPrefix, data.Id)
+	_, err = m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
+		query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, shortLinkRowsWithPlaceHolder)
+		return conn.ExecCtx(ctx, query, newData.Code, newData.OriginUrl, newData.Title, newData.Description, newData.Status, newData.ExpireAt, newData.CreatedBy, newData.DeletedAt, newData.Id)
+	}, shortLinkCodeKey, shortLinkIdKey)
 	return err
+}
+
+func (m *defaultShortLinkModel) formatPrimary(primary any) string {
+	return fmt.Sprintf("%s%v", cacheShortLinkIdPrefix, primary)
+}
+
+func (m *defaultShortLinkModel) queryPrimary(ctx context.Context, conn sqlx.SqlConn, v, primary any) error {
+	query := fmt.Sprintf("select %s from %s where `id` = ? limit 1", shortLinkRows, m.table)
+	return conn.QueryRowCtx(ctx, v, query, primary)
 }
 
 func (m *defaultShortLinkModel) tableName() string {
