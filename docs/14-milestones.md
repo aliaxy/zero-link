@@ -131,22 +131,24 @@ Risks:
 
 Goal: record and display basic visit statistics.
 
+Status: complete.
+
 Outputs:
 
-- Visit event recording.
-- Daily stat aggregation.
-- Statistics query API.
+- Visit event recording via `AnalyticsMiddleware` (non-blocking, goroutine per redirect).
+- Daily stat aggregation with `UpsertPV` (ON DUPLICATE KEY UPDATE).
+- `GET /admin/links/{id}/stats` statistics query API.
 
 Acceptance:
 
 - Visits are recorded after redirects.
-- Statistics appear in management API/UI.
+- Statistics are queryable via the management API.
 - Analytics failures do not block redirects.
 
 Risks:
 
 - Event table grows quickly.
-- UV definition changes later.
+- UV definition changes later (Stage 5 approximation: uv stays at 1 after first insert).
 
 ## Stage 6: Management UI
 

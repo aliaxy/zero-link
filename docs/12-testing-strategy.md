@@ -5,8 +5,7 @@
 - Treat tests as executable specifications.
 - Keep unit tests fast and deterministic.
 - Separate integration tests from normal unit tests.
-- Verify Stage 3 management behavior against MySQL before adding redirect and cache behavior.
-- Keep redirect, Redis redirect cache, analytics, and management UI tests deferred until their implementation stages.
+- Keep management UI tests deferred until Stage 6.
 
 ## Unit Tests
 
@@ -28,12 +27,15 @@ Required Stage 3 areas:
 - Error-to-HTTP mapping returns stable response envelope codes.
 - Management middleware rejects unauthenticated requests before business logic runs.
 
-Deferred unit areas:
+Implemented unit areas (Stage 4 and Stage 5):
 
 - Redirect cache decisions.
 - Redirect status decisions for missing, disabled, expired, or deleted links.
-- Visit event recording.
-- Daily statistics aggregation.
+- Visit event recording and daily statistics aggregation (analytics helpers, RecordVisit, GetLinkStats).
+- AnalyticsMiddleware goroutine triggering and IP extraction.
+
+Deferred unit areas:
+
 - Admin UI behavior.
 
 Use table-driven tests with named subtests.
@@ -71,17 +73,11 @@ Required Stage 3 scenarios:
 
 Deferred integration scenarios:
 
-- Resolve a cache miss from MySQL and backfill Redis.
-- Resolve a cache hit from Redis.
-- Disable a link and confirm redirect is blocked.
-- Expire a link and confirm `410 Gone`.
-- Record a visit event.
-- Query link statistics.
 - Exercise management UI workflows.
 
 ## End-To-End Smoke Tests
 
-Stage 3 smoke tests verify the complete local management flow:
+Smoke tests verify the complete local flow:
 
 1. Start infrastructure.
 2. Run migrations.
@@ -95,35 +91,33 @@ Stage 3 smoke tests verify the complete local management flow:
 10. Update mutable fields through `PATCH /admin/links/{id}`.
 11. Soft delete through `DELETE /admin/links/{id}`.
 12. Confirm the deleted link is hidden from normal management reads.
+13. Access `GET /{code}` with an active link and confirm `302`.
+14. Confirm cache hit and miss behavior on repeated requests.
+15. Call `GET /admin/links/{id}/stats` and confirm `pv: 1` for today.
 
 Deferred E2E steps:
 
-- Visit the short URL.
-- Confirm redirect.
-- Confirm cache hit and miss behavior.
-- Confirm statistics appear.
-- Complete the workflow through the management UI.
+- Complete the management workflow through the UI.
 
 ## Documentation And Smoke Asset Checks
 
-Stage 3 documentation and smoke assets are accepted when:
+Documentation and smoke assets are accepted when:
 
-- Every Stage 3 HTTP endpoint documents authentication, request shape, response shape, and error behavior.
-- Every Stage 3 RPC method has a matching management use case.
-- JWT configuration is documented without committing real secrets.
+- Every HTTP endpoint documents authentication, request shape, response shape, and error behavior.
+- Every RPC method has a matching use case.
+- JWT and IP salt configuration are documented without committing real secrets.
 - Pagination defaults and maximum page size are documented.
 - Short-code generation and custom-code validation rules are documented.
-- Duplicate custom codes map to `CONFLICT`.
-- Redirect serving, Redis redirect cache, analytics, and management UI remain explicitly out of scope.
+- Analytics date range defaults and maximum range are documented.
 - HTTP smoke requests live under `tests/httpyac/`.
 - `tests/httpyac/http-client.example.env.json` documents the `local` httpyac environment.
 - `tests/httpyac/http-client.private.env.json` stores local passwords, bearer tokens, and generated IDs and must not be committed.
 
 ## Race And Leak Detection
 
-- Run `go test -race ./...` before merging Stage 3 implementation changes.
-- Use goroutine leak detection if analytics workers or background queues are introduced.
-- Background workers must accept context cancellation and shut down cleanly.
+- Run `go test -race ./...` before merging implementation changes.
+- `AnalyticsMiddleware` tests use `go.uber.org/goleak` to verify no goroutines leak after the 3-second timeout expires.
+- Background goroutines must have a clear exit condition (context cancellation or timeout).
 
 ## Test Data
 
@@ -136,11 +130,13 @@ Stage 3 documentation and smoke assets are accepted when:
 
 ## Acceptance Criteria
 
-Before Stage 3 implementation is considered ready:
+Before implementation is considered ready:
 
 - Unit tests pass.
 - Integration tests pass with local Compose dependencies.
-- Stage 3 management scenarios cover authenticated and unauthenticated access.
-- Stage 3 administrator scenarios cover login, invalid credentials, inactive administrators, JWT creation, JWT validation, and profile retrieval.
-- Stage 3 short-link scenarios cover creation validation, generated codes, custom codes, duplicate code conflict, pagination, detail, update, immutable code, and soft delete.
-- Redirect, cache, analytics, and UI scenarios remain deferred until their dedicated stages.
+- Management scenarios cover authenticated and unauthenticated access.
+- Administrator scenarios cover login, invalid credentials, inactive administrators, JWT creation, JWT validation, and profile retrieval.
+- Short-link scenarios cover creation validation, generated codes, custom codes, duplicate code conflict, pagination, detail, update, immutable code, and soft delete.
+- Redirect scenarios cover active, missing, disabled, and expired links.
+- Analytics scenarios cover visit recording, PV upsert, stats query, date range defaults, and invalid range rejection.
+- Management UI scenarios remain deferred to Stage 6.

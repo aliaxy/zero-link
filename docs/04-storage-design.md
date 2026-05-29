@@ -62,11 +62,11 @@ Constraints:
 
 - Foreign key from `short_link.created_by` to `admin_user.id`.
 
-## Deferred Analytics Tables
+## Stage 5 Analytics Tables
 
-Analytics storage is intentionally deferred until the analytics stage. Do not add these tables during Stage 3 implementation.
+Stage 5 adds visit event and daily stat tables under `migrations/000002_stage5_analytics`.
 
-### link_visit_event
+### visit_event
 
 Purpose: store visit-level analytics events.
 
@@ -75,22 +75,22 @@ Columns:
 - `id BIGINT PRIMARY KEY AUTO_INCREMENT`
 - `link_id BIGINT NOT NULL`
 - `code VARCHAR(32) NOT NULL`
-- `visited_at DATETIME NOT NULL`
-- `ip_hash VARCHAR(128) NOT NULL DEFAULT ''`
-- `user_agent TEXT NULL`
-- `referer TEXT NULL`
-- `device VARCHAR(64) NOT NULL DEFAULT ''`
-- `browser VARCHAR(64) NOT NULL DEFAULT ''`
-- `os VARCHAR(64) NOT NULL DEFAULT ''`
-- `country VARCHAR(64) NOT NULL DEFAULT ''`
-- `province VARCHAR(64) NOT NULL DEFAULT ''`
-- `city VARCHAR(64) NOT NULL DEFAULT ''`
+- `visited_at DATETIME(6) NOT NULL`
+- `ip_hash VARCHAR(64) NOT NULL DEFAULT ''`
+- `user_agent VARCHAR(512) NOT NULL DEFAULT ''`
+- `referer VARCHAR(1024) NOT NULL DEFAULT ''`
+- `device VARCHAR(16) NOT NULL DEFAULT 'unknown'`
 
 Indexes:
 
 - Index on `link_id, visited_at`.
-- Index on `code, visited_at`.
-- Index on `visited_at`.
+
+Notes:
+
+- No foreign key from `link_id` to `short_link.id`; analytics writes are fire-and-forget and must not fail if a link is deleted.
+- `ip_hash` is HMAC-SHA256 of the raw IP with a server-side salt stored only in `link-rpc` config.
+- `device` is one of `bot`, `mobile`, `desktop`, `unknown` (detected from User-Agent).
+- `browser`, `os`, `country`, `province`, and `city` are deferred to a later stage.
 
 ### link_daily_stat
 
@@ -103,13 +103,16 @@ Columns:
 - `stat_date DATE NOT NULL`
 - `pv BIGINT NOT NULL DEFAULT 0`
 - `uv BIGINT NOT NULL DEFAULT 0`
-- `created_at DATETIME NOT NULL`
-- `updated_at DATETIME NOT NULL`
 
 Indexes:
 
-- Unique index on `link_id, stat_date`.
-- Index on `stat_date`.
+- Unique index on `link_id, stat_date` (`uk_link_daily_stat`).
+
+Notes:
+
+- `UpsertPV` uses `INSERT ... ON DUPLICATE KEY UPDATE pv = pv + 1`.
+- `uv` is set to 1 on first insert and not updated on subsequent visits (Stage 5 approximation; true UV counting is deferred).
+- No foreign key from `link_id`; same reason as `visit_event`.
 
 ## Consistency Strategy
 
@@ -137,11 +140,10 @@ Redirect resolution is deferred until Stage 4. The intended future flow is:
 
 ### Record Visit
 
-Visit recording is deferred until the analytics stage. The intended future flow is:
-
-1. Redirect path emits a lightweight visit event.
-2. Event storage failure is logged and counted but does not cancel a valid redirect.
-3. Aggregation reads visit events and upserts daily stats.
+1. `AnalyticsMiddleware` in `link-api` fires a goroutine after every 302 redirect.
+2. The goroutine calls `RecordVisit` RPC with a 3-second timeout context.
+3. `RecordVisit` looks up `link_id` via `FindOneByCode` (Redis-cached), hashes the IP, inserts `visit_event`, then upserts `link_daily_stat`.
+4. `UpsertPV` failure is logged but does not propagate; the redirect is unaffected.
 
 ## Migration Policy
 
@@ -151,5 +153,6 @@ Visit recording is deferred until the analytics stage. The intended future flow 
 - Rollback scripts are required for destructive changes.
 - Local development must support recreating a clean schema.
 - Stage 3 should create `admin_user` and `short_link` before any generated models or business logic depend on them.
+- Stage 5 should create `visit_event` and `link_daily_stat` before analytics models or logic depend on them.
 - Local development may seed one default administrator through migration SQL so login can be verified without manual setup.
 - Seeded administrator passwords must be stored as bcrypt hashes; plaintext passwords must not be committed outside documented local examples.

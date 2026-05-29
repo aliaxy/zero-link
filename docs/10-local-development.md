@@ -48,14 +48,15 @@ make test-integration
 
 ## Migration Workflow
 
-Stage 3 foundation uses a `golang-migrate` workflow.
+Uses a `golang-migrate` workflow.
 
 Intended local behavior:
 
 - `make migrate-up` applies all pending migrations to the local MySQL database.
 - `make migrate-down` rolls back the latest local migration step.
 - Migration files live under `migrations/` and use versioned up/down SQL.
-- The first Stage 3 migration creates `admin_user` and `short_link`.
+- `000001`: creates `admin_user` and `short_link` (Stage 3).
+- `000002`: creates `visit_event` and `link_daily_stat` (Stage 5).
 - A local/dev seed administrator may be inserted by migration SQL so login can be tested without manual database edits.
 
 Do not run migrations before `make infra-up` has started MySQL.
@@ -63,7 +64,7 @@ Do not run migrations before `make infra-up` has started MySQL.
 ## Local Verification Flow
 
 1. Start MySQL and Redis with `make infra-up`.
-2. Run `make migrate-up` to apply the Stage 3 foundation schema.
+2. Run `make migrate-up` to apply the Stage 3 and Stage 5 schema.
 3. Start `link-rpc` locally with `make run-rpc`.
 4. Start `link-api` locally with `make run-api`.
 5. Open `http://127.0.0.1:8080/healthz`.
@@ -71,6 +72,8 @@ Do not run migrations before `make infra-up` has started MySQL.
 7. Confirm `healthz` succeeds when the API process is alive.
 8. Confirm `readyz` succeeds only when API, RPC, MySQL, and Redis are reachable.
 9. Log in with the seeded local administrator and create a short link through the management API.
+10. Access `GET /{code}` and confirm a `302` redirect; check `visit_event` for a recorded row.
+11. Call `GET /admin/links/{id}/stats` and confirm `pv: 1` for today.
 
 ## HTTP Smoke Requests
 
