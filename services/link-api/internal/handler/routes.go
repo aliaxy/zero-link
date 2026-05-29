@@ -15,11 +15,6 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 	server.AddRoutes(
 		[]rest.Route{
 			{
-				Method:  http.MethodGet,
-				Path:    "/:code",
-				Handler: RedirectHandler(serverCtx),
-			},
-			{
 				Method:  http.MethodPost,
 				Path:    "/admin/login",
 				Handler: LoginHandler(serverCtx),
@@ -35,6 +30,19 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Handler: ReadyHandler(serverCtx),
 			},
 		},
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.AnalyticsMiddleware},
+			[]rest.Route{
+				{
+					Method:  http.MethodGet,
+					Path:    "/:code",
+					Handler: RedirectHandler(serverCtx),
+				},
+			}...,
+		),
 	)
 
 	server.AddRoutes(
@@ -65,6 +73,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Method:  http.MethodDelete,
 					Path:    "/admin/links/:id",
 					Handler: DeleteShortLinkHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodGet,
+					Path:    "/admin/links/:id/stats",
+					Handler: GetLinkStatsHandler(serverCtx),
 				},
 				{
 					Method:  http.MethodGet,

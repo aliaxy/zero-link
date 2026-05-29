@@ -16,10 +16,11 @@ import (
 
 // ServiceContext holds dependencies shared by link-api handlers.
 type ServiceContext struct {
-	Config         config.Config
-	AuthMiddleware rest.Middleware
-	TokenManager   *auth.TokenManager
-	LinkRPC        linkservice.LinkService
+	Config              config.Config
+	AuthMiddleware      rest.Middleware
+	AnalyticsMiddleware rest.Middleware
+	TokenManager        *auth.TokenManager
+	LinkRPC             linkservice.LinkService
 }
 
 // NewServiceContext creates a link-api service context.
@@ -29,10 +30,13 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		TokenTTLSeconds: c.Auth.TokenTTLSeconds,
 	})
 
+	linkRPC := linkservice.NewLinkService(zrpc.MustNewClient(c.LinkRPC))
+
 	return &ServiceContext{
-		Config:         c,
-		TokenManager:   tokenManager,
-		AuthMiddleware: middleware.NewAuthMiddleware(tokenManager).Handle,
-		LinkRPC:        linkservice.NewLinkService(zrpc.MustNewClient(c.LinkRPC)),
+		Config:              c,
+		TokenManager:        tokenManager,
+		AuthMiddleware:      middleware.NewAuthMiddleware(tokenManager).Handle,
+		AnalyticsMiddleware: middleware.NewAnalyticsMiddleware(linkRPC).Handle,
+		LinkRPC:             linkRPC,
 	}
 }

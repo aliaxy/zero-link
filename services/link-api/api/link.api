@@ -141,6 +141,29 @@ type RedirectResponse {
 	OriginUrl string `json:"origin_url"`
 }
 
+type GetLinkStatsRequest {
+	Id   int64  `path:"id"`
+	From string `form:"from,optional"`
+	To   string `form:"to,optional"`
+}
+
+type DailyStatItem {
+	StatDate string `json:"stat_date"`
+	Pv       int64  `json:"pv"`
+	Uv       int64  `json:"uv"`
+}
+
+type GetLinkStatsData {
+	LinkId int64           `json:"link_id"`
+	Items  []DailyStatItem `json:"items"`
+}
+
+type GetLinkStatsResponse {
+	Code    string           `json:"code"`
+	Message string           `json:"message"`
+	Data    GetLinkStatsData `json:"data"`
+}
+
 service link-api {
 	@handler HealthHandler
 	get /healthz returns (HealthResponse)
@@ -150,7 +173,12 @@ service link-api {
 
 	@handler LoginHandler
 	post /admin/login (LoginRequest) returns (LoginResponse)
+}
 
+@server (
+	middleware: AnalyticsMiddleware
+)
+service link-api {
 	@handler RedirectHandler
 	get /:code (RedirectRequest) returns (RedirectResponse)
 }
@@ -176,5 +204,8 @@ service link-api {
 
 	@handler DeleteShortLinkHandler
 	delete /admin/links/:id (LinkIdRequest) returns (DeleteShortLinkResponse)
+
+	@handler GetLinkStatsHandler
+	get /admin/links/:id/stats (GetLinkStatsRequest) returns (GetLinkStatsResponse)
 }
 
