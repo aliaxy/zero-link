@@ -44,6 +44,10 @@
               grpcurl
               grpcui
               httpyac
+
+              # Frontend tooling
+              nodejs_22
+              pnpm
             ];
           };
         };
