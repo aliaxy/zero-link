@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/aliaxy/zero-link/services/link-rpc/linkservice"
+	"github.com/aliaxy/zero-link/services/link-rpc/client/analyticsservice"
 	"go.uber.org/goleak"
 	"google.golang.org/grpc"
 )
@@ -20,21 +20,21 @@ func TestMain(m *testing.M) {
 
 // recordingLinkService captures RecordVisit calls via a channel for deterministic tests.
 type recordingLinkService struct {
-	linkservice.LinkService
-	visitCh chan *linkservice.RecordVisitRequest
+	analyticsservice.AnalyticsService
+	visitCh chan *analyticsservice.RecordVisitRequest
 }
 
 func (r *recordingLinkService) RecordVisit(
 	_ context.Context,
-	req *linkservice.RecordVisitRequest,
+	req *analyticsservice.RecordVisitRequest,
 	_ ...grpc.CallOption,
-) (*linkservice.RecordVisitResponse, error) {
+) (*analyticsservice.RecordVisitResponse, error) {
 	r.visitCh <- req
-	return &linkservice.RecordVisitResponse{}, nil
+	return &analyticsservice.RecordVisitResponse{}, nil
 }
 
-func newRecordingMiddleware() (*AnalyticsMiddleware, chan *linkservice.RecordVisitRequest) {
-	ch := make(chan *linkservice.RecordVisitRequest, 1)
+func newRecordingMiddleware() (*AnalyticsMiddleware, chan *analyticsservice.RecordVisitRequest) {
+	ch := make(chan *analyticsservice.RecordVisitRequest, 1)
 	return NewAnalyticsMiddleware(&recordingLinkService{visitCh: ch}), ch
 }
 

@@ -6,7 +6,10 @@ import (
 	"fmt"
 
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/config"
-	"github.com/aliaxy/zero-link/services/link-rpc/internal/server"
+	adminserver "github.com/aliaxy/zero-link/services/link-rpc/internal/server/adminservice"
+	analyticsserver "github.com/aliaxy/zero-link/services/link-rpc/internal/server/analyticsservice"
+	healthserver "github.com/aliaxy/zero-link/services/link-rpc/internal/server/healthservice"
+	linkserver "github.com/aliaxy/zero-link/services/link-rpc/internal/server/linkservice"
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/svc"
 	linkv1 "github.com/aliaxy/zero-link/services/link-rpc/pb/link/v1"
 
@@ -27,7 +30,10 @@ func main() {
 	ctx := svc.NewServiceContext(c)
 
 	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
-		linkv1.RegisterLinkServiceServer(grpcServer, server.NewLinkServiceServer(ctx))
+		linkv1.RegisterHealthServiceServer(grpcServer, healthserver.NewHealthServiceServer(ctx))
+		linkv1.RegisterAdminServiceServer(grpcServer, adminserver.NewAdminServiceServer(ctx))
+		linkv1.RegisterLinkServiceServer(grpcServer, linkserver.NewLinkServiceServer(ctx))
+		linkv1.RegisterAnalyticsServiceServer(grpcServer, analyticsserver.NewAnalyticsServiceServer(ctx))
 
 		if c.Mode == service.DevMode || c.Mode == service.TestMode {
 			reflection.Register(grpcServer)

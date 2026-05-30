@@ -8,7 +8,10 @@ import (
 	"github.com/aliaxy/zero-link/services/link-api/internal/auth"
 	"github.com/aliaxy/zero-link/services/link-api/internal/config"
 	"github.com/aliaxy/zero-link/services/link-api/internal/middleware"
-	"github.com/aliaxy/zero-link/services/link-rpc/linkservice"
+	"github.com/aliaxy/zero-link/services/link-rpc/client/adminservice"
+	"github.com/aliaxy/zero-link/services/link-rpc/client/analyticsservice"
+	"github.com/aliaxy/zero-link/services/link-rpc/client/healthservice"
+	"github.com/aliaxy/zero-link/services/link-rpc/client/linkservice"
 
 	"github.com/zeromicro/go-zero/rest"
 	"github.com/zeromicro/go-zero/zrpc"
@@ -20,7 +23,10 @@ type ServiceContext struct {
 	AuthMiddleware      rest.Middleware
 	AnalyticsMiddleware rest.Middleware
 	TokenManager        *auth.TokenManager
+	HealthRPC           healthservice.HealthService
+	AdminRPC            adminservice.AdminService
 	LinkRPC             linkservice.LinkService
+	AnalyticsRPC        analyticsservice.AnalyticsService
 }
 
 // NewServiceContext creates a link-api service context.
@@ -30,13 +36,17 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		TokenTTLSeconds: c.Auth.TokenTTLSeconds,
 	})
 
-	linkRPC := linkservice.NewLinkService(zrpc.MustNewClient(c.LinkRPC))
+	rpcClient := zrpc.MustNewClient(c.LinkRPC)
+	analyticsRPC := analyticsservice.NewAnalyticsService(rpcClient)
 
 	return &ServiceContext{
 		Config:              c,
 		TokenManager:        tokenManager,
 		AuthMiddleware:      middleware.NewAuthMiddleware(tokenManager).Handle,
-		AnalyticsMiddleware: middleware.NewAnalyticsMiddleware(linkRPC).Handle,
-		LinkRPC:             linkRPC,
+		AnalyticsMiddleware: middleware.NewAnalyticsMiddleware(analyticsRPC).Handle,
+		HealthRPC:           healthservice.NewHealthService(rpcClient),
+		AdminRPC:            adminservice.NewAdminService(rpcClient),
+		LinkRPC:             linkservice.NewLinkService(rpcClient),
+		AnalyticsRPC:        analyticsRPC,
 	}
 }

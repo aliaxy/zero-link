@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aliaxy/zero-link/services/link-rpc/linkservice"
+	"github.com/aliaxy/zero-link/services/link-rpc/client/analyticsservice"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -17,11 +17,11 @@ import (
 // Known limitation: goroutines are unbounded under high traffic; Stage 6 will replace
 // with a channel-based worker pool.
 type AnalyticsMiddleware struct {
-	linkRPC linkservice.LinkService
+	linkRPC analyticsservice.AnalyticsService
 }
 
 // NewAnalyticsMiddleware creates an AnalyticsMiddleware.
-func NewAnalyticsMiddleware(linkRPC linkservice.LinkService) *AnalyticsMiddleware {
+func NewAnalyticsMiddleware(linkRPC analyticsservice.AnalyticsService) *AnalyticsMiddleware {
 	return &AnalyticsMiddleware{linkRPC: linkRPC}
 }
 
@@ -46,7 +46,7 @@ func (m *AnalyticsMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 		go func() {
 			ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 			defer cancel()
-			if _, err := rpc.RecordVisit(ctx, &linkservice.RecordVisitRequest{
+			if _, err := rpc.RecordVisit(ctx, &analyticsservice.RecordVisitRequest{
 				Code:      code,
 				VisitedAt: ts,
 				Ip:        ip,

@@ -4,44 +4,13 @@ package link.v1;
 
 option go_package = "github.com/aliaxy/zero-link/services/link-rpc/pb/linkv1";
 
-message CheckRequest {}
-
-message CheckResponse {
-  bool ok = 1;
-  string message = 2;
-}
+// ─── Shared message types ────────────────────────────────────────────────────
 
 message AdminProfile {
   int64 id = 1;
   string username = 2;
   int64 status = 3;
   string created_at = 4;
-}
-
-message AuthenticateAdminRequest {
-  string username = 1;
-  string password = 2;
-}
-
-message AuthenticateAdminResponse {
-  AdminProfile admin = 1;
-}
-
-message GetAdminProfileRequest {
-  int64 admin_id = 1;
-}
-
-message GetAdminProfileResponse {
-  AdminProfile admin = 1;
-}
-
-message CreateShortLinkRequest {
-  string origin_url = 1;
-  string code = 2;
-  string title = 3;
-  string description = 4;
-  string expire_at = 5;
-  int64 created_by = 6;
 }
 
 message ShortLink {
@@ -66,6 +35,60 @@ message ShortLinkSummary {
   string expire_at = 6;
   string created_at = 7;
   string updated_at = 8;
+}
+
+message DailyStat {
+  string stat_date = 1;
+  int64  pv        = 2;
+  int64  uv        = 3;
+}
+
+// ─── HealthService ───────────────────────────────────────────────────────────
+
+message CheckRequest {}
+
+message CheckResponse {
+  bool ok = 1;
+  string message = 2;
+}
+
+service HealthService {
+  rpc Check(CheckRequest) returns (CheckResponse);
+}
+
+// ─── AdminService ────────────────────────────────────────────────────────────
+
+message AuthenticateAdminRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message AuthenticateAdminResponse {
+  AdminProfile admin = 1;
+}
+
+message GetAdminProfileRequest {
+  int64 admin_id = 1;
+}
+
+message GetAdminProfileResponse {
+  AdminProfile admin = 1;
+}
+
+service AdminService {
+  rpc AuthenticateAdmin(AuthenticateAdminRequest) returns (AuthenticateAdminResponse);
+  rpc GetAdminProfile(GetAdminProfileRequest) returns (GetAdminProfileResponse);
+}
+
+// ─── LinkService ─────────────────────────────────────────────────────────────
+
+message CreateShortLinkRequest {
+  string origin_url = 1;
+  string code = 2;
+  string title = 3;
+  string description = 4;
+  string expire_at = 5;
+  int64 created_by = 6;
 }
 
 message CreateShortLinkResponse {
@@ -124,6 +147,17 @@ message ResolveShortLinkResponse {
   string origin_url = 1;
 }
 
+service LinkService {
+  rpc CreateShortLink(CreateShortLinkRequest) returns (CreateShortLinkResponse);
+  rpc ListShortLinks(ListShortLinksRequest) returns (ListShortLinksResponse);
+  rpc GetShortLink(GetShortLinkRequest) returns (GetShortLinkResponse);
+  rpc UpdateShortLink(UpdateShortLinkRequest) returns (UpdateShortLinkResponse);
+  rpc DeleteShortLink(DeleteShortLinkRequest) returns (DeleteShortLinkResponse);
+  rpc ResolveShortLink(ResolveShortLinkRequest) returns (ResolveShortLinkResponse);
+}
+
+// ─── AnalyticsService ────────────────────────────────────────────────────────
+
 message RecordVisitRequest {
   string code       = 1;
   string visited_at = 2;
@@ -140,27 +174,12 @@ message GetLinkStatsRequest {
   string to      = 3;
 }
 
-message DailyStat {
-  string stat_date = 1;
-  int64  pv        = 2;
-  int64  uv        = 3;
-}
-
 message GetLinkStatsResponse {
   int64             link_id = 1;
   repeated DailyStat items  = 2;
 }
 
-service LinkService {
-  rpc Check(CheckRequest) returns (CheckResponse);
-  rpc AuthenticateAdmin(AuthenticateAdminRequest) returns (AuthenticateAdminResponse);
-  rpc GetAdminProfile(GetAdminProfileRequest) returns (GetAdminProfileResponse);
-  rpc CreateShortLink(CreateShortLinkRequest) returns (CreateShortLinkResponse);
-  rpc ListShortLinks(ListShortLinksRequest) returns (ListShortLinksResponse);
-  rpc GetShortLink(GetShortLinkRequest) returns (GetShortLinkResponse);
-  rpc UpdateShortLink(UpdateShortLinkRequest) returns (UpdateShortLinkResponse);
-  rpc DeleteShortLink(DeleteShortLinkRequest) returns (DeleteShortLinkResponse);
-  rpc ResolveShortLink(ResolveShortLinkRequest) returns (ResolveShortLinkResponse);
+service AnalyticsService {
   rpc RecordVisit(RecordVisitRequest) returns (RecordVisitResponse);
   rpc GetLinkStats(GetLinkStatsRequest) returns (GetLinkStatsResponse);
 }

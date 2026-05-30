@@ -4,11 +4,11 @@ package convert
 import (
 	"github.com/aliaxy/zero-link/services/link-api/internal/auth"
 	"github.com/aliaxy/zero-link/services/link-api/internal/types"
-	"github.com/aliaxy/zero-link/services/link-rpc/linkservice"
+	"github.com/aliaxy/zero-link/services/link-rpc/client/adminservice"
 )
 
 // AdminSubjectFromRPC converts an RPC AdminProfile to an auth subject.
-func AdminSubjectFromRPC(admin *linkservice.AdminProfile) auth.AdminSubject {
+func AdminSubjectFromRPC(admin *adminservice.AdminProfile) auth.AdminSubject {
 	if admin == nil {
 		return auth.AdminSubject{}
 	}
@@ -19,7 +19,7 @@ func AdminSubjectFromRPC(admin *linkservice.AdminProfile) auth.AdminSubject {
 }
 
 // AdminInfoFromRPC converts an RPC AdminProfile to an API AdminInfo.
-func AdminInfoFromRPC(admin *linkservice.AdminProfile) types.AdminInfo {
+func AdminInfoFromRPC(admin *adminservice.AdminProfile) types.AdminInfo {
 	if admin == nil {
 		return types.AdminInfo{}
 	}

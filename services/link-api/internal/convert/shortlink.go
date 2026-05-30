@@ -2,7 +2,7 @@ package convert
 
 import (
 	"github.com/aliaxy/zero-link/services/link-api/internal/types"
-	"github.com/aliaxy/zero-link/services/link-rpc/linkservice"
+	"github.com/aliaxy/zero-link/services/link-rpc/client/linkservice"
 )
 
 // ShortLinkInfoFromRPC converts an RPC ShortLink to an API ShortLinkInfo.
