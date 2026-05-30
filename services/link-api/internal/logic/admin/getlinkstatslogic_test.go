@@ -7,8 +7,27 @@ import (
 
 	"github.com/aliaxy/zero-link/services/link-api/internal/svc"
 	"github.com/aliaxy/zero-link/services/link-api/internal/types"
-	"github.com/aliaxy/zero-link/services/link-rpc/linkservice"
+	"github.com/aliaxy/zero-link/services/link-rpc/client/analyticsservice"
+
+	"google.golang.org/grpc"
 )
+
+type fakeAnalyticsService struct {
+	analyticsservice.AnalyticsService
+	statsResp *analyticsservice.GetLinkStatsResponse
+	err       error
+}
+
+func (f fakeAnalyticsService) GetLinkStats(
+	_ context.Context,
+	_ *analyticsservice.GetLinkStatsRequest,
+	_ ...grpc.CallOption,
+) (*analyticsservice.GetLinkStatsResponse, error) {
+	if f.err != nil {
+		return nil, f.err
+	}
+	return f.statsResp, nil
+}
 
 func newGetLinkStatsAPILogic(svc *svc.ServiceContext) *GetLinkStatsLogic {
 	return NewGetLinkStatsLogic(context.Background(), svc)
@@ -16,10 +35,10 @@ func newGetLinkStatsAPILogic(svc *svc.ServiceContext) *GetLinkStatsLogic {
 
 func TestGetLinkStatsLogic_Success(t *testing.T) {
 	logic := newGetLinkStatsAPILogic(&svc.ServiceContext{
-		LinkRPC: fakeLinkService{
-			statsResp: &linkservice.GetLinkStatsResponse{
+		AnalyticsRPC: fakeAnalyticsService{
+			statsResp: &analyticsservice.GetLinkStatsResponse{
 				LinkId: 1,
-				Items: []*linkservice.DailyStat{
+				Items: []*analyticsservice.DailyStat{
 					{StatDate: "2026-05-15", Pv: 42, Uv: 7},
 				},
 			},
@@ -53,7 +72,7 @@ func TestGetLinkStatsLogic_Success(t *testing.T) {
 
 func TestGetLinkStatsLogic_RPCError(t *testing.T) {
 	logic := newGetLinkStatsAPILogic(&svc.ServiceContext{
-		LinkRPC: fakeLinkService{
+		AnalyticsRPC: fakeAnalyticsService{
 			err: errors.New("rpc failure"),
 		},
 	})

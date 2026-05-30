@@ -9,7 +9,7 @@ import (
 	"github.com/aliaxy/zero-link/services/link-api/internal/apierror"
 	"github.com/aliaxy/zero-link/services/link-api/internal/svc"
 	"github.com/aliaxy/zero-link/services/link-api/internal/types"
-	"github.com/aliaxy/zero-link/services/link-rpc/linkservice"
+	"github.com/aliaxy/zero-link/services/link-rpc/client/analyticsservice"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -34,7 +34,7 @@ func NewGetLinkStatsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetL
 func (l *GetLinkStatsLogic) GetLinkStats(
 	req *types.GetLinkStatsRequest,
 ) (resp *types.GetLinkStatsResponse, err error) {
-	rpcResp, err := l.svcCtx.LinkRPC.GetLinkStats(l.ctx, &linkservice.GetLinkStatsRequest{
+	rpcResp, err := l.svcCtx.AnalyticsRPC.GetLinkStats(l.ctx, &analyticsservice.GetLinkStatsRequest{
 		LinkId: req.Id,
 		From:   req.From,
 		To:     req.To,

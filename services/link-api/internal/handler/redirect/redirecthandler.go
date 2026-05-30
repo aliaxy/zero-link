@@ -7,6 +7,7 @@ package redirect
 import (
 	"net/http"
 
+	"github.com/aliaxy/zero-link/services/link-api/internal/apierror"
 	"github.com/aliaxy/zero-link/services/link-api/internal/logic/redirect"
 	"github.com/aliaxy/zero-link/services/link-api/internal/svc"
 	"github.com/aliaxy/zero-link/services/link-api/internal/types"
@@ -20,16 +21,16 @@ func RedirectHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req types.RedirectRequest
 		if err := httpx.Parse(r, &req); err != nil {
-			httpx.ErrorCtx(r.Context(), w, err)
+			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 			return
 		}
 
 		l := redirect.NewRedirectLogic(r.Context(), svcCtx)
 		resp, err := l.Redirect(&req)
 		if err != nil {
-			httpx.ErrorCtx(r.Context(), w, err)
-		} else {
-			httpx.OkJsonCtx(r.Context(), w, resp)
+			apierror.RedirectError(w, err)
+			return
 		}
+		http.Redirect(w, r, resp.OriginUrl, http.StatusFound)
 	}
 }

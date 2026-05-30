@@ -19,34 +19,266 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	LinkService_Check_FullMethodName             = "/link.v1.LinkService/Check"
-	LinkService_AuthenticateAdmin_FullMethodName = "/link.v1.LinkService/AuthenticateAdmin"
-	LinkService_GetAdminProfile_FullMethodName   = "/link.v1.LinkService/GetAdminProfile"
-	LinkService_CreateShortLink_FullMethodName   = "/link.v1.LinkService/CreateShortLink"
-	LinkService_ListShortLinks_FullMethodName    = "/link.v1.LinkService/ListShortLinks"
-	LinkService_GetShortLink_FullMethodName      = "/link.v1.LinkService/GetShortLink"
-	LinkService_UpdateShortLink_FullMethodName   = "/link.v1.LinkService/UpdateShortLink"
-	LinkService_DeleteShortLink_FullMethodName   = "/link.v1.LinkService/DeleteShortLink"
-	LinkService_ResolveShortLink_FullMethodName  = "/link.v1.LinkService/ResolveShortLink"
-	LinkService_RecordVisit_FullMethodName       = "/link.v1.LinkService/RecordVisit"
-	LinkService_GetLinkStats_FullMethodName      = "/link.v1.LinkService/GetLinkStats"
+	HealthService_Check_FullMethodName = "/link.v1.HealthService/Check"
+)
+
+// HealthServiceClient is the client API for HealthService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type HealthServiceClient interface {
+	Check(ctx context.Context, in *CheckRequest, opts ...grpc.CallOption) (*CheckResponse, error)
+}
+
+type healthServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewHealthServiceClient(cc grpc.ClientConnInterface) HealthServiceClient {
+	return &healthServiceClient{cc}
+}
+
+func (c *healthServiceClient) Check(ctx context.Context, in *CheckRequest, opts ...grpc.CallOption) (*CheckResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CheckResponse)
+	err := c.cc.Invoke(ctx, HealthService_Check_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// HealthServiceServer is the server API for HealthService service.
+// All implementations must embed UnimplementedHealthServiceServer
+// for forward compatibility.
+type HealthServiceServer interface {
+	Check(context.Context, *CheckRequest) (*CheckResponse, error)
+	mustEmbedUnimplementedHealthServiceServer()
+}
+
+// UnimplementedHealthServiceServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedHealthServiceServer struct{}
+
+func (UnimplementedHealthServiceServer) Check(context.Context, *CheckRequest) (*CheckResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Check not implemented")
+}
+func (UnimplementedHealthServiceServer) mustEmbedUnimplementedHealthServiceServer() {}
+func (UnimplementedHealthServiceServer) testEmbeddedByValue()                       {}
+
+// UnsafeHealthServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to HealthServiceServer will
+// result in compilation errors.
+type UnsafeHealthServiceServer interface {
+	mustEmbedUnimplementedHealthServiceServer()
+}
+
+func RegisterHealthServiceServer(s grpc.ServiceRegistrar, srv HealthServiceServer) {
+	// If the following call panics, it indicates UnimplementedHealthServiceServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&HealthService_ServiceDesc, srv)
+}
+
+func _HealthService_Check_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HealthServiceServer).Check(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: HealthService_Check_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HealthServiceServer).Check(ctx, req.(*CheckRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// HealthService_ServiceDesc is the grpc.ServiceDesc for HealthService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var HealthService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "link.v1.HealthService",
+	HandlerType: (*HealthServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Check",
+			Handler:    _HealthService_Check_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "link/v1/link.proto",
+}
+
+const (
+	AdminService_AuthenticateAdmin_FullMethodName = "/link.v1.AdminService/AuthenticateAdmin"
+	AdminService_GetAdminProfile_FullMethodName   = "/link.v1.AdminService/GetAdminProfile"
+)
+
+// AdminServiceClient is the client API for AdminService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type AdminServiceClient interface {
+	AuthenticateAdmin(ctx context.Context, in *AuthenticateAdminRequest, opts ...grpc.CallOption) (*AuthenticateAdminResponse, error)
+	GetAdminProfile(ctx context.Context, in *GetAdminProfileRequest, opts ...grpc.CallOption) (*GetAdminProfileResponse, error)
+}
+
+type adminServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewAdminServiceClient(cc grpc.ClientConnInterface) AdminServiceClient {
+	return &adminServiceClient{cc}
+}
+
+func (c *adminServiceClient) AuthenticateAdmin(ctx context.Context, in *AuthenticateAdminRequest, opts ...grpc.CallOption) (*AuthenticateAdminResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AuthenticateAdminResponse)
+	err := c.cc.Invoke(ctx, AdminService_AuthenticateAdmin_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminServiceClient) GetAdminProfile(ctx context.Context, in *GetAdminProfileRequest, opts ...grpc.CallOption) (*GetAdminProfileResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetAdminProfileResponse)
+	err := c.cc.Invoke(ctx, AdminService_GetAdminProfile_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// AdminServiceServer is the server API for AdminService service.
+// All implementations must embed UnimplementedAdminServiceServer
+// for forward compatibility.
+type AdminServiceServer interface {
+	AuthenticateAdmin(context.Context, *AuthenticateAdminRequest) (*AuthenticateAdminResponse, error)
+	GetAdminProfile(context.Context, *GetAdminProfileRequest) (*GetAdminProfileResponse, error)
+	mustEmbedUnimplementedAdminServiceServer()
+}
+
+// UnimplementedAdminServiceServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedAdminServiceServer struct{}
+
+func (UnimplementedAdminServiceServer) AuthenticateAdmin(context.Context, *AuthenticateAdminRequest) (*AuthenticateAdminResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method AuthenticateAdmin not implemented")
+}
+func (UnimplementedAdminServiceServer) GetAdminProfile(context.Context, *GetAdminProfileRequest) (*GetAdminProfileResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetAdminProfile not implemented")
+}
+func (UnimplementedAdminServiceServer) mustEmbedUnimplementedAdminServiceServer() {}
+func (UnimplementedAdminServiceServer) testEmbeddedByValue()                      {}
+
+// UnsafeAdminServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to AdminServiceServer will
+// result in compilation errors.
+type UnsafeAdminServiceServer interface {
+	mustEmbedUnimplementedAdminServiceServer()
+}
+
+func RegisterAdminServiceServer(s grpc.ServiceRegistrar, srv AdminServiceServer) {
+	// If the following call panics, it indicates UnimplementedAdminServiceServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&AdminService_ServiceDesc, srv)
+}
+
+func _AdminService_AuthenticateAdmin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AuthenticateAdminRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServiceServer).AuthenticateAdmin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AdminService_AuthenticateAdmin_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServiceServer).AuthenticateAdmin(ctx, req.(*AuthenticateAdminRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AdminService_GetAdminProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAdminProfileRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServiceServer).GetAdminProfile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AdminService_GetAdminProfile_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServiceServer).GetAdminProfile(ctx, req.(*GetAdminProfileRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// AdminService_ServiceDesc is the grpc.ServiceDesc for AdminService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var AdminService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "link.v1.AdminService",
+	HandlerType: (*AdminServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "AuthenticateAdmin",
+			Handler:    _AdminService_AuthenticateAdmin_Handler,
+		},
+		{
+			MethodName: "GetAdminProfile",
+			Handler:    _AdminService_GetAdminProfile_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "link/v1/link.proto",
+}
+
+const (
+	LinkService_CreateShortLink_FullMethodName  = "/link.v1.LinkService/CreateShortLink"
+	LinkService_ListShortLinks_FullMethodName   = "/link.v1.LinkService/ListShortLinks"
+	LinkService_GetShortLink_FullMethodName     = "/link.v1.LinkService/GetShortLink"
+	LinkService_UpdateShortLink_FullMethodName  = "/link.v1.LinkService/UpdateShortLink"
+	LinkService_DeleteShortLink_FullMethodName  = "/link.v1.LinkService/DeleteShortLink"
+	LinkService_ResolveShortLink_FullMethodName = "/link.v1.LinkService/ResolveShortLink"
 )
 
 // LinkServiceClient is the client API for LinkService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type LinkServiceClient interface {
-	Check(ctx context.Context, in *CheckRequest, opts ...grpc.CallOption) (*CheckResponse, error)
-	AuthenticateAdmin(ctx context.Context, in *AuthenticateAdminRequest, opts ...grpc.CallOption) (*AuthenticateAdminResponse, error)
-	GetAdminProfile(ctx context.Context, in *GetAdminProfileRequest, opts ...grpc.CallOption) (*GetAdminProfileResponse, error)
 	CreateShortLink(ctx context.Context, in *CreateShortLinkRequest, opts ...grpc.CallOption) (*CreateShortLinkResponse, error)
 	ListShortLinks(ctx context.Context, in *ListShortLinksRequest, opts ...grpc.CallOption) (*ListShortLinksResponse, error)
 	GetShortLink(ctx context.Context, in *GetShortLinkRequest, opts ...grpc.CallOption) (*GetShortLinkResponse, error)
 	UpdateShortLink(ctx context.Context, in *UpdateShortLinkRequest, opts ...grpc.CallOption) (*UpdateShortLinkResponse, error)
 	DeleteShortLink(ctx context.Context, in *DeleteShortLinkRequest, opts ...grpc.CallOption) (*DeleteShortLinkResponse, error)
 	ResolveShortLink(ctx context.Context, in *ResolveShortLinkRequest, opts ...grpc.CallOption) (*ResolveShortLinkResponse, error)
-	RecordVisit(ctx context.Context, in *RecordVisitRequest, opts ...grpc.CallOption) (*RecordVisitResponse, error)
-	GetLinkStats(ctx context.Context, in *GetLinkStatsRequest, opts ...grpc.CallOption) (*GetLinkStatsResponse, error)
 }
 
 type linkServiceClient struct {
@@ -55,36 +287,6 @@ type linkServiceClient struct {
 
 func NewLinkServiceClient(cc grpc.ClientConnInterface) LinkServiceClient {
 	return &linkServiceClient{cc}
-}
-
-func (c *linkServiceClient) Check(ctx context.Context, in *CheckRequest, opts ...grpc.CallOption) (*CheckResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(CheckResponse)
-	err := c.cc.Invoke(ctx, LinkService_Check_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *linkServiceClient) AuthenticateAdmin(ctx context.Context, in *AuthenticateAdminRequest, opts ...grpc.CallOption) (*AuthenticateAdminResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(AuthenticateAdminResponse)
-	err := c.cc.Invoke(ctx, LinkService_AuthenticateAdmin_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *linkServiceClient) GetAdminProfile(ctx context.Context, in *GetAdminProfileRequest, opts ...grpc.CallOption) (*GetAdminProfileResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetAdminProfileResponse)
-	err := c.cc.Invoke(ctx, LinkService_GetAdminProfile_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
 }
 
 func (c *linkServiceClient) CreateShortLink(ctx context.Context, in *CreateShortLinkRequest, opts ...grpc.CallOption) (*CreateShortLinkResponse, error) {
@@ -147,41 +349,16 @@ func (c *linkServiceClient) ResolveShortLink(ctx context.Context, in *ResolveSho
 	return out, nil
 }
 
-func (c *linkServiceClient) RecordVisit(ctx context.Context, in *RecordVisitRequest, opts ...grpc.CallOption) (*RecordVisitResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(RecordVisitResponse)
-	err := c.cc.Invoke(ctx, LinkService_RecordVisit_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *linkServiceClient) GetLinkStats(ctx context.Context, in *GetLinkStatsRequest, opts ...grpc.CallOption) (*GetLinkStatsResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetLinkStatsResponse)
-	err := c.cc.Invoke(ctx, LinkService_GetLinkStats_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // LinkServiceServer is the server API for LinkService service.
 // All implementations must embed UnimplementedLinkServiceServer
 // for forward compatibility.
 type LinkServiceServer interface {
-	Check(context.Context, *CheckRequest) (*CheckResponse, error)
-	AuthenticateAdmin(context.Context, *AuthenticateAdminRequest) (*AuthenticateAdminResponse, error)
-	GetAdminProfile(context.Context, *GetAdminProfileRequest) (*GetAdminProfileResponse, error)
 	CreateShortLink(context.Context, *CreateShortLinkRequest) (*CreateShortLinkResponse, error)
 	ListShortLinks(context.Context, *ListShortLinksRequest) (*ListShortLinksResponse, error)
 	GetShortLink(context.Context, *GetShortLinkRequest) (*GetShortLinkResponse, error)
 	UpdateShortLink(context.Context, *UpdateShortLinkRequest) (*UpdateShortLinkResponse, error)
 	DeleteShortLink(context.Context, *DeleteShortLinkRequest) (*DeleteShortLinkResponse, error)
 	ResolveShortLink(context.Context, *ResolveShortLinkRequest) (*ResolveShortLinkResponse, error)
-	RecordVisit(context.Context, *RecordVisitRequest) (*RecordVisitResponse, error)
-	GetLinkStats(context.Context, *GetLinkStatsRequest) (*GetLinkStatsResponse, error)
 	mustEmbedUnimplementedLinkServiceServer()
 }
 
@@ -192,15 +369,6 @@ type LinkServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedLinkServiceServer struct{}
 
-func (UnimplementedLinkServiceServer) Check(context.Context, *CheckRequest) (*CheckResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method Check not implemented")
-}
-func (UnimplementedLinkServiceServer) AuthenticateAdmin(context.Context, *AuthenticateAdminRequest) (*AuthenticateAdminResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method AuthenticateAdmin not implemented")
-}
-func (UnimplementedLinkServiceServer) GetAdminProfile(context.Context, *GetAdminProfileRequest) (*GetAdminProfileResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method GetAdminProfile not implemented")
-}
 func (UnimplementedLinkServiceServer) CreateShortLink(context.Context, *CreateShortLinkRequest) (*CreateShortLinkResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateShortLink not implemented")
 }
@@ -218,12 +386,6 @@ func (UnimplementedLinkServiceServer) DeleteShortLink(context.Context, *DeleteSh
 }
 func (UnimplementedLinkServiceServer) ResolveShortLink(context.Context, *ResolveShortLinkRequest) (*ResolveShortLinkResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ResolveShortLink not implemented")
-}
-func (UnimplementedLinkServiceServer) RecordVisit(context.Context, *RecordVisitRequest) (*RecordVisitResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method RecordVisit not implemented")
-}
-func (UnimplementedLinkServiceServer) GetLinkStats(context.Context, *GetLinkStatsRequest) (*GetLinkStatsResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method GetLinkStats not implemented")
 }
 func (UnimplementedLinkServiceServer) mustEmbedUnimplementedLinkServiceServer() {}
 func (UnimplementedLinkServiceServer) testEmbeddedByValue()                     {}
@@ -244,60 +406,6 @@ func RegisterLinkServiceServer(s grpc.ServiceRegistrar, srv LinkServiceServer) {
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&LinkService_ServiceDesc, srv)
-}
-
-func _LinkService_Check_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CheckRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(LinkServiceServer).Check(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: LinkService_Check_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LinkServiceServer).Check(ctx, req.(*CheckRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _LinkService_AuthenticateAdmin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AuthenticateAdminRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(LinkServiceServer).AuthenticateAdmin(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: LinkService_AuthenticateAdmin_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LinkServiceServer).AuthenticateAdmin(ctx, req.(*AuthenticateAdminRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _LinkService_GetAdminProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetAdminProfileRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(LinkServiceServer).GetAdminProfile(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: LinkService_GetAdminProfile_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LinkServiceServer).GetAdminProfile(ctx, req.(*GetAdminProfileRequest))
-	}
-	return interceptor(ctx, in, info, handler)
 }
 
 func _LinkService_CreateShortLink_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -408,42 +516,6 @@ func _LinkService_ResolveShortLink_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
-func _LinkService_RecordVisit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RecordVisitRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(LinkServiceServer).RecordVisit(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: LinkService_RecordVisit_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LinkServiceServer).RecordVisit(ctx, req.(*RecordVisitRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _LinkService_GetLinkStats_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetLinkStatsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(LinkServiceServer).GetLinkStats(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: LinkService_GetLinkStats_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LinkServiceServer).GetLinkStats(ctx, req.(*GetLinkStatsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // LinkService_ServiceDesc is the grpc.ServiceDesc for LinkService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -451,18 +523,6 @@ var LinkService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "link.v1.LinkService",
 	HandlerType: (*LinkServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "Check",
-			Handler:    _LinkService_Check_Handler,
-		},
-		{
-			MethodName: "AuthenticateAdmin",
-			Handler:    _LinkService_AuthenticateAdmin_Handler,
-		},
-		{
-			MethodName: "GetAdminProfile",
-			Handler:    _LinkService_GetAdminProfile_Handler,
-		},
 		{
 			MethodName: "CreateShortLink",
 			Handler:    _LinkService_CreateShortLink_Handler,
@@ -487,13 +547,145 @@ var LinkService_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "ResolveShortLink",
 			Handler:    _LinkService_ResolveShortLink_Handler,
 		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "link/v1/link.proto",
+}
+
+const (
+	AnalyticsService_RecordVisit_FullMethodName  = "/link.v1.AnalyticsService/RecordVisit"
+	AnalyticsService_GetLinkStats_FullMethodName = "/link.v1.AnalyticsService/GetLinkStats"
+)
+
+// AnalyticsServiceClient is the client API for AnalyticsService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type AnalyticsServiceClient interface {
+	RecordVisit(ctx context.Context, in *RecordVisitRequest, opts ...grpc.CallOption) (*RecordVisitResponse, error)
+	GetLinkStats(ctx context.Context, in *GetLinkStatsRequest, opts ...grpc.CallOption) (*GetLinkStatsResponse, error)
+}
+
+type analyticsServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewAnalyticsServiceClient(cc grpc.ClientConnInterface) AnalyticsServiceClient {
+	return &analyticsServiceClient{cc}
+}
+
+func (c *analyticsServiceClient) RecordVisit(ctx context.Context, in *RecordVisitRequest, opts ...grpc.CallOption) (*RecordVisitResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RecordVisitResponse)
+	err := c.cc.Invoke(ctx, AnalyticsService_RecordVisit_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *analyticsServiceClient) GetLinkStats(ctx context.Context, in *GetLinkStatsRequest, opts ...grpc.CallOption) (*GetLinkStatsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetLinkStatsResponse)
+	err := c.cc.Invoke(ctx, AnalyticsService_GetLinkStats_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// AnalyticsServiceServer is the server API for AnalyticsService service.
+// All implementations must embed UnimplementedAnalyticsServiceServer
+// for forward compatibility.
+type AnalyticsServiceServer interface {
+	RecordVisit(context.Context, *RecordVisitRequest) (*RecordVisitResponse, error)
+	GetLinkStats(context.Context, *GetLinkStatsRequest) (*GetLinkStatsResponse, error)
+	mustEmbedUnimplementedAnalyticsServiceServer()
+}
+
+// UnimplementedAnalyticsServiceServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedAnalyticsServiceServer struct{}
+
+func (UnimplementedAnalyticsServiceServer) RecordVisit(context.Context, *RecordVisitRequest) (*RecordVisitResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method RecordVisit not implemented")
+}
+func (UnimplementedAnalyticsServiceServer) GetLinkStats(context.Context, *GetLinkStatsRequest) (*GetLinkStatsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetLinkStats not implemented")
+}
+func (UnimplementedAnalyticsServiceServer) mustEmbedUnimplementedAnalyticsServiceServer() {}
+func (UnimplementedAnalyticsServiceServer) testEmbeddedByValue()                          {}
+
+// UnsafeAnalyticsServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to AnalyticsServiceServer will
+// result in compilation errors.
+type UnsafeAnalyticsServiceServer interface {
+	mustEmbedUnimplementedAnalyticsServiceServer()
+}
+
+func RegisterAnalyticsServiceServer(s grpc.ServiceRegistrar, srv AnalyticsServiceServer) {
+	// If the following call panics, it indicates UnimplementedAnalyticsServiceServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&AnalyticsService_ServiceDesc, srv)
+}
+
+func _AnalyticsService_RecordVisit_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RecordVisitRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AnalyticsServiceServer).RecordVisit(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AnalyticsService_RecordVisit_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AnalyticsServiceServer).RecordVisit(ctx, req.(*RecordVisitRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AnalyticsService_GetLinkStats_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetLinkStatsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AnalyticsServiceServer).GetLinkStats(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AnalyticsService_GetLinkStats_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AnalyticsServiceServer).GetLinkStats(ctx, req.(*GetLinkStatsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// AnalyticsService_ServiceDesc is the grpc.ServiceDesc for AnalyticsService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var AnalyticsService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "link.v1.AnalyticsService",
+	HandlerType: (*AnalyticsServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "RecordVisit",
-			Handler:    _LinkService_RecordVisit_Handler,
+			Handler:    _AnalyticsService_RecordVisit_Handler,
 		},
 		{
 			MethodName: "GetLinkStats",
-			Handler:    _LinkService_GetLinkStats_Handler,
+			Handler:    _AnalyticsService_GetLinkStats_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

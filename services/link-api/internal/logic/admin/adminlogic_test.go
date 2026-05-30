@@ -8,48 +8,51 @@ import (
 	"github.com/aliaxy/zero-link/services/link-api/internal/middleware"
 	"github.com/aliaxy/zero-link/services/link-api/internal/svc"
 	"github.com/aliaxy/zero-link/services/link-api/internal/types"
-	"github.com/aliaxy/zero-link/services/link-rpc/linkservice"
+	"github.com/aliaxy/zero-link/services/link-rpc/client/adminservice"
+	"github.com/aliaxy/zero-link/services/link-rpc/client/linkservice"
 
 	"google.golang.org/grpc"
 )
 
-// fakeLinkService embeds the LinkService interface so only the methods
-// exercised by a specific test need to be overridden.
-type fakeLinkService struct {
-	linkservice.LinkService
-	authResp    *linkservice.AuthenticateAdminResponse
-	profileResp *linkservice.GetAdminProfileResponse
-	createResp  *linkservice.CreateShortLinkResponse
-	listResp    *linkservice.ListShortLinksResponse
-	getResp     *linkservice.GetShortLinkResponse
-	updateResp  *linkservice.UpdateShortLinkResponse
-	deleteResp  *linkservice.DeleteShortLinkResponse
-	resolveResp *linkservice.ResolveShortLinkResponse
-	visitResp   *linkservice.RecordVisitResponse
-	statsResp   *linkservice.GetLinkStatsResponse
+// fakeAdminService embeds AdminService so only exercised methods need overriding.
+type fakeAdminService struct {
+	adminservice.AdminService
+	authResp    *adminservice.AuthenticateAdminResponse
+	profileResp *adminservice.GetAdminProfileResponse
 	err         error
 }
 
-func (f fakeLinkService) AuthenticateAdmin(
+func (f fakeAdminService) AuthenticateAdmin(
 	_ context.Context,
-	_ *linkservice.AuthenticateAdminRequest,
+	_ *adminservice.AuthenticateAdminRequest,
 	_ ...grpc.CallOption,
-) (*linkservice.AuthenticateAdminResponse, error) {
+) (*adminservice.AuthenticateAdminResponse, error) {
 	if f.err != nil {
 		return nil, f.err
 	}
 	return f.authResp, nil
 }
 
-func (f fakeLinkService) GetAdminProfile(
+func (f fakeAdminService) GetAdminProfile(
 	_ context.Context,
-	_ *linkservice.GetAdminProfileRequest,
+	_ *adminservice.GetAdminProfileRequest,
 	_ ...grpc.CallOption,
-) (*linkservice.GetAdminProfileResponse, error) {
+) (*adminservice.GetAdminProfileResponse, error) {
 	if f.err != nil {
 		return nil, f.err
 	}
 	return f.profileResp, nil
+}
+
+// fakeLinkService embeds LinkService so only exercised methods need overriding.
+type fakeLinkService struct {
+	linkservice.LinkService
+	createResp *linkservice.CreateShortLinkResponse
+	listResp   *linkservice.ListShortLinksResponse
+	getResp    *linkservice.GetShortLinkResponse
+	updateResp *linkservice.UpdateShortLinkResponse
+	deleteResp *linkservice.DeleteShortLinkResponse
+	err        error
 }
 
 func (f fakeLinkService) CreateShortLink(
@@ -107,39 +110,6 @@ func (f fakeLinkService) DeleteShortLink(
 	return f.deleteResp, nil
 }
 
-func (f fakeLinkService) ResolveShortLink(
-	_ context.Context,
-	_ *linkservice.ResolveShortLinkRequest,
-	_ ...grpc.CallOption,
-) (*linkservice.ResolveShortLinkResponse, error) {
-	if f.err != nil {
-		return nil, f.err
-	}
-	return f.resolveResp, nil
-}
-
-func (f fakeLinkService) RecordVisit(
-	_ context.Context,
-	_ *linkservice.RecordVisitRequest,
-	_ ...grpc.CallOption,
-) (*linkservice.RecordVisitResponse, error) {
-	if f.err != nil {
-		return nil, f.err
-	}
-	return f.visitResp, nil
-}
-
-func (f fakeLinkService) GetLinkStats(
-	_ context.Context,
-	_ *linkservice.GetLinkStatsRequest,
-	_ ...grpc.CallOption,
-) (*linkservice.GetLinkStatsResponse, error) {
-	if f.err != nil {
-		return nil, f.err
-	}
-	return f.statsResp, nil
-}
-
 func TestLoginLogic_Login(t *testing.T) {
 	tokenManager := auth.NewTokenManager(auth.Config{
 		Secret:          "local-test-secret",
@@ -147,9 +117,9 @@ func TestLoginLogic_Login(t *testing.T) {
 	})
 	svcCtx := &svc.ServiceContext{
 		TokenManager: tokenManager,
-		LinkRPC: fakeLinkService{
-			authResp: &linkservice.AuthenticateAdminResponse{
-				Admin: &linkservice.AdminProfile{
+		AdminRPC: fakeAdminService{
+			authResp: &adminservice.AuthenticateAdminResponse{
+				Admin: &adminservice.AdminProfile{
 					Id:       42,
 					Username: "admin",
 				},
@@ -302,9 +272,9 @@ func sampleRPCLinkSummary() *linkservice.ShortLinkSummary {
 
 func TestProfileLogic_Profile(t *testing.T) {
 	svcCtx := &svc.ServiceContext{
-		LinkRPC: fakeLinkService{
-			profileResp: &linkservice.GetAdminProfileResponse{
-				Admin: &linkservice.AdminProfile{
+		AdminRPC: fakeAdminService{
+			profileResp: &adminservice.GetAdminProfileResponse{
+				Admin: &adminservice.AdminProfile{
 					Id:       42,
 					Username: "admin",
 					Status:   1,

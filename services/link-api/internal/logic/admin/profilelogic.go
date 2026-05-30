@@ -11,7 +11,7 @@ import (
 	"github.com/aliaxy/zero-link/services/link-api/internal/middleware"
 	"github.com/aliaxy/zero-link/services/link-api/internal/svc"
 	"github.com/aliaxy/zero-link/services/link-api/internal/types"
-	"github.com/aliaxy/zero-link/services/link-rpc/linkservice"
+	"github.com/aliaxy/zero-link/services/link-rpc/client/adminservice"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -39,7 +39,7 @@ func (l *ProfileLogic) Profile() (resp *types.ProfileResponse, err error) {
 		return nil, apierror.ErrUnauthenticated
 	}
 
-	rpcResp, err := l.svcCtx.LinkRPC.GetAdminProfile(l.ctx, &linkservice.GetAdminProfileRequest{
+	rpcResp, err := l.svcCtx.AdminRPC.GetAdminProfile(l.ctx, &adminservice.GetAdminProfileRequest{
 		AdminId: subject.ID,
 	})
 	if err != nil {

@@ -49,7 +49,7 @@ Stage 2 is complete. The transport skeleton includes:
 - go-zero API service under `services/link-api/`.
 - go-zero RPC service under `services/link-rpc/`.
 - Health endpoints `GET /healthz` and `GET /readyz`.
-- RPC readiness method `LinkService.Check`.
+- RPC readiness method `HealthService.Check`.
 - API readiness logic that calls the RPC readiness method.
 - RPC readiness logic that validates configured MySQL and Redis endpoints with simple connectivity checks.
 
@@ -188,7 +188,8 @@ goctl rpc protoc services/link-rpc/proto/link/v1/link.proto \
   --go-grpc_out=services/link-rpc/pb \
   --go-grpc_opt=paths=source_relative \
   --zrpc_out=services/link-rpc \
-  --proto_path=services/link-rpc/proto
+  --proto_path=services/link-rpc/proto \
+  -m
 ```
 
 API generation should use the repository's existing go-zero API service layout and preserve current local

@@ -6,7 +6,7 @@ import (
 
 	"github.com/aliaxy/zero-link/services/link-api/internal/svc"
 	"github.com/aliaxy/zero-link/services/link-api/internal/types"
-	"github.com/aliaxy/zero-link/services/link-rpc/linkservice"
+	"github.com/aliaxy/zero-link/services/link-rpc/client/linkservice"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"

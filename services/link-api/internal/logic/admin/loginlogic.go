@@ -12,7 +12,7 @@ import (
 	"github.com/aliaxy/zero-link/services/link-api/internal/convert"
 	"github.com/aliaxy/zero-link/services/link-api/internal/svc"
 	"github.com/aliaxy/zero-link/services/link-api/internal/types"
-	"github.com/aliaxy/zero-link/services/link-rpc/linkservice"
+	"github.com/aliaxy/zero-link/services/link-rpc/client/adminservice"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -35,7 +35,7 @@ func NewLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginLogic 
 
 // Login authenticates an administrator and returns a management token.
 func (l *LoginLogic) Login(req *types.LoginRequest) (resp *types.LoginResponse, err error) {
-	rpcResp, err := l.svcCtx.LinkRPC.AuthenticateAdmin(l.ctx, &linkservice.AuthenticateAdminRequest{
+	rpcResp, err := l.svcCtx.AdminRPC.AuthenticateAdmin(l.ctx, &adminservice.AuthenticateAdminRequest{
 		Username: req.Username,
 		Password: req.Password,
 	})

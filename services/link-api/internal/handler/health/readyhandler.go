@@ -17,7 +17,10 @@ func ReadyHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		l := health.NewReadyLogic(r.Context(), svcCtx)
 		resp, err := l.Ready()
 		if err != nil {
-			httpx.ErrorCtx(r.Context(), w, err)
+			httpx.WriteJsonCtx(r.Context(), w, http.StatusServiceUnavailable, map[string]string{
+				"status":  "unavailable",
+				"message": err.Error(),
+			})
 		} else {
 			httpx.OkJsonCtx(r.Context(), w, resp)
 		}
