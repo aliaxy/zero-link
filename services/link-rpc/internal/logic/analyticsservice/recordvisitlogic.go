@@ -58,7 +58,12 @@ func (l *RecordVisitLogic) RecordVisit(in *linkv1.RecordVisitRequest) (*linkv1.R
 
 	statDate := visitedAt.UTC().Format("2006-01-02")
 	if err := l.svcCtx.DailyStatModel.UpsertPV(l.ctx, link.Id, statDate); err != nil {
-		l.Errorf("upsert daily stat: %v", err)
+		l.Errorw("upsert daily stat failed",
+			logx.Field("link_id", link.Id),
+			logx.Field("code", in.Code),
+			logx.Field("stat_date", statDate),
+			logx.Field("error", err.Error()),
+		)
 	}
 
 	return &linkv1.RecordVisitResponse{}, nil

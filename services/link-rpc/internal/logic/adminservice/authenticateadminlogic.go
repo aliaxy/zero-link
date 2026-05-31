@@ -34,9 +34,14 @@ func (l *AuthenticateAdminLogic) AuthenticateAdmin(
 ) (*linkv1.AuthenticateAdminResponse, error) {
 	admin, err := domain.AuthenticateAdmin(l.ctx, l.svcCtx.AdminUserModel, in.GetUsername(), in.GetPassword())
 	if err != nil {
+		l.Infow("authenticate failed", logx.Field("username", in.GetUsername()))
 		return nil, rpcError(err)
 	}
 
+	l.Infow("authenticate success",
+		logx.Field("admin_id", admin.Id),
+		logx.Field("username", admin.Username),
+	)
 	return &linkv1.AuthenticateAdminResponse{
 		Admin: adminProfile(admin),
 	}, nil
