@@ -35,11 +35,17 @@ func NewLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginLogic 
 
 // Login authenticates an administrator and returns a management token.
 func (l *LoginLogic) Login(req *types.LoginRequest) (resp *types.LoginResponse, err error) {
+	l.Infow("login attempt", logx.Field("username", req.Username))
+
 	rpcResp, err := l.svcCtx.AdminRPC.AuthenticateAdmin(l.ctx, &adminservice.AuthenticateAdminRequest{
 		Username: req.Username,
 		Password: req.Password,
 	})
 	if err != nil {
+		l.Infow("login failed",
+			logx.Field("username", req.Username),
+			logx.Field("reason", err.Error()),
+		)
 		return nil, apierror.FromRPCError(err)
 	}
 
@@ -47,6 +53,11 @@ func (l *LoginLogic) Login(req *types.LoginRequest) (resp *types.LoginResponse, 
 	if err != nil {
 		return nil, err
 	}
+
+	l.Infow("login success",
+		logx.Field("admin_id", rpcResp.Admin.Id),
+		logx.Field("username", rpcResp.Admin.Username),
+	)
 
 	return &types.LoginResponse{
 		Code:    "OK",

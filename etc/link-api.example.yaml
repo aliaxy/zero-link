@@ -22,3 +22,8 @@ RateLimit:
 
 LinkRPC:
   Target: 127.0.0.1:9090
+
+Prometheus:
+  Host: 127.0.0.1
+  Port: 9100
+  Path: /metrics

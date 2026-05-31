@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/aliaxy/zero-link/services/link-api/internal/auth"
+	"github.com/zeromicro/go-zero/core/logx"
 )
 
 type contextKey string
@@ -40,6 +41,10 @@ func (m *AuthMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
+		logx.WithContext(r.Context()).Infow("admin authenticated",
+			logx.Field("admin_id", subject.ID),
+			logx.Field("username", subject.Username),
+		)
 		ctx := ContextWithAdminSubject(r.Context(), subject)
 		next(w, r.WithContext(ctx))
 	}
