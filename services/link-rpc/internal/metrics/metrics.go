@@ -1,7 +1,9 @@
+// Package metrics defines Prometheus business metric counters for link-rpc.
 package metrics
 
 import "github.com/zeromicro/go-zero/core/metric"
 
+// RedirectRequestsTotal counts short-link resolution requests by outcome label (hit/miss/disabled/expired/error).
 var RedirectRequestsTotal = metric.NewCounterVec(&metric.CounterVecOpts{
 	Namespace: "zerolink",
 	Subsystem: "redirect",
@@ -10,6 +12,7 @@ var RedirectRequestsTotal = metric.NewCounterVec(&metric.CounterVecOpts{
 	Labels:    []string{"result"},
 })
 
+// AnalyticsEventsTotal counts visit recording events by outcome label (success/error).
 var AnalyticsEventsTotal = metric.NewCounterVec(&metric.CounterVecOpts{
 	Namespace: "zerolink",
 	Subsystem: "analytics",

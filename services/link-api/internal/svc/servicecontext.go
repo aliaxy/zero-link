@@ -20,17 +20,17 @@ import (
 
 // ServiceContext holds dependencies shared by link-api handlers.
 type ServiceContext struct {
-	Config                config.Config
-	AuthMiddleware        rest.Middleware
-	AnalyticsMiddleware   rest.Middleware
+	Config                   config.Config
+	AuthMiddleware           rest.Middleware
+	AnalyticsMiddleware      rest.Middleware
 	IPRateLimitMiddleware    rest.Middleware
 	LoginRateLimitMiddleware rest.Middleware
-	TokenManager          *auth.TokenManager
-	Redis                 *redis.Redis
-	HealthRPC             healthservice.HealthService
-	AdminRPC              adminservice.AdminService
-	LinkRPC               linkservice.LinkService
-	AnalyticsRPC          analyticsservice.AnalyticsService
+	TokenManager             *auth.TokenManager
+	Redis                    *redis.Redis
+	HealthRPC                healthservice.HealthService
+	AdminRPC                 adminservice.AdminService
+	LinkRPC                  linkservice.LinkService
+	AnalyticsRPC             analyticsservice.AnalyticsService
 }
 
 // NewServiceContext creates a link-api service context.
