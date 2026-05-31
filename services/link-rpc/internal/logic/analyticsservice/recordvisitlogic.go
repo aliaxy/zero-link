@@ -5,6 +5,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/aliaxy/zero-link/services/link-rpc/internal/metrics"
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/model"
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/svc"
 	linkv1 "github.com/aliaxy/zero-link/services/link-rpc/pb/link/v1"
@@ -64,7 +65,10 @@ func (l *RecordVisitLogic) RecordVisit(in *linkv1.RecordVisitRequest) (*linkv1.R
 			logx.Field("stat_date", statDate),
 			logx.Field("error", err.Error()),
 		)
+		metrics.AnalyticsEventsTotal.Inc("error")
+		return &linkv1.RecordVisitResponse{}, nil
 	}
 
+	metrics.AnalyticsEventsTotal.Inc("success")
 	return &linkv1.RecordVisitResponse{}, nil
 }

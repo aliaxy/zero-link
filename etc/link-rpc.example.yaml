@@ -17,7 +17,12 @@ CacheRedis:
 Analytics:
   IPSalt: replace-with-production-ip-salt
 
+Prometheus:
+  Host: 127.0.0.1
+  Port: 9101
+  Path: /metrics
+
 Middlewares:
   Trace: false
-  Prometheus: false
+  Prometheus: true
   Metrics: false
