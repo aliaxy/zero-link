@@ -96,6 +96,7 @@ Errors:
 - `INVALID_ARGUMENT` for missing username or password.
 - `UNAUTHENTICATED` for invalid credentials or inactive administrators.
 - `INTERNAL` for unexpected authentication failures.
+- `429 Too Many Requests` when the per-IP rate limit (10 req/min) is exceeded.
 
 ### GET /admin/profile
 

@@ -3,7 +3,7 @@
 ## Goal
 
 Track the current zero-link implementation state and define the next safe handoff point. Stages 1–6 are
-complete. The project is ready to begin Stage 7 testing, observability, and security hardening.
+complete. Stage 7 testing, observability, and security hardening is in progress.
 
 ## Source Documents
 
@@ -254,15 +254,42 @@ Stage 6 management UI is accepted when:
 - Stats view displays daily PV/UV chart and summary cards for a given date range.
 - Short link codes proxy correctly to link-api (`/:code` → 302) through the Vite dev server.
 
+## Stage 7 Progress
+
+Stage 7 testing, observability, and security hardening is in progress.
+
+Completed:
+
+- Reserved short codes extended to include `metrics` and `static` in `link-rpc/internal/domain/validation.go`.
+- `MaxConns: 1000` and `MaxBytes: 1048576` added to `link-api` `rest.RestConf` (configuration only).
+- `IPRateLimitMiddleware` on `GET /{code}`: 20 req/s per IP using go-zero `limit.PeriodLimit` backed by Redis.
+- `LoginRateLimitMiddleware` on `POST /admin/login`: 10 req/min per IP, reuses `IPRateLimitMiddleware`.
+- `services/link-api/pkg/httputil.ExtractClientIP`: shared IP extraction utility (prefers `X-Forwarded-For`).
+- Structured logging in `link-api`:
+  - `loginlogic.go`: attempt, failed (with reason), success (with admin_id).
+  - `authmiddleware.go`: authenticated (with admin_id and username).
+  - `redirectlogic.go`: rpc failed (with code and error), resolved (with code and url).
+- Structured logging in `link-rpc`:
+  - `resolveshortlinklogic.go`: hit/miss/disabled/expired/error, each with code and result fields.
+  - `authenticateadminlogic.go`: failed (username), success (admin_id, username).
+  - `recordvisitlogic.go`: upsert daily stat failed with link_id, code, stat_date, error.
+- Prometheus metrics in `link-rpc/internal/metrics/metrics.go`:
+  - `zerolink_redirect_requests_total{result}` (hit/miss/disabled/expired/error).
+  - `zerolink_analytics_events_total{result}` (success/error).
+- Prometheus `/metrics` HTTP endpoints: link-api port 9100, link-rpc port 9101.
+- Unit tests for `AnalyticsMiddleware`, `IPRateLimitMiddleware`, `LoginRateLimitMiddleware` using interface stubs and `go.uber.org/goleak`.
+
+Remaining:
+
+- Integration tests (deferred; require live MySQL + Redis).
+
 ## Next Handoff
 
-Stage 7 testing, observability, and security hardening:
+Stage 8 full Docker Compose deployment:
 
-- Unit and integration tests for Go services.
-- Structured logs and metrics.
-- Rate limiting on redirect and management routes.
-- Security review fixes.
-- Keep Docker Compose application services deferred to Stage 8.
+- Dockerfiles for link-api and link-rpc.
+- Complete `docker-compose.yml` with application and infrastructure services.
+- Deployment documentation.
 
 ## Git And Commit Rules
 

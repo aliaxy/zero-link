@@ -2,8 +2,9 @@ syntax = "v1"
 
 info (
 	title:  "zero-link API"
-	desc:   "Health/readiness and Stage 3 management API"
+	desc:   "Health, readiness, management, redirect, analytics, rate limiting, and observability"
 	author: "zero-link"
+	version: "stage7"
 )
 
 type HealthResponse {

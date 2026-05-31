@@ -173,6 +173,22 @@ Risks:
 
 Goal: make the service diagnosable and safer.
 
+Status: in progress.
+
+Completed:
+
+- Reserved short codes extended with `metrics` and `static`.
+- `MaxConns` and `MaxBytes` connection protection on `link-api`.
+- IP rate limiting on redirect (20 req/s) and login (10 req/min) via go-zero `PeriodLimit`.
+- Structured logging across `link-api` (login, auth, redirect) and `link-rpc` (resolve, authenticate, analytics).
+- Prometheus business metrics: `zerolink_redirect_requests_total{result}` and `zerolink_analytics_events_total{result}`.
+- Prometheus `/metrics` endpoints on ports 9100 (link-api) and 9101 (link-rpc).
+- Unit tests for `AnalyticsMiddleware`, `IPRateLimitMiddleware`, `LoginRateLimitMiddleware`.
+
+Remaining:
+
+- Integration tests (deferred, require live MySQL + Redis).
+
 Outputs:
 
 - Unit and integration tests.

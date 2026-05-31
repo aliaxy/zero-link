@@ -5,7 +5,8 @@
 - `cache:shortLink:id:{id}`: short-link row cached by primary key (goctl model layer).
 - `cache:shortLink:code:{code}`: short-link row cached by unique code index (goctl model layer).
 - `ratelimit:create:{admin_id}`: administrator create-rate counter.
-- `ratelimit:redirect:{code}:{ip_hash}`: per-link redirect-rate counter.
+- `rl:redirect:ip:{ip}`: per-IP redirect rate counter (go-zero `PeriodLimit`, 20 req/s window).
+- `rl:login:ip:{ip}`: per-IP login rate counter (go-zero `PeriodLimit`, 10 req/min window).
 - `uv:{link_id}:{date}`: optional UV de-duplication set or bitmap.
 
 The `cache:shortLink:*` keys are managed by the go-zero goctl cached model. `FindOneByCode` uses a
@@ -23,7 +24,7 @@ unused on the redirect path.
 
 1. Receive `GET /{code}`.
 2. Validate short-code format.
-3. Apply lightweight redirect rate limiting.
+3. Apply per-IP rate limiting (20 req/s; returns `429 Too Many Requests` on excess).
 4. Read `shortlink:code:{code}` from Redis.
 5. If Redis misses, read `short_link` from MySQL by `code`.
 6. If no row exists, return `404 Not Found`.

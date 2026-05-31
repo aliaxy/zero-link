@@ -39,6 +39,8 @@ Networking:
 - API exposes the public HTTP port.
 - RPC is internal to the Compose network.
 - MySQL and Redis are internal unless local debugging requires exposed ports.
+- Prometheus metrics endpoints (port 9100 for link-api, port 9101 for link-rpc) should be reachable by a Prometheus scraper or remain internal; do not expose them publicly.
+- Structured logs from both services are JSON-formatted (go-zero logx); route to a log aggregator in production deployments.
 
 ## Configuration Differences
 

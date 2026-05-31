@@ -55,8 +55,8 @@
 
 - CI/CD.
 - Automated vulnerability scanning.
-- Grafana dashboards.
-- Alert rules.
+- Grafana dashboards based on Stage 7 foundational metrics (`zerolink_redirect_requests_total`, `zerolink_analytics_events_total`) and go-zero built-in HTTP/gRPC latency metrics.
+- Alert rules (e.g., redirect error rate, analytics failure rate, rate-limit saturation).
 - Backup and restore playbooks.
 - Kubernetes deployment.
 - Blue-green or rolling deployments.

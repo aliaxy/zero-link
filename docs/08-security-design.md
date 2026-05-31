@@ -46,7 +46,9 @@
 ## Abuse Prevention
 
 - Rate limit link creation per administrator.
-- Rate limit suspicious redirect traffic per code and IP hash.
+- `GET /{code}`: per-IP rate limit of 20 req/s using go-zero `PeriodLimit` backed by Redis (`rl:redirect:ip:{ip}`). Excess requests return `429 Too Many Requests`.
+- `POST /admin/login`: per-IP rate limit of 10 req/min using go-zero `PeriodLimit` (`rl:login:ip:{ip}`). Excess requests return `429 Too Many Requests`.
+- Client IP is extracted from `X-Forwarded-For` (first value) with fallback to `RemoteAddr`; trust only when a reverse proxy is present.
 - Consider bot detection later if analytics quality becomes important.
 - Avoid negative-cache poisoning by keeping missing-link caches short if introduced.
 
