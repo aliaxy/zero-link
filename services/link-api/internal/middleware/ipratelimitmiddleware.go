@@ -4,15 +4,22 @@
 package middleware
 
 import (
+	"context"
 	"net/http"
 
+	"github.com/aliaxy/zero-link/services/link-api/pkg/httputil"
 	"github.com/zeromicro/go-zero/core/limit"
 	"github.com/zeromicro/go-zero/core/stores/redis"
 )
 
+// rateLimiter is the interface satisfied by limit.PeriodLimit.
+type rateLimiter interface {
+	TakeCtx(ctx context.Context, key string) (int, error)
+}
+
 // IPRateLimitMiddleware limits requests per client IP using a Redis sliding window.
 type IPRateLimitMiddleware struct {
-	limiter *limit.PeriodLimit
+	limiter rateLimiter
 }
 
 // NewIPRateLimitMiddleware creates an IP rate limiter with the given window period (seconds),
@@ -26,19 +33,11 @@ func NewIPRateLimitMiddleware(store *redis.Redis, period, quota int, keyPrefix s
 // Handle rejects requests that exceed the per-IP quota with 429 Too Many Requests.
 func (m *IPRateLimitMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		ip := extractClientIP(r)
-		code, err := m.limiter.TakeCtx(r.Context(), ip)
+		code, err := m.limiter.TakeCtx(r.Context(), httputil.ExtractClientIP(r))
 		if err != nil || code == limit.OverQuota {
 			http.Error(w, http.StatusText(http.StatusTooManyRequests), http.StatusTooManyRequests)
 			return
 		}
 		next(w, r)
 	}
-}
-
-func extractClientIP(r *http.Request) string {
-	if ip := r.Header.Get("X-Forwarded-For"); ip != "" {
-		return ip
-	}
-	return r.RemoteAddr
 }

@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/aliaxy/zero-link/services/link-api/pkg/httputil"
 	"github.com/aliaxy/zero-link/services/link-rpc/client/analyticsservice"
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -36,7 +37,7 @@ func (m *AnalyticsMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 		}
 
 		code := strings.TrimPrefix(r.URL.Path, "/")
-		ip := extractIP(r)
+		ip := httputil.ExtractClientIP(r)
 		ua := r.Header.Get("User-Agent")
 		ref := r.Header.Get("Referer")
 		ts := time.Now().UTC().Format(time.RFC3339Nano)
@@ -69,15 +70,3 @@ func (r *statusRecorder) WriteHeader(status int) {
 	r.ResponseWriter.WriteHeader(status)
 }
 
-func extractIP(r *http.Request) string {
-	if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
-		if ip, _, ok := strings.Cut(xff, ","); ok {
-			return strings.TrimSpace(ip)
-		}
-		return strings.TrimSpace(xff)
-	}
-	if idx := strings.LastIndex(r.RemoteAddr, ":"); idx != -1 {
-		return r.RemoteAddr[:idx]
-	}
-	return r.RemoteAddr
-}
