@@ -39,7 +39,15 @@ func (l *RedirectLogic) Redirect(req *types.RedirectRequest) (*types.RedirectRes
 		Code: req.Code,
 	})
 	if err != nil {
+		l.Errorw("redirect rpc failed",
+			logx.Field("code", req.Code),
+			logx.Field("error", err.Error()),
+		)
 		return nil, apierror.FromRPCError(err)
 	}
+	l.Infow("redirect resolved",
+		logx.Field("code", req.Code),
+		logx.Field("url", resp.OriginUrl),
+	)
 	return &types.RedirectResponse{OriginUrl: resp.OriginUrl}, nil
 }

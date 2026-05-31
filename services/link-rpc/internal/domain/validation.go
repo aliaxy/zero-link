@@ -46,6 +46,8 @@ var (
 		"healthz": {},
 		"readyz":  {},
 		"rpc":     {},
+		"metrics": {},
+		"static":  {},
 	}
 	base62Alphabet = []byte("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
 )

@@ -1,10 +1,20 @@
 # zero-link
 
-zero-link is a go-zero-oriented short-link system. Stages 1–6 are complete.
+zero-link is a go-zero-oriented short-link system. Stages 1–6 are complete. Stage 7 is in progress.
 
 ## Current Stage
 
-Stage 6 adds a Vue 3 + Vite + Element Plus admin SPA on top of the Stage 5 analytics and Stage 4 redirect foundation:
+Stage 7 adds observability, security hardening, and testing on top of the Stage 6 admin SPA foundation:
+
+- IP rate limiting on `GET /{code}` (20 req/s per IP) and `POST /admin/login` (10 req/min per IP) via go-zero `PeriodLimit`.
+- Structured logging across `link-api` (login, auth, redirect) and `link-rpc` (resolve, authenticate, analytics) using `logx.Infow` / `logx.Errorw`.
+- Prometheus `/metrics` endpoints: `link-api` on port 9100, `link-rpc` on port 9101.
+- Business metric counters `zerolink_redirect_requests_total{result}` and `zerolink_analytics_events_total{result}`.
+- Unit tests for `AnalyticsMiddleware`, `IPRateLimitMiddleware`, and `LoginRateLimitMiddleware` with goroutine leak detection via `goleak`.
+- `MaxConns: 1000` and `MaxBytes: 1048576` connection protection on `link-api`.
+- Reserved short codes extended to include `metrics` and `static`.
+
+Stage 6 added a Vue 3 + Vite + Element Plus admin SPA:
 
 - MySQL and Redis are provided by `deploy/docker-compose.infra.yml`.
 - `link-api` exposes `GET /healthz`, `GET /readyz`, `GET /{code}` redirect, and management + analytics APIs.

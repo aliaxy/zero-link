@@ -86,6 +86,8 @@ Do not run migrations before `make infra-up` has started MySQL.
 9. Log in with the seeded local administrator and create a short link through the management API.
 10. Access `GET /{code}` and confirm a `302` redirect; check `visit_event` for a recorded row.
 11. Call `GET /admin/links/{id}/stats` and confirm `pv: 1` for today.
+12. Open `http://127.0.0.1:9100/metrics` to verify link-api Prometheus metrics are exported.
+13. Open `http://127.0.0.1:9101/metrics` and confirm `zerolink_redirect_requests_total` and `zerolink_analytics_events_total` are present.
 
 ### Full stack with admin UI
 

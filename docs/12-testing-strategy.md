@@ -34,6 +34,13 @@ Implemented unit areas (Stage 4 and Stage 5):
 - Visit event recording and daily statistics aggregation (analytics helpers, RecordVisit, GetLinkStats).
 - AnalyticsMiddleware goroutine triggering and IP extraction.
 
+Implemented unit areas (Stage 7):
+
+- `IPRateLimitMiddleware`: allowed, over-quota, limiter error, hit-quota pass-through, XFF key extraction, RemoteAddr fallback. Uses `rateLimiter` interface stub to avoid real Redis.
+- `LoginRateLimitMiddleware`: allowed and over-quota via `IPRateLimitMiddleware` delegation.
+- `AnalyticsMiddleware`: 302 triggers `RecordVisit`, 404/403 do not. Uses `goleak.VerifyTestMain` to detect goroutine leaks.
+- `ExtractClientIP`: XFF header (first IP from comma-separated list), RemoteAddr fallback.
+
 Deferred unit areas:
 
 - Admin UI behavior.

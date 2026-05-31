@@ -22,6 +22,8 @@ func TestValidateCustomCode(t *testing.T) {
 		{name: "non ascii", code: "中文", wantErr: true},
 		{name: "reserved admin", code: "admin", wantErr: true},
 		{name: "reserved healthz", code: "healthz", wantErr: true},
+		{name: "reserved metrics", code: "metrics", wantErr: true},
+		{name: "reserved static", code: "static", wantErr: true},
 	}
 
 	for _, tt := range tests {

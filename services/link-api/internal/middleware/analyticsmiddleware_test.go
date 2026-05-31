@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/aliaxy/zero-link/services/link-api/pkg/httputil"
 	"github.com/aliaxy/zero-link/services/link-rpc/client/analyticsservice"
 	"go.uber.org/goleak"
 	"google.golang.org/grpc"
@@ -101,7 +102,7 @@ func TestAnalyticsMiddleware_403NoRecordVisit(t *testing.T) {
 func TestExtractIP_XForwardedFor(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	req.Header.Set("X-Forwarded-For", "1.2.3.4, 10.0.0.1")
-	if got := extractIP(req); got != "1.2.3.4" {
+	if got := httputil.ExtractClientIP(req); got != "1.2.3.4" {
 		t.Fatalf("extractIP = %q, want 1.2.3.4", got)
 	}
 }
@@ -109,7 +110,7 @@ func TestExtractIP_XForwardedFor(t *testing.T) {
 func TestExtractIP_FallbackRemoteAddr(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	req.RemoteAddr = "5.6.7.8:9999"
-	if got := extractIP(req); got != "5.6.7.8" {
+	if got := httputil.ExtractClientIP(req); got != "5.6.7.8" {
 		t.Fatalf("extractIP = %q, want 5.6.7.8", got)
 	}
 }

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/aliaxy/zero-link/services/link-rpc/internal/metrics"
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/model"
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/svc"
 	linkv1 "github.com/aliaxy/zero-link/services/link-rpc/pb/link/v1"
@@ -58,8 +59,16 @@ func (l *RecordVisitLogic) RecordVisit(in *linkv1.RecordVisitRequest) (*linkv1.R
 
 	statDate := visitedAt.UTC().Format("2006-01-02")
 	if err := l.svcCtx.DailyStatModel.UpsertPV(l.ctx, link.Id, statDate); err != nil {
-		l.Errorf("upsert daily stat: %v", err)
+		l.Errorw("upsert daily stat failed",
+			logx.Field("link_id", link.Id),
+			logx.Field("code", in.Code),
+			logx.Field("stat_date", statDate),
+			logx.Field("error", err.Error()),
+		)
+		metrics.AnalyticsEventsTotal.Inc("error")
+		return &linkv1.RecordVisitResponse{}, nil
 	}
 
+	metrics.AnalyticsEventsTotal.Inc("success")
 	return &linkv1.RecordVisitResponse{}, nil
 }
