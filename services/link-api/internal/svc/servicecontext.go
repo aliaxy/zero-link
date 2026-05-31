@@ -23,7 +23,8 @@ type ServiceContext struct {
 	Config                config.Config
 	AuthMiddleware        rest.Middleware
 	AnalyticsMiddleware   rest.Middleware
-	IPRateLimitMiddleware rest.Middleware
+	IPRateLimitMiddleware    rest.Middleware
+	LoginRateLimitMiddleware rest.Middleware
 	TokenManager          *auth.TokenManager
 	Redis                 *redis.Redis
 	HealthRPC             healthservice.HealthService
@@ -51,6 +52,9 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		AnalyticsMiddleware: middleware.NewAnalyticsMiddleware(analyticsRPC).Handle,
 		IPRateLimitMiddleware: middleware.NewIPRateLimitMiddleware(
 			redisClient, 1, c.RateLimit.RedirectPerIPPerSecond, "rl:redirect:ip:",
+		).Handle,
+		LoginRateLimitMiddleware: middleware.NewLoginRateLimitMiddleware(
+			redisClient, c.RateLimit.LoginPerIPPerMinute,
 		).Handle,
 		HealthRPC:    healthservice.NewHealthService(rpcClient),
 		AdminRPC:     adminservice.NewAdminService(rpcClient),

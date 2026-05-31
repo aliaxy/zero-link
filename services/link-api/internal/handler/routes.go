@@ -16,13 +16,16 @@ import (
 
 func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 	server.AddRoutes(
-		[]rest.Route{
-			{
-				Method:  http.MethodPost,
-				Path:    "/admin/login",
-				Handler: admin.LoginHandler(serverCtx),
-			},
-		},
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.LoginRateLimitMiddleware},
+			[]rest.Route{
+				{
+					Method:  http.MethodPost,
+					Path:    "/admin/login",
+					Handler: admin.LoginHandler(serverCtx),
+				},
+			}...,
+		),
 	)
 
 	server.AddRoutes(

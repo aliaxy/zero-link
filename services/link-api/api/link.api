@@ -176,7 +176,8 @@ service link-api {
 }
 
 @server (
-	group: admin
+	middleware: LoginRateLimitMiddleware
+	group:      admin
 )
 service link-api {
 	@handler LoginHandler
