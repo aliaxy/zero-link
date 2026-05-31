@@ -13,6 +13,7 @@ import (
 	"github.com/aliaxy/zero-link/services/link-rpc/client/healthservice"
 	"github.com/aliaxy/zero-link/services/link-rpc/client/linkservice"
 
+	"github.com/zeromicro/go-zero/core/stores/redis"
 	"github.com/zeromicro/go-zero/rest"
 	"github.com/zeromicro/go-zero/zrpc"
 )
@@ -23,6 +24,7 @@ type ServiceContext struct {
 	AuthMiddleware      rest.Middleware
 	AnalyticsMiddleware rest.Middleware
 	TokenManager        *auth.TokenManager
+	Redis               *redis.Redis
 	HealthRPC           healthservice.HealthService
 	AdminRPC            adminservice.AdminService
 	LinkRPC             linkservice.LinkService
@@ -38,10 +40,12 @@ func NewServiceContext(c config.Config) *ServiceContext {
 
 	rpcClient := zrpc.MustNewClient(c.LinkRPC)
 	analyticsRPC := analyticsservice.NewAnalyticsService(rpcClient)
+	redisClient := redis.MustNewRedis(c.Redis)
 
 	return &ServiceContext{
 		Config:              c,
 		TokenManager:        tokenManager,
+		Redis:               redisClient,
 		AuthMiddleware:      middleware.NewAuthMiddleware(tokenManager).Handle,
 		AnalyticsMiddleware: middleware.NewAnalyticsMiddleware(analyticsRPC).Handle,
 		HealthRPC:           healthservice.NewHealthService(rpcClient),

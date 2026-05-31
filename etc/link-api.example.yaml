@@ -13,5 +13,12 @@ Cors:
 MaxConns: 1000
 MaxBytes: 1048576
 
+Redis:
+  Host: 127.0.0.1:6379
+
+RateLimit:
+  RedirectPerIPPerSecond: 20
+  LoginPerIPPerMinute: 10
+
 LinkRPC:
   Target: 127.0.0.1:9090

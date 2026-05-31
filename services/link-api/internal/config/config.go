@@ -5,6 +5,7 @@
 package config
 
 import (
+	"github.com/zeromicro/go-zero/core/stores/redis"
 	"github.com/zeromicro/go-zero/rest"
 	"github.com/zeromicro/go-zero/zrpc"
 )
@@ -20,10 +21,18 @@ type CorsConfig struct {
 	AllowOrigins []string
 }
 
+// RateLimitConfig holds per-route rate limit quotas.
+type RateLimitConfig struct {
+	RedirectPerIPPerSecond int `json:",default=20"`
+	LoginPerIPPerMinute    int `json:",default=10"`
+}
+
 // Config contains the HTTP server and upstream RPC client settings.
 type Config struct {
 	rest.RestConf
-	Auth    AuthConfig
-	Cors    CorsConfig
-	LinkRPC zrpc.RpcClientConf
+	Auth      AuthConfig
+	Cors      CorsConfig
+	LinkRPC   zrpc.RpcClientConf
+	Redis     redis.RedisConf
+	RateLimit RateLimitConfig
 }
