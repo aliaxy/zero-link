@@ -20,15 +20,16 @@ import (
 
 // ServiceContext holds dependencies shared by link-api handlers.
 type ServiceContext struct {
-	Config              config.Config
-	AuthMiddleware      rest.Middleware
-	AnalyticsMiddleware rest.Middleware
-	TokenManager        *auth.TokenManager
-	Redis               *redis.Redis
-	HealthRPC           healthservice.HealthService
-	AdminRPC            adminservice.AdminService
-	LinkRPC             linkservice.LinkService
-	AnalyticsRPC        analyticsservice.AnalyticsService
+	Config                config.Config
+	AuthMiddleware        rest.Middleware
+	AnalyticsMiddleware   rest.Middleware
+	IPRateLimitMiddleware rest.Middleware
+	TokenManager          *auth.TokenManager
+	Redis                 *redis.Redis
+	HealthRPC             healthservice.HealthService
+	AdminRPC              adminservice.AdminService
+	LinkRPC               linkservice.LinkService
+	AnalyticsRPC          analyticsservice.AnalyticsService
 }
 
 // NewServiceContext creates a link-api service context.
@@ -48,9 +49,12 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		Redis:               redisClient,
 		AuthMiddleware:      middleware.NewAuthMiddleware(tokenManager).Handle,
 		AnalyticsMiddleware: middleware.NewAnalyticsMiddleware(analyticsRPC).Handle,
-		HealthRPC:           healthservice.NewHealthService(rpcClient),
-		AdminRPC:            adminservice.NewAdminService(rpcClient),
-		LinkRPC:             linkservice.NewLinkService(rpcClient),
-		AnalyticsRPC:        analyticsRPC,
+		IPRateLimitMiddleware: middleware.NewIPRateLimitMiddleware(
+			redisClient, 1, c.RateLimit.RedirectPerIPPerSecond, "rl:redirect:ip:",
+		).Handle,
+		HealthRPC:    healthservice.NewHealthService(rpcClient),
+		AdminRPC:     adminservice.NewAdminService(rpcClient),
+		LinkRPC:      linkservice.NewLinkService(rpcClient),
+		AnalyticsRPC: analyticsRPC,
 	}
 }

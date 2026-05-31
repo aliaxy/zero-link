@@ -184,7 +184,7 @@ service link-api {
 }
 
 @server (
-	middleware: AnalyticsMiddleware
+	middleware: IPRateLimitMiddleware,AnalyticsMiddleware
 	group:      redirect
 )
 service link-api {
