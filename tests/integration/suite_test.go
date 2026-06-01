@@ -27,6 +27,7 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"syscall"
 	"testing"
 	"time"
 
@@ -43,34 +44,42 @@ var (
 
 // ─── TestMain ────────────────────────────────────────────────────────────────
 
+// TestMain is a thin wrapper so that os.Exit is only called at the top level.
+// All setup and teardown lives in runTests so that deferred subprocess kills
+// execute before os.Exit — os.Exit skips deferred functions, which would leave
+// child processes running and block test I/O completion.
 func TestMain(m *testing.M) {
+	os.Exit(runTests(m))
+}
+
+func runTests(m *testing.M) int {
 	if os.Getenv("INTEGRATION_SKIP") == "true" {
 		fmt.Println("integration: skipped via INTEGRATION_SKIP=true")
-		os.Exit(0)
+		return 0
 	}
 
 	repoRoot, err := findRepoRoot()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "integration: cannot find repo root:", err)
-		os.Exit(1)
+		return 1
 	}
 
 	rpcPort, err := getFreePort()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "integration: getFreePort rpc:", err)
-		os.Exit(1)
+		return 1
 	}
 	apiPort, err := getFreePort()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "integration: getFreePort api:", err)
-		os.Exit(1)
+		return 1
 	}
 	apiBase = fmt.Sprintf("http://127.0.0.1:%d", apiPort)
 
 	tmpDir, err := os.MkdirTemp("", "zero-link-integration-*")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "integration: MkdirTemp:", err)
-		os.Exit(1)
+		return 1
 	}
 	defer os.RemoveAll(tmpDir)
 
@@ -78,28 +87,28 @@ func TestMain(m *testing.M) {
 
 	// Start link-rpc first (link-api connects to it on startup).
 	rpcCmd := startService(repoRoot, "./services/link-rpc", rpcConf)
-	defer func() { _ = rpcCmd.Process.Kill() }()
+	defer killGroup(rpcCmd)
 
 	if err := waitForTCP(fmt.Sprintf("127.0.0.1:%d", rpcPort), 30*time.Second); err != nil {
 		fmt.Fprintln(os.Stderr, "integration: link-rpc did not start:", err)
-		os.Exit(1)
+		return 1
 	}
 
 	// Start link-api.
 	apiCmd := startService(repoRoot, "./services/link-api", apiConf)
-	defer func() { _ = apiCmd.Process.Kill() }()
+	defer killGroup(apiCmd)
 
 	// /readyz calls link-rpc health gRPC — proves the full chain is wired.
 	if err := waitForHTTP(apiBase+"/readyz", 30*time.Second); err != nil {
 		fmt.Fprintln(os.Stderr, "integration: link-api /readyz failed:", err)
-		os.Exit(1)
+		return 1
 	}
 
 	// Smoke-check DB connectivity — migration must have run before tests.
 	db, err := sql.Open("mysql", testDSN())
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "integration: sql.Open:", err)
-		os.Exit(1)
+		return 1
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	pingErr := db.PingContext(ctx)
@@ -107,10 +116,10 @@ func TestMain(m *testing.M) {
 	db.Close()
 	if pingErr != nil {
 		fmt.Fprintln(os.Stderr, "integration: DB not reachable:", pingErr)
-		os.Exit(1)
+		return 1
 	}
 
-	os.Exit(m.Run())
+	return m.Run()
 }
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
@@ -119,7 +128,7 @@ func testDSN() string {
 	if v := os.Getenv("MYSQL_DSN"); v != "" {
 		return v
 	}
-	return "zerolink:zerolink@tcp(127.0.0.1:3306)/zero_link?charset=utf8mb4&parseTime=true&loc=Local"
+	return "zerolink:zerolink@tcp(127.0.0.1:3306)/zero_link?charset=utf8mb4&parseTime=true&loc=UTC"
 }
 
 func testRedisAddr() string {
@@ -179,6 +188,8 @@ Log:
 Dependencies:
   MySQL:
     Endpoint: 127.0.0.1:3306
+    Database: zero_link
+    User: zerolink
     DataSource: %s
   Redis:
     Endpoint: %s
@@ -229,16 +240,31 @@ Cors:
 
 // startService runs "go run <pkg> -f <conf>" as a child process with its
 // stdout/stderr attached to os.Stderr so service logs appear in go test output.
+// Setpgid puts the process in its own group so killGroup can reach every
+// descendant (including the binary compiled and exec'd by "go run").
 func startService(repoRoot, pkg, conf string) *exec.Cmd {
 	cmd := exec.Command("go", "run", pkg, "-f", conf)
 	cmd.Dir = repoRoot
 	cmd.Stdout = os.Stderr
 	cmd.Stderr = os.Stderr
+	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
 	if err := cmd.Start(); err != nil {
 		fmt.Fprintln(os.Stderr, "integration: startService", pkg, err)
 		os.Exit(1)
 	}
 	return cmd
+}
+
+// killGroup sends SIGKILL to the entire process group of cmd, then waits for
+// the direct child to reap resources.  Killing the group ensures that the
+// binary spawned by "go run" is also terminated so it no longer holds a
+// reference to the test's stderr pipe — without this the pipe never closes and
+// "go test" hangs with "Test I/O incomplete".
+func killGroup(cmd *exec.Cmd) {
+	if cmd.Process != nil {
+		_ = syscall.Kill(-cmd.Process.Pid, syscall.SIGKILL)
+	}
+	_ = cmd.Wait()
 }
 
 // waitForTCP polls addr until a TCP connection succeeds or timeout expires.

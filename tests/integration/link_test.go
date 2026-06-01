@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
-	"time"
 )
 
 func TestLogin_Success(t *testing.T) {
@@ -221,23 +220,14 @@ func TestRedirect_Disabled(t *testing.T) {
 
 func TestRedirect_Expired(t *testing.T) {
 	token := doLogin(t, testAdminUsername, testAdminPassword)
-	// Pass a past RFC3339 timestamp as expire_at.
-	pastTime := time.Now().Add(-2 * time.Hour).UTC().Format(time.RFC3339)
-	resp := doRequest(t, http.MethodPost, "/admin/links", map[string]string{
-		"origin_url": "https://example.com/expired-" + uniqueName(t),
-		"expire_at":  pastTime,
-	}, token)
-	assertStatus(t, resp, http.StatusOK)
-
-	var envelope struct {
-		Data struct {
-			Id   int64  `json:"id"`
-			Code string `json:"code"`
-		} `json:"data"`
-	}
-	decodeJSON(t, resp, &envelope)
-	id, code := envelope.Data.Id, envelope.Data.Code
+	// The API validates that expire_at must be in the future, so we cannot pass
+	// a past timestamp at creation time. Instead, create without expiry and then
+	// backdate directly in the DB — the Redis cache has no entry for this code
+	// yet (never resolved), so the next FindOneByCode reads from DB.
+	id, code := createLink(t, token, "https://example.com/expired-"+uniqueName(t))
 	t.Cleanup(func() { deleteLink(t, token, id) })
+
+	dbExec(t, "UPDATE short_link SET expire_at = '2020-01-01 00:00:00' WHERE id = ?", id)
 
 	redirectResp := doRequestNoRedirect(t, http.MethodGet, "/"+code, nil, "")
 	defer redirectResp.Body.Close()

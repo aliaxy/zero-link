@@ -155,11 +155,13 @@ func createLink(t *testing.T, token, originURL string) (id int64, code string) {
 }
 
 // deleteLink calls DELETE /admin/links/:id.
+// 404 is treated as success — the link was already deleted (e.g. the test
+// exercised the delete step itself and the cleanup fires a second time).
 func deleteLink(t *testing.T, token string, id int64) {
 	t.Helper()
 	resp := doRequest(t, http.MethodDelete, fmt.Sprintf("/admin/links/%d", id), nil, token)
 	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusNotFound {
 		body, _ := io.ReadAll(resp.Body)
 		t.Errorf("deleteLink %d: status %d, body: %s", id, resp.StatusCode, body)
 	}
