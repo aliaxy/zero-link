@@ -4,7 +4,7 @@ This file is the canonical development guide for AI coding agents working in thi
 
 ## Project State
 
-zero-link is in Stage 7 (testing, observability, and security hardening). Stages 1–6 are complete.
+zero-link has completed Stage 7 (testing, observability, and security hardening). Stages 1–7 are complete.
 
 The repository intentionally has:
 
@@ -30,6 +30,7 @@ The repository intentionally has:
 - Business metric counters `zerolink_redirect_requests_total{result}` and `zerolink_analytics_events_total{result}` in `services/link-rpc/internal/metrics/`.
 - Unit tests for `AnalyticsMiddleware`, `IPRateLimitMiddleware`, and `LoginRateLimitMiddleware` using interface stubs and `goleak`.
 - Reserved short codes extended to include `metrics` and `static`.
+- Full-stack integration tests under `tests/integration/` covering the complete HTTP → link-api → link-rpc → MySQL/Redis chain, guarded by `//go:build integration` and run via `make test-e2e`.
 
 Do not add management UI, additional business contracts, or new stages unless the user
 explicitly asks for that implementation stage.
@@ -43,6 +44,7 @@ explicitly asks for that implementation stage.
 - `services/link-rpc/`: go-zero RPC service.
 - `migrations/`: versioned SQL migrations. Stage 3 includes the initial administrator and short-link schema. Stage 5 adds visit event and daily stat tables.
 - `tests/httpyac/`: local HTTP smoke requests and example httpyac variables.
+- `tests/integration/`: full-stack integration tests (`//go:build integration`). Services are started as OS subprocesses by `TestMain`.
 - `web/admin/`: Vue 3 + Vite + Element Plus admin SPA. Source under `src/`, build output under `dist/` (ignored by Git).
 
 ## Development Rules
@@ -110,10 +112,16 @@ This file should provide local dependencies only. Do not add application service
 
 ## Verification
 
-Run:
+Run unit tests:
 
 ```bash
 make test
+```
+
+Run full-stack integration tests (requires `make infra-up && make migrate-up` first):
+
+```bash
+make test-e2e
 ```
 
 Validate the Compose configuration with:
@@ -121,8 +129,6 @@ Validate the Compose configuration with:
 ```bash
 docker compose -f deploy/docker-compose.infra.yml config --quiet
 ```
-
-The repository now has Go packages, so `make test` should run the available unit tests when Go is available.
 
 ## Git Rules
 

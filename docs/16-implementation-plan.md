@@ -2,8 +2,8 @@
 
 ## Goal
 
-Track the current zero-link implementation state and define the next safe handoff point. Stages 1–6 are
-complete. Stage 7 testing, observability, and security hardening is in progress.
+Track the current zero-link implementation state and define the next safe handoff point. Stages 1–7 are
+complete.
 
 ## Source Documents
 
@@ -233,6 +233,12 @@ docker compose -f deploy/docker-compose.infra.yml config --quiet
 go test -race ./...
 ```
 
+Run full-stack integration tests (requires `make infra-up && make migrate-up` first):
+
+```bash
+make test-e2e
+```
+
 ## Stage 5 Acceptance
 
 Stage 5 analytics implementation is accepted when:
@@ -256,7 +262,7 @@ Stage 6 management UI is accepted when:
 
 ## Stage 7 Progress
 
-Stage 7 testing, observability, and security hardening is in progress.
+Stage 7 testing, observability, and security hardening is complete.
 
 Completed:
 
@@ -278,10 +284,7 @@ Completed:
   - `zerolink_analytics_events_total{result}` (success/error).
 - Prometheus `/metrics` HTTP endpoints: link-api port 9100, link-rpc port 9101.
 - Unit tests for `AnalyticsMiddleware`, `IPRateLimitMiddleware`, `LoginRateLimitMiddleware` using interface stubs and `go.uber.org/goleak`.
-
-Remaining:
-
-- Integration tests (deferred; require live MySQL + Redis).
+- Full-stack integration tests in `tests/integration/` covering health, auth, link CRUD, redirect (active/missing/disabled/expired), and analytics (RecordVisit + GetLinkStats polling). Services started as OS subprocesses by `TestMain`; run via `make test-e2e`.
 
 ## Next Handoff
 

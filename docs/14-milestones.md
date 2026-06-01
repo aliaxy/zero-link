@@ -173,7 +173,7 @@ Risks:
 
 Goal: make the service diagnosable and safer.
 
-Status: in progress.
+Status: complete.
 
 Completed:
 
@@ -184,10 +184,7 @@ Completed:
 - Prometheus business metrics: `zerolink_redirect_requests_total{result}` and `zerolink_analytics_events_total{result}`.
 - Prometheus `/metrics` endpoints on ports 9100 (link-api) and 9101 (link-rpc).
 - Unit tests for `AnalyticsMiddleware`, `IPRateLimitMiddleware`, `LoginRateLimitMiddleware`.
-
-Remaining:
-
-- Integration tests (deferred, require live MySQL + Redis).
+- Full-stack integration tests in `tests/integration/` run via `make test-e2e`.
 
 Outputs:
 

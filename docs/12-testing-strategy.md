@@ -45,6 +45,35 @@ Deferred unit areas:
 
 - Admin UI behavior.
 
+## Full-Stack Integration Tests
+
+Full-stack integration tests live under `tests/integration/` and exercise the complete HTTP → link-api → link-rpc → MySQL/Redis chain. They are guarded by `//go:build integration` and run with:
+
+```bash
+make test-e2e
+```
+
+Prerequisites: `make infra-up && make migrate-up`.
+
+`TestMain` starts both services as OS subprocesses (`go run ./services/link-rpc` and `go run ./services/link-api`) on dynamically allocated ports, waits for readiness, then runs all tests in the package. On teardown the subprocess tree is killed via process group (`Setpgid + SIGKILL`) to prevent pipe-close hangs.
+
+Implemented scenarios:
+
+- `GET /healthz` and `GET /readyz` return `{status:"ok"}`.
+- `POST /admin/login` succeeds with the migration-seeded admin and returns a JWT.
+- `POST /admin/login` returns 401 with `UNAUTHENTICATED` code on wrong password.
+- `GET /admin/profile` returns the authenticated admin's username.
+- All seven management endpoints return 401 without a token.
+- Link full CRUD: create → list (link appears) → get (fields match) → update (new URL and title) → delete (deleted=true).
+- `GET /admin/links/999999999` returns 404.
+- `GET /{code}` on an active link returns 302 with correct `Location`.
+- `GET /{code}` on a missing code returns 404.
+- `GET /{code}` on a disabled link returns 403.
+- `GET /{code}` on an expired link returns 410. Expiry is set via DB `UPDATE` because `ValidateExpireAt` rejects past timestamps through the API.
+- `RecordVisit` + `GetLinkStats`: redirect fires the analytics goroutine; test polls `/admin/links/:id/stats` up to 8 s until `pv ≥ 1`.
+- Multiple redirects: poll up to 10 s until `pv ≥ 3`.
+- New link with no redirects returns an empty `items` array from stats.
+
 Use table-driven tests with named subtests.
 
 ## Integration Tests
@@ -80,7 +109,7 @@ Required Stage 3 scenarios:
 
 Deferred integration scenarios:
 
-- Exercise management UI workflows.
+- Exercise management UI workflows (deferred to a future stage).
 
 ## End-To-End Smoke Tests
 
