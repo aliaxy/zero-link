@@ -7,7 +7,7 @@ MIGRATE ?= migrate
 -include .env.local
 export
 
-.PHONY: infra-up infra-down migrate-up migrate-down run-api run-rpc test test-integration lint fmt install-hooks web-install web-dev web-build web-preview
+.PHONY: infra-up infra-down migrate-up migrate-down run-api run-rpc test test-integration test-e2e lint fmt install-hooks web-install web-dev web-build web-preview
 
 infra-up:
 	$(DOCKER_COMPOSE) -f $(INFRA_COMPOSE) up -d
@@ -48,6 +48,9 @@ test-integration:
 	else \
 		echo "No Go integration packages yet; skeleton foundation is ready."; \
 	fi
+
+test-e2e:
+	$(GO_ENV) $(GO) test -tags=integration -v -timeout 120s ./tests/integration/...
 
 lint:
 	GOCACHE=$(CURDIR)/.cache/go-build GOLANGCI_LINT_CACHE=$(CURDIR)/.cache/golangci-lint golangci-lint run ./...
