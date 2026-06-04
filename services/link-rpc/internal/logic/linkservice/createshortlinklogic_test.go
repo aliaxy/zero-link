@@ -170,6 +170,34 @@ func TestCreateShortLink_GeneratedCode(t *testing.T) {
 	}
 }
 
+// fakeReservedCodeModel is a test double for model.ReservedCodeModel.
+type fakeReservedCodeModel struct {
+	model.ReservedCodeModel
+	exists bool
+	err    error
+}
+
+func (f fakeReservedCodeModel) Exists(_ context.Context, _ string) (bool, error) {
+	return f.exists, f.err
+}
+
+func TestCreateShortLink_ReservedCode_Conflict(t *testing.T) {
+	t.Parallel()
+	// Code absent from short_link but present in reserved_code → AlreadyExists.
+	m := &fakeCreateModel{findByCodeErr: model.ErrNotFound}
+	logic := NewCreateShortLinkLogic(context.Background(), &svc.ServiceContext{
+		ShortLinkModel:    m,
+		ReservedCodeModel: fakeReservedCodeModel{exists: true},
+	})
+	_, err := logic.CreateShortLink(&linkv1.CreateShortLinkRequest{
+		OriginUrl: "https://example.com",
+		Code:      "mycode",
+	})
+	if status.Code(err) != codes.AlreadyExists {
+		t.Fatalf("want AlreadyExists for reserved code, got %v", err)
+	}
+}
+
 func TestCreateShortLink_ModelInsertError(t *testing.T) {
 	t.Parallel()
 	m := &fakeCreateModel{

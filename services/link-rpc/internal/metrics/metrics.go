@@ -20,3 +20,21 @@ var AnalyticsEventsTotal = metric.NewCounterVec(&metric.CounterVecOpts{
 	Help:      "Total visit recording events by outcome.",
 	Labels:    []string{"result"},
 })
+
+// FilterRequestsTotal counts cuckoo filter lookups by outcome label (hit/miss).
+var FilterRequestsTotal = metric.NewCounterVec(&metric.CounterVecOpts{
+	Namespace: "zerolink",
+	Subsystem: "filter",
+	Name:      "requests_total",
+	Help:      "Total cuckoo filter lookups by outcome.",
+	Labels:    []string{"result"},
+})
+
+// CleanupDeletedRowsTotal counts rows deleted by the retention cleanup runner by table label.
+var CleanupDeletedRowsTotal = metric.NewCounterVec(&metric.CounterVecOpts{
+	Namespace: "zerolink",
+	Subsystem: "cleanup",
+	Name:      "deleted_rows_total",
+	Help:      "Total rows deleted by the retention cleanup runner.",
+	Labels:    []string{"table"},
+})
