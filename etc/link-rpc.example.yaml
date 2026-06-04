@@ -26,3 +26,12 @@ Middlewares:
   Trace: false
   Prometheus: true
   Metrics: false
+
+Retention:
+  VisitEventRetentionDays: 90
+  ShortLinkRetentionDays: 365
+  DailyStatRetentionDays: 730
+  CleanupBatchSize: 1000
+
+Cuckoo:
+  Capacity: 1000000

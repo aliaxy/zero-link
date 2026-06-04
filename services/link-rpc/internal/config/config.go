@@ -30,10 +30,25 @@ type AnalyticsConfig struct {
 	IPSalt string
 }
 
+// RetentionConfig controls data lifecycle cleanup behaviour.
+type RetentionConfig struct {
+	VisitEventRetentionDays int
+	ShortLinkRetentionDays  int
+	DailyStatRetentionDays  int
+	CleanupBatchSize        int
+}
+
+// CuckooConfig controls the in-process cuckoo filter for cache penetration defence.
+type CuckooConfig struct {
+	Capacity uint
+}
+
 // Config contains the RPC server and dependency settings.
 type Config struct {
 	zrpc.RpcServerConf
 	Dependencies DependenciesConfig
 	CacheRedis   cache.CacheConf
 	Analytics    AnalyticsConfig
+	Retention    RetentionConfig
+	Cuckoo       CuckooConfig
 }

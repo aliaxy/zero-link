@@ -49,6 +49,16 @@ func (l *CreateShortLinkLogic) CreateShortLink(
 		} else if !errors.Is(err, model.ErrNotFound) {
 			return nil, rpcError(err)
 		}
+		// Code absent from short_link — also check reserved_code to prevent reuse of archived codes.
+		if l.svcCtx.ReservedCodeModel != nil {
+			reserved, err := l.svcCtx.ReservedCodeModel.Exists(l.ctx, code)
+			if err != nil {
+				return nil, rpcError(err)
+			}
+			if reserved {
+				return nil, rpcError(domain.ErrConflict)
+			}
+		}
 	}
 	if code == "" {
 		generated, err := domain.GenerateCode()
@@ -84,6 +94,18 @@ func (l *CreateShortLinkLogic) CreateShortLink(
 	link, err := l.svcCtx.ShortLinkModel.FindOneNotDeleted(l.ctx, id)
 	if err != nil {
 		return nil, rpcError(modelError(err))
+	}
+
+	// Update local filter and notify other instances via pub/sub.
+	if l.svcCtx.CodeFilter != nil {
+		l.svcCtx.CodeFilter.Insert(link.Code)
+	}
+	if l.svcCtx.Redis != nil {
+		if _, err := l.svcCtx.Redis.PublishCtx(l.ctx, "zl:code:created", link.Code); err != nil {
+			// Non-fatal: other instances temporarily miss this code but fall through to DB correctly.
+			l.Errorw("create: publish code failed",
+				logx.Field("code", link.Code), logx.Field("error", err.Error()))
+		}
 	}
 
 	return &linkv1.CreateShortLinkResponse{
