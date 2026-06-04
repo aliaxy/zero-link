@@ -33,6 +33,18 @@ func NewResolveShortLinkLogic(ctx context.Context, svcCtx *svc.ServiceContext) *
 func (l *ResolveShortLinkLogic) ResolveShortLink(
 	in *linkv1.ResolveShortLinkRequest,
 ) (*linkv1.ResolveShortLinkResponse, error) {
+	// Fast path: cuckoo filter definitively says code does not exist — skip Redis and DB.
+	// go-zero's internal singleflight already covers cache breakdown; this handles penetration.
+	if l.svcCtx.CodeFilter != nil {
+		if !l.svcCtx.CodeFilter.Lookup(in.Code) {
+			l.Infow("resolve miss", logx.Field("code", in.Code), logx.Field("result", "miss"))
+			metrics.FilterRequestsTotal.Inc("miss")
+			metrics.RedirectRequestsTotal.Inc("miss")
+			return nil, rpcError(domain.ErrNotFound)
+		}
+		metrics.FilterRequestsTotal.Inc("hit")
+	}
+
 	link, err := l.svcCtx.ShortLinkModel.FindOneByCode(l.ctx, in.Code)
 	if err != nil {
 		if err == model.ErrNotFound {
