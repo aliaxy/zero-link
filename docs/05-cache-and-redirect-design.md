@@ -8,6 +8,7 @@
 - `rl:redirect:ip:{ip}`: per-IP redirect rate counter (go-zero `PeriodLimit`, 20 req/s window).
 - `rl:login:ip:{ip}`: per-IP login rate counter (go-zero `PeriodLimit`, 10 req/min window).
 - `uv:{link_id}:{date}`: optional UV de-duplication set or bitmap.
+- `zl:code:created` (Pub/Sub channel): published by `link-rpc` after every successful short-link creation; subscribers update their local cuckoo filter.
 
 The `cache:shortLink:*` keys are managed by the go-zero goctl cached model. `FindOneByCode` uses a
 two-level index cache (code → id → full row). `Update` and `Delete` invalidate both keys automatically.
@@ -66,3 +67,35 @@ best effort; if Redis deletion fails the operation still returns success to the 
 ## Performance Boundary
 
 The redirect path must do the minimum work needed to decide the redirect result. Heavy analytics parsing, geographic lookup, and aggregation run outside the synchronous redirect path.
+
+## Cache Penetration Defence
+
+Cache penetration occurs when repeated requests for non-existent codes hit Redis and MySQL on every request. `ResolveShortLink` defends against this with an in-process cuckoo filter.
+
+### Cuckoo Filter
+
+The filter lives in `services/link-rpc/pkg/filter` and is loaded at startup:
+
+1. Subscribe to `zl:code:created` before the batch read to close the race window.
+2. Batch-read all `code` values from `short_link` (including soft-deleted rows, which still occupy the unique index).
+3. Insert each code into the filter.
+
+On `ResolveShortLink`, the filter is checked before any Redis or MySQL access:
+
+- **Filter miss** (definitive non-existence): return `NotFound` immediately without touching Redis or DB. Increments `zerolink_filter_requests_total{result="miss"}`.
+- **Filter hit** (probable existence): proceed to the normal Redis → MySQL path. Increments `zerolink_filter_requests_total{result="hit"}`.
+
+Cuckoo filters have a small false-positive rate (a hit does not guarantee existence) but zero false negatives, making them safe for this use case.
+
+### Multi-Instance Synchronisation
+
+Multiple `link-rpc` instances each hold an independent in-process filter. When `CreateShortLink` succeeds, the creating instance:
+
+1. Inserts the new code into its own filter.
+2. Publishes the code to the `zl:code:created` Redis Pub/Sub channel.
+
+Each instance runs a subscription goroutine that inserts published codes into its local filter. A failed publish is non-fatal: the other instances' filters miss the new code temporarily, and those requests fall through to the normal Redis → MySQL path correctly.
+
+### Cache Breakdown
+
+Cache breakdown (many concurrent requests for the same valid code on a cache miss) is already handled by go-zero's internal `syncx.SingleFlight` inside `QueryRowIndexCtx`. No additional fix is needed.

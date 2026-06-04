@@ -116,6 +116,67 @@ Notes:
 
 ## Consistency Strategy
 
+## Stage 8 Data Lifecycle Tables
+
+Stage 8 adds two tables under `migrations/000003_data_retention` to support data retention and code reuse prevention.
+
+### short_link_archive
+
+Purpose: permanent archive of soft-deleted short-link rows after they exceed the retention window (default 365 days).
+
+Columns:
+
+- `id BIGINT NOT NULL` — preserves the original `short_link.id`; not auto-increment.
+- `code VARCHAR(32) NOT NULL`
+- `origin_url TEXT NOT NULL`
+- `title VARCHAR(255) NOT NULL DEFAULT ''`
+- `description VARCHAR(1024) NOT NULL DEFAULT ''`
+- `status TINYINT NOT NULL`
+- `expire_at DATETIME NULL`
+- `created_by BIGINT NOT NULL`
+- `created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP`
+- `updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`
+- `deleted_at DATETIME NULL`
+
+Indexes:
+
+- `KEY idx_sla_code (code)`.
+- `KEY idx_sla_deleted_at (deleted_at)`.
+
+Notes:
+
+- No `UNIQUE KEY` on `code` and no foreign keys. `INSERT IGNORE` ensures idempotency on crash-restart.
+- Preserves original identity: `id` equals the original `short_link.id`.
+
+### reserved_code
+
+Purpose: permanently reserve codes after archival so they can never be reassigned.
+
+Columns:
+
+- `code VARCHAR(32) NOT NULL` — primary key.
+- `reserved_at DATETIME NOT NULL`.
+
+Notes:
+
+- Primary key on `code` provides O(1) lookup.
+- Written during the archival step: after a row is moved from `short_link` to `short_link_archive`, its code is inserted here with `INSERT IGNORE`.
+- `CreateShortLink` checks this table for custom codes before allowing creation.
+
+## Data Retention Policy
+
+The cleanup runner in `services/link-rpc/internal/cleanup/` executes once on startup and then every 24 hours. Retention windows and batch sizes are controlled by `Retention.*` config fields (with zero-value defaults applied in `NewServiceContext`):
+
+| Data | Default retention | Cleanup action |
+|------|-------------------|----------------|
+| `visit_event` | 90 days | Batch DELETE by `visited_at` |
+| `short_link` (soft-deleted) | 365 days | INSERT IGNORE to archive → INSERT IGNORE to reserved_code → DELETE |
+| `link_daily_stat` | 730 days | Batch DELETE by `stat_date` |
+
+Batch deletes use `LIMIT CleanupBatchSize` (default 1000) in a loop to avoid long-running table locks. The archival step is idempotent: crash-restart safety is provided by `INSERT IGNORE` at each step rather than a transaction.
+
+## Consistency Strategy
+
 ### Create Short Link
 
 1. Validate input.

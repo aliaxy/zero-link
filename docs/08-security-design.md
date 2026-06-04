@@ -51,6 +51,7 @@
 - Client IP is extracted from `X-Forwarded-For` (first value) with fallback to `RemoteAddr`; trust only when a reverse proxy is present.
 - Consider bot detection later if analytics quality becomes important.
 - Avoid negative-cache poisoning by keeping missing-link caches short if introduced.
+- Short codes are permanently reserved in `reserved_code` after archival. `CreateShortLink` checks this table before allowing a custom code, preventing an attacker from claiming a previously popular short code after its original link has been archived and hard-deleted.
 
 ## Logging Safety
 

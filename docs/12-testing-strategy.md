@@ -41,6 +41,13 @@ Implemented unit areas (Stage 7):
 - `AnalyticsMiddleware`: 302 triggers `RecordVisit`, 404/403 do not. Uses `goleak.VerifyTestMain` to detect goroutine leaks.
 - `ExtractClientIP`: XFF header (first IP from comma-separated list), RemoteAddr fallback.
 
+Implemented unit areas (Stage 8):
+
+- `pkg/filter/cuckoo_test.go`: filter returns false before insert, true after insert, and passes `-race` on concurrent insert and lookup.
+- `cleanup/runner_test.go`: `TestRunner_StartCancellation` verifies the background goroutine exits cleanly when context is cancelled. Uses `goleak.VerifyTestMain(m, goleak.IgnoreCurrent())` to detect leaks against go-zero framework goroutines.
+- `linkservice/createshortlinklogic_test.go`: `TestCreateShortLink_ReservedCode_Conflict` verifies that a code absent from `short_link` but present in `reserved_code` returns `AlreadyExists`.
+- `linkservice/resolveshortlinklogic_test.go`: `TestResolveShortLink_FilterMiss_SkipsDB` verifies that an empty filter returns `NotFound` without reaching the model. `TestResolveShortLink_FilterHit_ProceedsToModel` verifies that a filter containing the code proceeds to the model and returns the origin URL.
+
 Deferred unit areas:
 
 - Admin UI behavior.

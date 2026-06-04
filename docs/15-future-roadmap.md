@@ -66,4 +66,5 @@
 - Introduce etcd for go-zero service discovery when multi-instance RPC deployment is needed.
 - Split analytics into a separate service when event volume grows.
 - Add a dedicated frontend deployment if the management UI grows beyond a simple embedded admin.
-- Add read replicas or caching improvements if MySQL read load becomes a bottleneck.
+- Add read replicas if MySQL read load becomes a bottleneck.
+- Persist the cuckoo filter to disk or Redis on shutdown and restore on startup to avoid a cold-load period after restarts.

@@ -43,6 +43,12 @@ Implemented structured log points:
 | link-rpc | `authenticateadminlogic.go` | authenticate failed | username |
 | link-rpc | `authenticateadminlogic.go` | authenticate success | admin_id, username |
 | link-rpc | `recordvisitlogic.go` | upsert daily stat failed | link_id, code, stat_date, error |
+| link-rpc | `resolveshortlinklogic.go` | filter miss (code not in cuckoo filter) | code, result=miss |
+| link-rpc | `createshortlinklogic.go` | pub/sub publish failed | code, error |
+| link-rpc | `cleanup/runner.go` | retention run start/complete | — |
+| link-rpc | `cleanup/visitevents.go` | visit_event batch delete failed | error |
+| link-rpc | `cleanup/shortlinks.go` | archive link failed | id, code, error |
+| link-rpc | `cleanup/dailystats.go` | link_daily_stat batch delete failed | error |
 
 ## Metrics
 
@@ -50,6 +56,8 @@ Implemented business metrics (in `services/link-rpc/internal/metrics/`):
 
 - `zerolink_redirect_requests_total{result}` — result values: hit, miss, disabled, expired, error.
 - `zerolink_analytics_events_total{result}` — result values: success, error.
+- `zerolink_filter_requests_total{result}` — cuckoo filter lookup outcomes; result values: hit, miss.
+- `zerolink_cleanup_deleted_rows_total{table}` — rows deleted by the retention cleanup runner; table values: visit_event, short_link, link_daily_stat.
 
 Prometheus HTTP endpoints:
 
