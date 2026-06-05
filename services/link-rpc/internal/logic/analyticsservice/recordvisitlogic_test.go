@@ -36,19 +36,29 @@ func activeLink() *model.ShortLink {
 
 type fakeVisitEventModel struct {
 	model.VisitEventModel
-	Err error
+	Err                error
+	AlreadyVisited     bool
+	HasVisitedTodayErr error
 }
 
 func (f fakeVisitEventModel) Insert(_ context.Context, _ *model.VisitEvent) (sql.Result, error) {
 	return nil, f.Err
 }
 
-type fakeDailyStatModel struct {
-	model.LinkDailyStatModel
-	UpsertErr error
+func (f fakeVisitEventModel) HasVisitedToday(_ context.Context, _ int64, _, _ string) (bool, error) {
+	return f.AlreadyVisited, f.HasVisitedTodayErr
 }
 
-func (f fakeDailyStatModel) UpsertPV(_ context.Context, _ int64, _ string) error {
+type fakeDailyStatModel struct {
+	model.LinkDailyStatModel
+	UpsertErr    error
+	capturedIsUV *bool
+}
+
+func (f *fakeDailyStatModel) UpsertStats(_ context.Context, _ int64, _ string, isNewUV bool) error {
+	if f.capturedIsUV != nil {
+		*f.capturedIsUV = isNewUV
+	}
 	return f.UpsertErr
 }
 
@@ -67,7 +77,7 @@ func TestRecordVisit_Success(t *testing.T) {
 	logic := newRecordVisitLogic(
 		FakeShortLinkModel{Link: activeLink()},
 		fakeVisitEventModel{},
-		fakeDailyStatModel{},
+		&fakeDailyStatModel{},
 	)
 	_, err := logic.RecordVisit(&linkv1.RecordVisitRequest{
 		Code:      "abc123",
@@ -84,7 +94,7 @@ func TestRecordVisit_LinkNotFound(t *testing.T) {
 	logic := newRecordVisitLogic(
 		FakeShortLinkModel{Err: model.ErrNotFound},
 		fakeVisitEventModel{},
-		fakeDailyStatModel{},
+		&fakeDailyStatModel{},
 	)
 	resp, err := logic.RecordVisit(&linkv1.RecordVisitRequest{Code: "missing"})
 	if err != nil {
@@ -99,7 +109,7 @@ func TestRecordVisit_InsertFails(t *testing.T) {
 	logic := newRecordVisitLogic(
 		FakeShortLinkModel{Link: activeLink()},
 		fakeVisitEventModel{Err: errors.New("db error")},
-		fakeDailyStatModel{},
+		&fakeDailyStatModel{},
 	)
 	_, err := logic.RecordVisit(&linkv1.RecordVisitRequest{
 		Code: "abc123",
@@ -110,17 +120,71 @@ func TestRecordVisit_InsertFails(t *testing.T) {
 	}
 }
 
-func TestRecordVisit_UpsertPVFails_StillSucceeds(t *testing.T) {
+func TestRecordVisit_UpsertStatsFails_StillSucceeds(t *testing.T) {
 	logic := newRecordVisitLogic(
 		FakeShortLinkModel{Link: activeLink()},
 		fakeVisitEventModel{},
-		fakeDailyStatModel{UpsertErr: errors.New("stat error")},
+		&fakeDailyStatModel{UpsertErr: errors.New("stat error")},
 	)
 	_, err := logic.RecordVisit(&linkv1.RecordVisitRequest{
 		Code: "abc123",
 		Ip:   "1.2.3.4",
 	})
 	if err != nil {
-		t.Fatalf("UpsertPV failure should not propagate, got %v", err)
+		t.Fatalf("UpsertStats failure should not propagate, got %v", err)
+	}
+}
+
+func TestRecordVisit_NewVisitor_UpsertWithIsNewUVTrue(t *testing.T) {
+	var gotIsNewUV bool
+	stat := &fakeDailyStatModel{capturedIsUV: &gotIsNewUV}
+	logic := newRecordVisitLogic(
+		FakeShortLinkModel{Link: activeLink()},
+		fakeVisitEventModel{AlreadyVisited: false}, // first visit today
+		stat,
+	)
+	if _, err := logic.RecordVisit(&linkv1.RecordVisitRequest{
+		Code: "abc123", Ip: "1.2.3.4",
+	}); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if !gotIsNewUV {
+		t.Fatal("isNewUV should be true for a first-time visitor today")
+	}
+}
+
+func TestRecordVisit_ReturningVisitor_UpsertWithIsNewUVFalse(t *testing.T) {
+	var gotIsNewUV bool
+	stat := &fakeDailyStatModel{capturedIsUV: &gotIsNewUV}
+	logic := newRecordVisitLogic(
+		FakeShortLinkModel{Link: activeLink()},
+		fakeVisitEventModel{AlreadyVisited: true}, // already visited today
+		stat,
+	)
+	if _, err := logic.RecordVisit(&linkv1.RecordVisitRequest{
+		Code: "abc123", Ip: "1.2.3.4",
+	}); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if gotIsNewUV {
+		t.Fatal("isNewUV should be false for a returning visitor today")
+	}
+}
+
+func TestRecordVisit_HasVisitedTodayError_UpsertWithIsNewUVFalse(t *testing.T) {
+	var gotIsNewUV bool
+	stat := &fakeDailyStatModel{capturedIsUV: &gotIsNewUV}
+	logic := newRecordVisitLogic(
+		FakeShortLinkModel{Link: activeLink()},
+		fakeVisitEventModel{HasVisitedTodayErr: errors.New("db down")}, // query fails
+		stat,
+	)
+	if _, err := logic.RecordVisit(&linkv1.RecordVisitRequest{
+		Code: "abc123", Ip: "1.2.3.4",
+	}); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if gotIsNewUV {
+		t.Fatal("isNewUV should be false when HasVisitedToday errors (conservative fallback)")
 	}
 }

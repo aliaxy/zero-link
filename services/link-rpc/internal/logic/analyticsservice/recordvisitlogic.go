@@ -45,11 +45,23 @@ func (l *RecordVisitLogic) RecordVisit(in *linkv1.RecordVisitRequest) (*linkv1.R
 		return nil, rpcerror.ToRPC(err)
 	}
 
+	ipHash := hashIP(in.Ip, l.svcCtx.Config.Analytics.IPSalt)
+	statDate := visitedAt.UTC().Format(dateFormat)
+
+	alreadyVisited, err := l.svcCtx.VisitEventModel.HasVisitedToday(l.ctx, link.Id, ipHash, statDate)
+	if err != nil {
+		l.Errorw("check uv failed, defaulting to no-uv",
+			logx.Field("link_id", link.Id),
+			logx.Field("error", err.Error()),
+		)
+		alreadyVisited = true
+	}
+
 	event := &model.VisitEvent{
 		LinkId:    link.Id,
 		Code:      in.Code,
 		VisitedAt: visitedAt,
-		IpHash:    hashIP(in.Ip, l.svcCtx.Config.Analytics.IPSalt),
+		IpHash:    ipHash,
 		UserAgent: in.UserAgent,
 		Referer:   in.Referer,
 		Device:    detectDevice(in.UserAgent),
@@ -58,8 +70,7 @@ func (l *RecordVisitLogic) RecordVisit(in *linkv1.RecordVisitRequest) (*linkv1.R
 		return nil, rpcerror.ToRPC(err)
 	}
 
-	statDate := visitedAt.UTC().Format(dateFormat)
-	if err := l.svcCtx.DailyStatModel.UpsertPV(l.ctx, link.Id, statDate); err != nil {
+	if err := l.svcCtx.DailyStatModel.UpsertStats(l.ctx, link.Id, statDate, !alreadyVisited); err != nil {
 		l.Errorw("upsert daily stat failed",
 			logx.Field("link_id", link.Id),
 			logx.Field("code", in.Code),

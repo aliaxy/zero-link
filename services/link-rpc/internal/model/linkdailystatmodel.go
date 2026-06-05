@@ -16,7 +16,7 @@ type (
 	LinkDailyStatModel interface {
 		linkDailyStatModel
 		withSession(session sqlx.Session) LinkDailyStatModel
-		UpsertPV(ctx context.Context, linkID int64, statDate string) error
+		UpsertStats(ctx context.Context, linkID int64, statDate string, isNewUV bool) error
 		FindByLinkIDAndDateRange(ctx context.Context, linkID int64, from, to time.Time) ([]*LinkDailyStat, error)
 	}
 
@@ -36,11 +36,19 @@ func (m *customLinkDailyStatModel) withSession(session sqlx.Session) LinkDailySt
 	return NewLinkDailyStatModel(sqlx.NewSqlConnFromSession(session))
 }
 
-func (m *customLinkDailyStatModel) UpsertPV(ctx context.Context, linkID int64, statDate string) error {
-	query := fmt.Sprintf(
-		"insert into %s (`link_id`, `stat_date`, `pv`, `uv`) values (?, ?, 1, 1) on duplicate key update `pv` = `pv` + 1",
-		m.table,
-	)
+func (m *customLinkDailyStatModel) UpsertStats(ctx context.Context, linkID int64, statDate string, isNewUV bool) error {
+	var query string
+	if isNewUV {
+		query = fmt.Sprintf(
+			"insert into %s (`link_id`, `stat_date`, `pv`, `uv`) values (?, ?, 1, 1) on duplicate key update `pv` = `pv` + 1, `uv` = `uv` + 1",
+			m.table,
+		)
+	} else {
+		query = fmt.Sprintf(
+			"insert into %s (`link_id`, `stat_date`, `pv`, `uv`) values (?, ?, 1, 0) on duplicate key update `pv` = `pv` + 1",
+			m.table,
+		)
+	}
 	_, err := m.conn.ExecCtx(ctx, query, linkID, statDate)
 	return err
 }
