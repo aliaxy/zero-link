@@ -25,3 +25,5 @@ web/admin/build/
 # IDE
 .idea/
 .vscode/
+
+.claude/

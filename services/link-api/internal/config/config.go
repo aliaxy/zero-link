@@ -12,8 +12,8 @@ import (
 
 // AuthConfig contains management JWT settings.
 type AuthConfig struct {
-	Secret          string
-	TokenTTLSeconds int64
+	Secret          string `json:"Secret" validate:"required,min=32"`
+	TokenTTLSeconds int64  `json:"TokenTTLSeconds" validate:"required,gt=0"`
 }
 
 // CorsConfig holds allowed origins for cross-origin requests.
@@ -23,8 +23,8 @@ type CorsConfig struct {
 
 // RateLimitConfig holds per-route rate limit quotas.
 type RateLimitConfig struct {
-	RedirectPerIPPerSecond int      `json:",default=20"`
-	LoginPerIPPerMinute    int      `json:",default=10"`
+	RedirectPerIPPerSecond int      `json:",default=20" validate:"gt=0"`
+	LoginPerIPPerMinute    int      `json:",default=10" validate:"gt=0"`
 	TrustedProxies         []string `json:",optional"`
 }
 

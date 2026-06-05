@@ -13,6 +13,7 @@ import (
 	"github.com/aliaxy/zero-link/services/link-api/internal/handler"
 	"github.com/aliaxy/zero-link/services/link-api/internal/middleware"
 	"github.com/aliaxy/zero-link/services/link-api/internal/svc"
+	"github.com/aliaxy/zero-link/services/link-api/pkg/configvalidator"
 
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/rest"
@@ -26,6 +27,7 @@ func main() {
 
 	var c config.Config
 	conf.MustLoad(*configFile, &c)
+	configvalidator.MustValidate(c)
 	httpx.SetErrorHandlerCtx(apierror.ErrorHandler)
 
 	server := rest.MustNewServer(c.RestConf)

@@ -3,8 +3,10 @@ package apierror
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"net/http"
+	"strings"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -22,6 +24,12 @@ func ErrorHandler(ctx context.Context, err error) (int, any) {
 
 	if st, ok := status.FromError(err); ok {
 		return grpcError(st)
+	}
+	if isParseError(err) {
+		return http.StatusBadRequest, ErrorEnvelope{
+			Code:    "BAD_REQUEST",
+			Message: "invalid request parameters",
+		}
 	}
 	if errors.Is(err, ErrUnauthenticated) {
 		return http.StatusUnauthorized, ErrorEnvelope{
@@ -65,6 +73,19 @@ func FromRPCError(err error) error {
 	return err
 }
 
+// isParseError reports whether err originates from go-zero's httpx.Parse:
+// missing required fields ("is not set") or malformed JSON bodies.
+func isParseError(err error) bool {
+	var syntaxErr *json.SyntaxError
+	if errors.As(err, &syntaxErr) {
+		return true
+	}
+	msg := err.Error()
+	return strings.Contains(msg, " is not set") ||
+		strings.Contains(msg, "type mismatch") ||
+		strings.Contains(msg, "out of range")
+}
+
 func grpcError(st *status.Status) (int, ErrorEnvelope) {
 	switch st.Code() {
 	case codes.InvalidArgument:
@@ -79,6 +100,8 @@ func grpcError(st *status.Status) (int, ErrorEnvelope) {
 		return http.StatusConflict, ErrorEnvelope{Code: "CONFLICT", Message: st.Message()}
 	case codes.FailedPrecondition:
 		return http.StatusGone, ErrorEnvelope{Code: "GONE", Message: st.Message()}
+	case codes.Unavailable:
+		return http.StatusServiceUnavailable, ErrorEnvelope{Code: "SERVICE_UNAVAILABLE", Message: "service temporarily unavailable"}
 	default:
 		return http.StatusInternalServerError, ErrorEnvelope{Code: "INTERNAL", Message: "internal error"}
 	}

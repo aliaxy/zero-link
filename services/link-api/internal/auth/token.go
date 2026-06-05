@@ -10,8 +10,6 @@ import (
 )
 
 var (
-	// ErrInvalidConfig reports missing or invalid token configuration.
-	ErrInvalidConfig = errors.New("invalid auth config")
 	// ErrInvalidToken reports an invalid, expired, or malformed management token.
 	ErrInvalidToken = errors.New("invalid token")
 )
@@ -58,10 +56,6 @@ func NewTokenManager(c Config) *TokenManager {
 
 // Create signs a JWT for the given administrator subject.
 func (m *TokenManager) Create(subject AdminSubject) (string, time.Time, error) {
-	if err := m.validateConfig(); err != nil {
-		return "", time.Time{}, err
-	}
-
 	now := m.now().UTC()
 	expiresAt := now.Add(m.ttl)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims{
@@ -83,9 +77,6 @@ func (m *TokenManager) Create(subject AdminSubject) (string, time.Time, error) {
 
 // Validate verifies a JWT and returns its administrator subject.
 func (m *TokenManager) Validate(rawToken string) (AdminSubject, error) {
-	if err := m.validateConfig(); err != nil {
-		return AdminSubject{}, err
-	}
 	if rawToken == "" {
 		return AdminSubject{}, ErrInvalidToken
 	}
@@ -115,9 +106,3 @@ func (m *TokenManager) Validate(rawToken string) (AdminSubject, error) {
 	}, nil
 }
 
-func (m *TokenManager) validateConfig() error {
-	if len(m.secret) < 32 || m.ttl <= 0 {
-		return ErrInvalidConfig
-	}
-	return nil
-}

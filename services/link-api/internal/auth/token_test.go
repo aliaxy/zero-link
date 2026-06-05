@@ -89,35 +89,3 @@ func TestTokenManager_ValidateRejectsWrongSecret(t *testing.T) {
 	}
 }
 
-func TestTokenManager_CreateRejectsInvalidConfig(t *testing.T) {
-	tests := []struct {
-		name   string
-		config Config
-	}{
-		{
-			name: "missing secret",
-			config: Config{
-				TokenTTLSeconds: 3600,
-			},
-		},
-		{
-			name: "missing ttl",
-			config: Config{
-				Secret: "local-test-secret-for-unit-tests!!!!!",
-			},
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			manager := NewTokenManager(tt.config)
-			_, _, err := manager.Create(AdminSubject{
-				ID:       42,
-				Username: "admin",
-			})
-			if err == nil {
-				t.Fatal("Create() error = nil, want config error")
-			}
-		})
-	}
-}
