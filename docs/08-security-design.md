@@ -16,6 +16,16 @@
 - Tokens must expire.
 - Login failures should return generic messages.
 
+## Startup Config Validation
+
+Service configuration is validated at startup via `go-playground/validator/v10`. Invalid configuration causes an immediate fatal log and process exit rather than allowing the service to run with a misconfigured state.
+
+Enforced constraints:
+
+- `Auth.Secret`: required, minimum 32 bytes. A short secret reduces effective brute-force resistance for HS256 tokens.
+- `Auth.TokenTTLSeconds`: required, greater than zero.
+- `Analytics.IPSalt` (link-rpc): required, non-empty. An absent salt would collapse all IP hashes to the same bucket, removing the pseudonymisation guarantee.
+
 ## Authorization
 
 - All management endpoints require administrator identity.

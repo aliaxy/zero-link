@@ -304,6 +304,25 @@ Completed:
 - `Retention.*` and `Cuckoo.*` config sections with zero-value defaults in `NewServiceContext`.
 - Unit tests: filter (basic + concurrent), runner cancellation, reserved-code conflict, filter miss/hit in resolve.
 
+## Post-Stage-8 Quality Improvements
+
+Completed after Stage 8 without advancing the feature stage boundary.
+
+### Startup Config Validation
+
+- New package `services/link-api/pkg/configvalidator` wraps `go-playground/validator/v10`.
+- `MustValidate(cfg any)` validates struct tags and calls `logx.Severef` on failure — the process exits before serving traffic.
+- Called in both `services/link-api/link.go` and `services/link-rpc/link.go` immediately after `conf.MustLoad`.
+- `Auth.Secret`: `required,min=32`; `Auth.TokenTTLSeconds`: `required,gt=0`; `Analytics.IPSalt`: `required`.
+- All config fields with `validate:` tags also carry an explicit `json:` tag to work around go-zero's `usingDifferentKeys` field-skip behaviour.
+- Removed runtime `validateConfig()` path from `services/link-api/internal/auth/token.go`; the startup check is the single validation point.
+
+### Error Handler Improvements
+
+- go-zero `httpx.Parse` failures (missing required field, type mismatch, malformed JSON body) now return `BAD_REQUEST 400` instead of `INTERNAL 500`. Handled in `apierror.isParseError` by inspecting the error message strings produced by go-zero.
+- gRPC `codes.Unavailable` now maps to `SERVICE_UNAVAILABLE 503` instead of `INTERNAL 500`.
+- See `services/link-api/internal/apierror/error.go` for the full mapping table.
+
 ## Next Handoff
 
 Stage 9 full Docker Compose deployment:
