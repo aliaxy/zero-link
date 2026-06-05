@@ -10,34 +10,42 @@
 
 ## Error Categories
 
-- `INVALID_ARGUMENT`: invalid input such as malformed URL or code.
-- `UNAUTHORIZED`: missing or invalid authentication.
-- `FORBIDDEN`: authenticated but not allowed, or disabled public link.
+Management API JSON error codes (the `code` field in the response envelope):
+
+- `BAD_REQUEST`: request payload could not be parsed (missing required field, type mismatch, malformed JSON). Produced by go-zero's `httpx.Parse` before the RPC call is made.
+- `INVALID_ARGUMENT`: request passed parsing but contains an invalid value (e.g. malformed URL, invalid short code).
+- `UNAUTHENTICATED`: missing or invalid bearer token, or RPC authentication failure.
+- `PERMISSION_DENIED`: authenticated but not allowed, or disabled public link.
 - `NOT_FOUND`: resource does not exist.
 - `CONFLICT`: unique constraint or state conflict.
-- `EXPIRED`: short link has expired.
-- `DISABLED`: short link has been disabled.
-- `DEPENDENCY_UNAVAILABLE`: MySQL, Redis, or RPC unavailable.
+- `GONE`: short link has expired or been disabled.
+- `SERVICE_UNAVAILABLE`: MySQL, Redis, or RPC is not reachable.
 - `INTERNAL`: unexpected server error.
 
 ## HTTP Mapping
 
 Management APIs:
 
+- `BAD_REQUEST`: 400.
 - `INVALID_ARGUMENT`: 400.
-- `UNAUTHORIZED`: 401.
-- `FORBIDDEN`: 403.
+- `UNAUTHENTICATED`: 401.
+- `PERMISSION_DENIED`: 403.
 - `NOT_FOUND`: 404.
 - `CONFLICT`: 409.
-- `DEPENDENCY_UNAVAILABLE`: 503.
+- `GONE`: 410.
+- `SERVICE_UNAVAILABLE`: 503.
 - `INTERNAL`: 500.
 
-Redirect API:
+Redirect API (plain text, no JSON envelope):
 
 - Missing or deleted link: 404.
 - Disabled link: 403.
 - Expired link: 410.
 - Unexpected failure: 500.
+
+## Parse Error Handling
+
+go-zero's `httpx.Parse` runs before logic and produces plain Go errors (not gRPC status errors) when a required JSON field is absent, the value has the wrong type, or the body is malformed. The management API error handler (`apierror.ErrorHandler`) catches these patterns and returns `BAD_REQUEST 400` so the caller is not presented with a generic `INTERNAL 500`.
 
 ## Go Error Handling
 

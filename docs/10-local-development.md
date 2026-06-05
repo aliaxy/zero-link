@@ -67,6 +67,7 @@ Intended local behavior:
 - Migration files live under `migrations/` and use versioned up/down SQL.
 - `000001`: creates `admin_user` and `short_link` (Stage 3).
 - `000002`: creates `visit_event` and `link_daily_stat` (Stage 5).
+- `000003`: creates `short_link_archive` and `reserved_code` (Stage 8).
 - A local/dev seed administrator may be inserted by migration SQL so login can be tested without manual database edits.
 
 Do not run migrations before `make infra-up` has started MySQL.
@@ -87,7 +88,7 @@ Do not run migrations before `make infra-up` has started MySQL.
 10. Access `GET /{code}` and confirm a `302` redirect; check `visit_event` for a recorded row.
 11. Call `GET /admin/links/{id}/stats` and confirm `pv: 1` for today.
 12. Open `http://127.0.0.1:9100/metrics` to verify link-api Prometheus metrics are exported.
-13. Open `http://127.0.0.1:9101/metrics` and confirm `zerolink_redirect_requests_total` and `zerolink_analytics_events_total` are present.
+13. Open `http://127.0.0.1:9101/metrics` and confirm `zerolink_redirect_requests_total`, `zerolink_analytics_events_total`, `zerolink_filter_requests_total`, and `zerolink_cleanup_deleted_rows_total` are present.
 
 ### Full stack with admin UI
 
