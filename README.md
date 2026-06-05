@@ -1,33 +1,15 @@
 # zero-link
 
-zero-link is a go-zero-oriented short-link system. Stages 1–6 are complete. Stage 7 is in progress.
+zero-link is a go-zero-oriented short-link system. Stages 1–8 are complete.
 
-## Current Stage
+## Roadmap
 
-Stage 7 adds observability, security hardening, and testing on top of the Stage 6 admin SPA foundation:
-
-- IP rate limiting on `GET /{code}` (20 req/s per IP) and `POST /admin/login` (10 req/min per IP) via go-zero `PeriodLimit`.
-- Structured logging across `link-api` (login, auth, redirect) and `link-rpc` (resolve, authenticate, analytics) using `logx.Infow` / `logx.Errorw`.
-- Prometheus `/metrics` endpoints: `link-api` on port 9100, `link-rpc` on port 9101.
-- Business metric counters `zerolink_redirect_requests_total{result}` and `zerolink_analytics_events_total{result}`.
-- Unit tests for `AnalyticsMiddleware`, `IPRateLimitMiddleware`, and `LoginRateLimitMiddleware` with goroutine leak detection via `goleak`.
-- `MaxConns: 1000` and `MaxBytes: 1048576` connection protection on `link-api`.
-- Reserved short codes extended to include `metrics` and `static`.
-
-Stage 6 added a Vue 3 + Vite + Element Plus admin SPA:
-
-- MySQL and Redis are provided by `deploy/docker-compose.infra.yml`.
-- `link-api` exposes `GET /healthz`, `GET /readyz`, `GET /{code}` redirect, and management + analytics APIs.
-- `link-rpc` exposes readiness, administrator auth, short-link management, redirect resolution, visit recording, and stats query.
-- Stage 3 migrations create `admin_user` and `short_link`.
-- Stage 5 migrations create `visit_event` and `link_daily_stat`.
-- `GET /{code}` returns 302/404/403/410; `AnalyticsMiddleware` fires a non-blocking `RecordVisit` RPC goroutine on every 302.
-- `GET /admin/links/{id}/stats` returns daily PV/UV for a short link within a date range.
-- Administrator login and profile APIs use JWT-based authentication.
-- Authenticated short-link create, list, detail, update, and soft-delete management APIs are implemented.
-- Admin SPA under `web/admin/` provides login, link management, and analytics views.
-- Local HTTP smoke request assets are available under `tests/httpyac/`.
-- `go.mod` is initialized with `github.com/aliaxy/zero-link`.
+- **CI/CD**: GitHub Actions pipeline for lint, test, and build on pull requests.
+- **Containerisation**: Docker Compose application services for one-command local stack startup.
+- **Kubernetes**: Helm chart or Kustomize manifests for production deployment.
+- **Observability**: Grafana + Prometheus dashboards and alerting rules.
+- **Link QR codes**: Generate and serve QR code images for each short link.
+- **Multi-tenancy**: Per-workspace isolation of links, stats, and administrators.
 
 ## Requirements
 
