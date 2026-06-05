@@ -30,10 +30,10 @@ migrate-down:
 	$(MIGRATE) -path migrations -database "$$ZERO_LINK_MIGRATE_DSN" down 1
 
 run-api:
-	$(GO_ENV) $(GO) run ./services/link-api -f etc/link-api-local.yaml
+	$(GO_ENV) $(GO) run ./services/link-api -f etc/link-api.local.yaml
 
 run-rpc:
-	$(GO_ENV) $(GO) run ./services/link-rpc -f etc/link-rpc-local.yaml
+	$(GO_ENV) $(GO) run ./services/link-rpc -f etc/link-rpc.local.yaml
 
 test:
 	@if find . -name '*.go' -not -path './.direnv/*' -not -path './.cache/*' | grep -q .; then \

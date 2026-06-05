@@ -48,8 +48,8 @@ Create local configuration from the committed examples:
 
 ```bash
 cp .env.example .env.local
-cp etc/link-api.example.yaml etc/link-api-local.yaml
-cp etc/link-rpc.example.yaml etc/link-rpc-local.yaml
+cp etc/link-api.example.yaml etc/link-api.local.yaml
+cp etc/link-rpc.example.yaml etc/link-rpc.local.yaml
 cp web/admin/.env.example web/admin/.env.local
 ```
 

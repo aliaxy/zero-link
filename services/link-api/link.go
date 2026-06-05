@@ -19,7 +19,7 @@ import (
 	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
-var configFile = flag.String("f", "etc/link-api-local.yaml", "the config file")
+var configFile = flag.String("f", "etc/link-api.local.yaml", "the config file")
 
 func main() {
 	flag.Parse()

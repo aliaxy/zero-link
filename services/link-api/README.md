@@ -30,7 +30,7 @@ go-zero HTTP API service for zero-link.
 Copy the example config and edit for local values:
 
 ```bash
-cp etc/link-api.example.yaml etc/link-api-local.yaml
+cp etc/link-api.example.yaml etc/link-api.local.yaml
 ```
 
 Key fields: `Auth.Secret`, `Auth.TokenTTLSeconds`, `Cors.AllowOrigins`, `LinkRPC.Target`.

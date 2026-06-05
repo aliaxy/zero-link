@@ -23,7 +23,7 @@ go-zero gRPC service for zero-link. Owns credential verification, business valid
 Copy the example config and edit for local values:
 
 ```bash
-cp etc/link-rpc.example.yaml etc/link-rpc-local.yaml
+cp etc/link-rpc.example.yaml etc/link-rpc.local.yaml
 ```
 
 Key fields: `DataSource`, `CacheRedis`, `Analytics.IPSalt`.

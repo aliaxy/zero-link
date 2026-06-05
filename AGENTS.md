@@ -69,7 +69,7 @@ explicitly asks for that implementation stage.
 - Use `.env.example` for committed environment variable documentation.
 - Use `.env.local` for machine-local environment values. Do not commit it.
 - Use `etc/<service>.example.yaml` for committed service configuration examples.
-- Use `etc/<service>-local.yaml` for machine-local service configuration. Do not commit it.
+- Use `etc/<service>.local.yaml` for machine-local service configuration. Do not commit it.
 - Keep secrets and machine-specific values in ignored local files only.
 
 ## Go And go-zero Rules

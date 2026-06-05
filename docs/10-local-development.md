@@ -12,9 +12,9 @@ This gives fast rebuilds, easy debugger attachment, and predictable MySQL/Redis 
 - `.env.example`: documents local environment values.
 - `.env.local`: machine-local environment values ignored by Git.
 - `etc/link-api.example.yaml`: committed API service config example.
-- `etc/link-api-local.yaml`: machine-local API service config ignored by Git.
+- `etc/link-api.local.yaml`: machine-local API service config ignored by Git.
 - `etc/link-rpc.example.yaml`: committed RPC service config example.
-- `etc/link-rpc-local.yaml`: machine-local RPC service config ignored by Git.
+- `etc/link-rpc.local.yaml`: machine-local RPC service config ignored by Git.
 - `tests/httpyac/*.http`: local HTTP smoke requests.
 - `tests/httpyac/http-client.example.env.json`: committed httpyac variable example.
 - `tests/httpyac/http-client.private.env.json`: machine-local httpyac variables ignored by Git.
@@ -49,8 +49,8 @@ make web-build
 make web-preview
 ```
 
-`make run-rpc` starts the RPC service with `etc/link-rpc-local.yaml`.
-`make run-api` starts the API service with `etc/link-api-local.yaml`.
+`make run-rpc` starts the RPC service with `etc/link-rpc.local.yaml`.
+`make run-api` starts the API service with `etc/link-api.local.yaml`.
 `make web-install` installs frontend dependencies via pnpm.
 `make web-dev` starts the Vite dev server at `http://localhost:5173`.
 `make web-build` produces a production build under `web/admin/dist/`.
@@ -135,8 +135,8 @@ Create local configuration before running services:
 
 ```bash
 cp .env.example .env.local
-cp etc/link-api.example.yaml etc/link-api-local.yaml
-cp etc/link-rpc.example.yaml etc/link-rpc-local.yaml
+cp etc/link-api.example.yaml etc/link-api.local.yaml
+cp etc/link-rpc.example.yaml etc/link-rpc.local.yaml
 ```
 
 Only edit the local files for machine-specific values.
