@@ -112,7 +112,7 @@ func (f fakeLinkService) DeleteShortLink(
 
 func TestLoginLogic_Login(t *testing.T) {
 	tokenManager := auth.NewTokenManager(auth.Config{
-		Secret:          "local-test-secret",
+		Secret:          "local-test-secret-for-unit-tests!!!!!",
 		TokenTTLSeconds: 3600,
 	})
 	svcCtx := &svc.ServiceContext{

@@ -49,12 +49,12 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		TokenManager:        tokenManager,
 		Redis:               redisClient,
 		AuthMiddleware:      middleware.NewAuthMiddleware(tokenManager).Handle,
-		AnalyticsMiddleware: middleware.NewAnalyticsMiddleware(analyticsRPC).Handle,
+		AnalyticsMiddleware: middleware.NewAnalyticsMiddleware(analyticsRPC, c.RateLimit.TrustedProxies).Handle,
 		IPRateLimitMiddleware: middleware.NewIPRateLimitMiddleware(
-			redisClient, 1, c.RateLimit.RedirectPerIPPerSecond, "rl:redirect:ip:",
+			redisClient, 1, c.RateLimit.RedirectPerIPPerSecond, "rl:redirect:ip:", c.RateLimit.TrustedProxies,
 		).Handle,
 		LoginRateLimitMiddleware: middleware.NewLoginRateLimitMiddleware(
-			redisClient, c.RateLimit.LoginPerIPPerMinute,
+			redisClient, c.RateLimit.LoginPerIPPerMinute, c.RateLimit.TrustedProxies,
 		).Handle,
 		HealthRPC:    healthservice.NewHealthService(rpcClient),
 		AdminRPC:     adminservice.NewAdminService(rpcClient),

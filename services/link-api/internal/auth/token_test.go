@@ -8,7 +8,7 @@ import (
 func TestTokenManager_CreateAndValidate(t *testing.T) {
 	now := time.Date(2026, 5, 27, 12, 0, 0, 0, time.UTC)
 	manager := NewTokenManager(Config{
-		Secret:          "local-test-secret",
+		Secret:          "local-test-secret-for-unit-tests!!!!!",
 		TokenTTLSeconds: 3600,
 		Now:             func() time.Time { return now },
 	})
@@ -41,7 +41,7 @@ func TestTokenManager_CreateAndValidate(t *testing.T) {
 func TestTokenManager_ValidateRejectsExpiredToken(t *testing.T) {
 	issuedAt := time.Date(2026, 5, 27, 12, 0, 0, 0, time.UTC)
 	manager := NewTokenManager(Config{
-		Secret:          "local-test-secret",
+		Secret:          "local-test-secret-for-unit-tests!!!!!",
 		TokenTTLSeconds: 1,
 		Now:             func() time.Time { return issuedAt },
 	})
@@ -55,7 +55,7 @@ func TestTokenManager_ValidateRejectsExpiredToken(t *testing.T) {
 	}
 
 	expiredManager := NewTokenManager(Config{
-		Secret:          "local-test-secret",
+		Secret:          "local-test-secret-for-unit-tests!!!!!",
 		TokenTTLSeconds: 1,
 		Now:             func() time.Time { return issuedAt.Add(2 * time.Second) },
 	})
@@ -67,7 +67,7 @@ func TestTokenManager_ValidateRejectsExpiredToken(t *testing.T) {
 
 func TestTokenManager_ValidateRejectsWrongSecret(t *testing.T) {
 	manager := NewTokenManager(Config{
-		Secret:          "local-test-secret",
+		Secret:          "local-test-secret-for-unit-tests!!!!!",
 		TokenTTLSeconds: 3600,
 	})
 
@@ -80,7 +80,7 @@ func TestTokenManager_ValidateRejectsWrongSecret(t *testing.T) {
 	}
 
 	wrongManager := NewTokenManager(Config{
-		Secret:          "different-secret",
+		Secret:          "different-secret-for-unit-tests!!!!!",
 		TokenTTLSeconds: 3600,
 	})
 
@@ -103,7 +103,7 @@ func TestTokenManager_CreateRejectsInvalidConfig(t *testing.T) {
 		{
 			name: "missing ttl",
 			config: Config{
-				Secret: "local-test-secret",
+				Secret: "local-test-secret-for-unit-tests!!!!!",
 			},
 		},
 	}

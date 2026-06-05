@@ -116,7 +116,7 @@ func (m *TokenManager) Validate(rawToken string) (AdminSubject, error) {
 }
 
 func (m *TokenManager) validateConfig() error {
-	if len(m.secret) == 0 || m.ttl <= 0 {
+	if len(m.secret) < 32 || m.ttl <= 0 {
 		return ErrInvalidConfig
 	}
 	return nil

@@ -21,7 +21,7 @@ func (s *stubLimiter) TakeCtx(_ context.Context, _ string) (int, error) {
 }
 
 func newIPMiddlewareWithStub(code int, err error) *IPRateLimitMiddleware {
-	return &IPRateLimitMiddleware{limiter: &stubLimiter{code: code, err: err}}
+	return &IPRateLimitMiddleware{limiter: &stubLimiter{code: code, err: err}, trustedProxies: nil}
 }
 
 func TestIPRateLimitMiddleware_AllowsRequest(t *testing.T) {
@@ -92,10 +92,12 @@ func TestIPRateLimitMiddleware_AllowsOnHitQuota(t *testing.T) {
 	}
 }
 
-func TestIPRateLimitMiddleware_UsesXForwardedForAsKey(t *testing.T) {
+func TestIPRateLimitMiddleware_UsesXForwardedForWhenTrustedProxy(t *testing.T) {
 	var capturedKey string
+	// httptest.NewRequest sets RemoteAddr to "192.0.2.1:1234"
 	mw := &IPRateLimitMiddleware{
-		limiter: &capturingLimiter{capture: &capturedKey},
+		limiter:        &capturingLimiter{capture: &capturedKey},
+		trustedProxies: []string{"192.0.2.1"},
 	}
 
 	req := httptest.NewRequest(http.MethodGet, "/abc", nil)
@@ -107,6 +109,26 @@ func TestIPRateLimitMiddleware_UsesXForwardedForAsKey(t *testing.T) {
 
 	if capturedKey != "1.2.3.4" {
 		t.Fatalf("limiter key = %q, want 1.2.3.4", capturedKey)
+	}
+}
+
+func TestIPRateLimitMiddleware_IgnoresXForwardedForWhenUntrusted(t *testing.T) {
+	var capturedKey string
+	mw := &IPRateLimitMiddleware{
+		limiter:        &capturingLimiter{capture: &capturedKey},
+		trustedProxies: nil,
+	}
+
+	req := httptest.NewRequest(http.MethodGet, "/abc", nil)
+	req.Header.Set("X-Forwarded-For", "1.2.3.4")
+
+	mw.Handle(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})(httptest.NewRecorder(), req)
+
+	// XFF must be ignored; direct RemoteAddr used instead
+	if capturedKey != "192.0.2.1" {
+		t.Fatalf("limiter key = %q, want 192.0.2.1 (direct RemoteAddr)", capturedKey)
 	}
 }
 

@@ -32,6 +32,7 @@ func main() {
 	defer server.Stop()
 
 	server.Use(middleware.NewCorsMiddleware(c.Cors.AllowOrigins).Handle)
+	server.Use(middleware.SecurityHeadersMiddleware)
 
 	ctx := svc.NewServiceContext(c)
 	handler.RegisterHandlers(server, ctx)

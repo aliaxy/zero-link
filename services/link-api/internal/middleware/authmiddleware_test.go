@@ -10,7 +10,7 @@ import (
 
 func TestAuthMiddleware_RejectsMissingBearerToken(t *testing.T) {
 	middleware := NewAuthMiddleware(auth.NewTokenManager(auth.Config{
-		Secret:          "local-test-secret",
+		Secret:          "local-test-secret-for-unit-tests!!!!!",
 		TokenTTLSeconds: 3600,
 	}))
 
@@ -28,7 +28,7 @@ func TestAuthMiddleware_RejectsMissingBearerToken(t *testing.T) {
 
 func TestAuthMiddleware_RejectsInvalidBearerToken(t *testing.T) {
 	middleware := NewAuthMiddleware(auth.NewTokenManager(auth.Config{
-		Secret:          "local-test-secret",
+		Secret:          "local-test-secret-for-unit-tests!!!!!",
 		TokenTTLSeconds: 3600,
 	}))
 
@@ -49,7 +49,7 @@ func TestAuthMiddleware_RejectsInvalidBearerToken(t *testing.T) {
 
 func TestAuthMiddleware_AllowsValidBearerToken(t *testing.T) {
 	manager := auth.NewTokenManager(auth.Config{
-		Secret:          "local-test-secret",
+		Secret:          "local-test-secret-for-unit-tests!!!!!",
 		TokenTTLSeconds: 3600,
 	})
 	token, _, err := manager.Create(auth.AdminSubject{

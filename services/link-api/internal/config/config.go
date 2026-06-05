@@ -23,8 +23,9 @@ type CorsConfig struct {
 
 // RateLimitConfig holds per-route rate limit quotas.
 type RateLimitConfig struct {
-	RedirectPerIPPerSecond int `json:",default=20"`
-	LoginPerIPPerMinute    int `json:",default=10"`
+	RedirectPerIPPerSecond int      `json:",default=20"`
+	LoginPerIPPerMinute    int      `json:",default=10"`
+	TrustedProxies         []string `json:",optional"`
 }
 
 // Config contains the HTTP server and upstream RPC client settings.

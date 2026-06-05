@@ -16,9 +16,9 @@ type LoginRateLimitMiddleware struct {
 }
 
 // NewLoginRateLimitMiddleware creates a login rate limiter capped at quota attempts per minute per IP.
-func NewLoginRateLimitMiddleware(store *redis.Redis, quota int) *LoginRateLimitMiddleware {
+func NewLoginRateLimitMiddleware(store *redis.Redis, quota int, trustedProxies []string) *LoginRateLimitMiddleware {
 	return &LoginRateLimitMiddleware{
-		inner: NewIPRateLimitMiddleware(store, 60, quota, "rl:login:ip:"),
+		inner: NewIPRateLimitMiddleware(store, 60, quota, "rl:login:ip:", trustedProxies),
 	}
 }
 

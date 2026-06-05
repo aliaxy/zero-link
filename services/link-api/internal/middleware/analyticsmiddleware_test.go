@@ -34,9 +34,11 @@ func (r *recordingLinkService) RecordVisit(
 	return &analyticsservice.RecordVisitResponse{}, nil
 }
 
+// newRecordingMiddleware creates a test middleware with httptest's default RemoteAddr
+// (192.0.2.1) trusted so X-Forwarded-For is honoured in tests.
 func newRecordingMiddleware() (*AnalyticsMiddleware, chan *analyticsservice.RecordVisitRequest) {
 	ch := make(chan *analyticsservice.RecordVisitRequest, 1)
-	return NewAnalyticsMiddleware(&recordingLinkService{visitCh: ch}), ch
+	return NewAnalyticsMiddleware(&recordingLinkService{visitCh: ch}, []string{"192.0.2.1"}), ch
 }
 
 func TestAnalyticsMiddleware_302TriggersRecordVisit(t *testing.T) {
@@ -99,18 +101,28 @@ func TestAnalyticsMiddleware_403NoRecordVisit(t *testing.T) {
 	}
 }
 
-func TestExtractIP_XForwardedFor(t *testing.T) {
+func TestExtractIP_XForwardedFor_TrustedProxy(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	req.Header.Set("X-Forwarded-For", "1.2.3.4, 10.0.0.1")
-	if got := httputil.ExtractClientIP(req); got != "1.2.3.4" {
+	// httptest.NewRequest sets RemoteAddr to "192.0.2.1:1234"
+	if got := httputil.ExtractClientIP(req, []string{"192.0.2.1"}); got != "1.2.3.4" {
 		t.Fatalf("extractIP = %q, want 1.2.3.4", got)
+	}
+}
+
+func TestExtractIP_XForwardedFor_UntrustedProxy(t *testing.T) {
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	req.Header.Set("X-Forwarded-For", "1.2.3.4")
+	// empty trusted list → XFF ignored, use RemoteAddr
+	if got := httputil.ExtractClientIP(req, nil); got != "192.0.2.1" {
+		t.Fatalf("extractIP = %q, want 192.0.2.1", got)
 	}
 }
 
 func TestExtractIP_FallbackRemoteAddr(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	req.RemoteAddr = "5.6.7.8:9999"
-	if got := httputil.ExtractClientIP(req); got != "5.6.7.8" {
+	if got := httputil.ExtractClientIP(req, nil); got != "5.6.7.8" {
 		t.Fatalf("extractIP = %q, want 5.6.7.8", got)
 	}
 }

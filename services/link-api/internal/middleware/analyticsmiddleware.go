@@ -18,12 +18,13 @@ import (
 // Known limitation: goroutines are unbounded under high traffic; Stage 6 will replace
 // with a channel-based worker pool.
 type AnalyticsMiddleware struct {
-	linkRPC analyticsservice.AnalyticsService
+	linkRPC        analyticsservice.AnalyticsService
+	trustedProxies []string
 }
 
 // NewAnalyticsMiddleware creates an AnalyticsMiddleware.
-func NewAnalyticsMiddleware(linkRPC analyticsservice.AnalyticsService) *AnalyticsMiddleware {
-	return &AnalyticsMiddleware{linkRPC: linkRPC}
+func NewAnalyticsMiddleware(linkRPC analyticsservice.AnalyticsService, trustedProxies []string) *AnalyticsMiddleware {
+	return &AnalyticsMiddleware{linkRPC: linkRPC, trustedProxies: trustedProxies}
 }
 
 // Handle wraps the redirect handler and records visit events asynchronously.
@@ -37,7 +38,7 @@ func (m *AnalyticsMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 		}
 
 		code := strings.TrimPrefix(r.URL.Path, "/")
-		ip := httputil.ExtractClientIP(r)
+		ip := httputil.ExtractClientIP(r, m.trustedProxies)
 		ua := r.Header.Get("User-Agent")
 		ref := r.Header.Get("Referer")
 		ts := time.Now().UTC().Format(time.RFC3339Nano)
