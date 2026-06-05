@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/domain"
+	"github.com/aliaxy/zero-link/services/link-rpc/internal/rpcerror"
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/svc"
 	"github.com/aliaxy/zero-link/services/link-rpc/pb/link/v1"
 
@@ -32,10 +33,10 @@ func (l *DeleteShortLinkLogic) DeleteShortLink(
 	in *linkv1.DeleteShortLinkRequest,
 ) (*linkv1.DeleteShortLinkResponse, error) {
 	if in.GetId() <= 0 {
-		return nil, rpcError(domain.ErrInvalidArgument)
+		return nil, rpcerror.ToRPC(domain.ErrInvalidArgument)
 	}
 	if err := l.svcCtx.ShortLinkModel.SoftDelete(l.ctx, in.GetId(), time.Now().UTC()); err != nil {
-		return nil, rpcError(modelError(err))
+		return nil, rpcerror.ToRPC(modelError(err))
 	}
 
 	return &linkv1.DeleteShortLinkResponse{

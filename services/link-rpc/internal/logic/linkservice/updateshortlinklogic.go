@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/domain"
+	"github.com/aliaxy/zero-link/services/link-rpc/internal/rpcerror"
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/svc"
 	"github.com/aliaxy/zero-link/services/link-rpc/pb/link/v1"
 
@@ -32,26 +33,26 @@ func (l *UpdateShortLinkLogic) UpdateShortLink(
 	in *linkv1.UpdateShortLinkRequest,
 ) (*linkv1.UpdateShortLinkResponse, error) {
 	if in.GetId() <= 0 {
-		return nil, rpcError(domain.ErrInvalidArgument)
+		return nil, rpcerror.ToRPC(domain.ErrInvalidArgument)
 	}
 	if in.GetOriginUrl() != "" {
 		if err := domain.ValidateOriginURL(in.GetOriginUrl()); err != nil {
-			return nil, rpcError(domain.ErrInvalidArgument)
+			return nil, rpcerror.ToRPC(domain.ErrInvalidArgument)
 		}
 	}
 	if in.GetStatus() > 0 {
 		if err := domain.ValidateLinkStatus(in.GetStatus()); err != nil {
-			return nil, rpcError(domain.ErrInvalidArgument)
+			return nil, rpcerror.ToRPC(domain.ErrInvalidArgument)
 		}
 	}
 	expireAt, err := nullTimeFromString(in.GetExpireAt(), time.Now().UTC())
 	if err != nil {
-		return nil, rpcError(domain.ErrInvalidArgument)
+		return nil, rpcerror.ToRPC(domain.ErrInvalidArgument)
 	}
 
 	link, err := l.svcCtx.ShortLinkModel.FindOneNotDeleted(l.ctx, in.GetId())
 	if err != nil {
-		return nil, rpcError(modelError(err))
+		return nil, rpcerror.ToRPC(modelError(err))
 	}
 	if in.GetOriginUrl() != "" {
 		link.OriginUrl = in.GetOriginUrl()
@@ -69,12 +70,12 @@ func (l *UpdateShortLinkLogic) UpdateShortLink(
 		link.ExpireAt = expireAt
 	}
 	if err := l.svcCtx.ShortLinkModel.Update(l.ctx, link); err != nil {
-		return nil, rpcError(err)
+		return nil, rpcerror.ToRPC(err)
 	}
 
 	link, err = l.svcCtx.ShortLinkModel.FindOneNotDeleted(l.ctx, in.GetId())
 	if err != nil {
-		return nil, rpcError(modelError(err))
+		return nil, rpcerror.ToRPC(modelError(err))
 	}
 
 	return &linkv1.UpdateShortLinkResponse{

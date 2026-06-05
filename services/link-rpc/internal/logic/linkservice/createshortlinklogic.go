@@ -9,6 +9,7 @@ import (
 
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/domain"
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/model"
+	"github.com/aliaxy/zero-link/services/link-rpc/internal/rpcerror"
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/svc"
 	linkv1 "github.com/aliaxy/zero-link/services/link-rpc/pb/link/v1"
 
@@ -36,41 +37,41 @@ func (l *CreateShortLinkLogic) CreateShortLink(
 	in *linkv1.CreateShortLinkRequest,
 ) (*linkv1.CreateShortLinkResponse, error) {
 	if err := domain.ValidateOriginURL(in.GetOriginUrl()); err != nil {
-		return nil, rpcError(domain.ErrInvalidArgument)
+		return nil, rpcerror.ToRPC(domain.ErrInvalidArgument)
 	}
 
 	code := in.GetCode()
 	if code != "" {
 		if err := domain.ValidateCustomCode(code); err != nil {
-			return nil, rpcError(domain.ErrInvalidArgument)
+			return nil, rpcerror.ToRPC(domain.ErrInvalidArgument)
 		}
 		if _, err := l.svcCtx.ShortLinkModel.FindOneByCode(l.ctx, code); err == nil {
-			return nil, rpcError(domain.ErrConflict)
+			return nil, rpcerror.ToRPC(domain.ErrConflict)
 		} else if !errors.Is(err, model.ErrNotFound) {
-			return nil, rpcError(err)
+			return nil, rpcerror.ToRPC(err)
 		}
 		// Code absent from short_link — also check reserved_code to prevent reuse of archived codes.
 		if l.svcCtx.ReservedCodeModel != nil {
 			reserved, err := l.svcCtx.ReservedCodeModel.Exists(l.ctx, code)
 			if err != nil {
-				return nil, rpcError(err)
+				return nil, rpcerror.ToRPC(err)
 			}
 			if reserved {
-				return nil, rpcError(domain.ErrConflict)
+				return nil, rpcerror.ToRPC(domain.ErrConflict)
 			}
 		}
 	}
 	if code == "" {
 		generated, err := domain.GenerateCode()
 		if err != nil {
-			return nil, rpcError(err)
+			return nil, rpcerror.ToRPC(err)
 		}
 		code = generated
 	}
 
 	expireAt, err := nullTimeFromString(in.GetExpireAt(), time.Now().UTC())
 	if err != nil {
-		return nil, rpcError(domain.ErrInvalidArgument)
+		return nil, rpcerror.ToRPC(domain.ErrInvalidArgument)
 	}
 
 	data := &model.ShortLink{
@@ -85,15 +86,15 @@ func (l *CreateShortLinkLogic) CreateShortLink(
 	}
 	result, err := l.svcCtx.ShortLinkModel.Insert(l.ctx, data)
 	if err != nil {
-		return nil, rpcError(err)
+		return nil, rpcerror.ToRPC(err)
 	}
 	id, err := result.LastInsertId()
 	if err != nil {
-		return nil, rpcError(err)
+		return nil, rpcerror.ToRPC(err)
 	}
 	link, err := l.svcCtx.ShortLinkModel.FindOneNotDeleted(l.ctx, id)
 	if err != nil {
-		return nil, rpcError(modelError(err))
+		return nil, rpcerror.ToRPC(modelError(err))
 	}
 
 	// Update local filter and notify other instances via pub/sub.

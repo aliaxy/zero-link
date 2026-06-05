@@ -7,6 +7,7 @@ import (
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/domain"
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/metrics"
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/model"
+	"github.com/aliaxy/zero-link/services/link-rpc/internal/rpcerror"
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/svc"
 	linkv1 "github.com/aliaxy/zero-link/services/link-rpc/pb/link/v1"
 
@@ -40,7 +41,7 @@ func (l *ResolveShortLinkLogic) ResolveShortLink(
 			l.Infow("resolve miss", logx.Field("code", in.Code), logx.Field("result", "miss"))
 			metrics.FilterRequestsTotal.Inc("miss")
 			metrics.RedirectRequestsTotal.Inc("miss")
-			return nil, rpcError(domain.ErrNotFound)
+			return nil, rpcerror.ToRPC(domain.ErrNotFound)
 		}
 		metrics.FilterRequestsTotal.Inc("hit")
 	}
@@ -50,29 +51,29 @@ func (l *ResolveShortLinkLogic) ResolveShortLink(
 		if err == model.ErrNotFound {
 			l.Infow("resolve miss", logx.Field("code", in.Code), logx.Field("result", "miss"))
 			metrics.RedirectRequestsTotal.Inc("miss")
-			return nil, rpcError(domain.ErrNotFound)
+			return nil, rpcerror.ToRPC(domain.ErrNotFound)
 		}
 		l.Errorw("resolve failed", logx.Field("code", in.Code), logx.Field("error", err.Error()))
 		metrics.RedirectRequestsTotal.Inc("error")
-		return nil, rpcError(err)
+		return nil, rpcerror.ToRPC(err)
 	}
 
 	if link.DeletedAt.Valid {
 		l.Infow("resolve miss", logx.Field("code", in.Code), logx.Field("result", "miss"))
 		metrics.RedirectRequestsTotal.Inc("miss")
-		return nil, rpcError(domain.ErrNotFound)
+		return nil, rpcerror.ToRPC(domain.ErrNotFound)
 	}
 
 	if link.Status == domain.LinkStatusDisabled {
 		l.Infow("resolve disabled", logx.Field("code", in.Code), logx.Field("result", "disabled"))
 		metrics.RedirectRequestsTotal.Inc("disabled")
-		return nil, rpcError(domain.ErrPermissionDenied)
+		return nil, rpcerror.ToRPC(domain.ErrPermissionDenied)
 	}
 
 	if link.ExpireAt.Valid && link.ExpireAt.Time.Before(time.Now()) {
 		l.Infow("resolve expired", logx.Field("code", in.Code), logx.Field("result", "expired"))
 		metrics.RedirectRequestsTotal.Inc("expired")
-		return nil, rpcError(domain.ErrGone)
+		return nil, rpcerror.ToRPC(domain.ErrGone)
 	}
 
 	l.Infow("resolve hit", logx.Field("code", in.Code), logx.Field("result", "hit"), logx.Field("url", link.OriginUrl))

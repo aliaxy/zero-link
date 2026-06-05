@@ -22,13 +22,15 @@ func (r *Runner) cleanVisitEvents(ctx context.Context) {
 			logx.Errorw("cleanup: visit_event delete failed", logx.Field("error", err.Error()))
 			return
 		}
-		affected, _ := result.RowsAffected()
+		affected, err := result.RowsAffected()
+		if err != nil {
+			logx.Errorw("cleanup: visit_event rows affected failed", logx.Field("error", err.Error()))
+			return
+		}
 		if affected == 0 {
 			break
 		}
-		for range affected {
-			metrics.CleanupDeletedRowsTotal.Inc("visit_event")
-		}
+		metrics.CleanupDeletedRowsTotal.Add(float64(affected), "visit_event")
 		total += affected
 	}
 	logx.Infow("cleanup: visit_event done", logx.Field("deleted", total))

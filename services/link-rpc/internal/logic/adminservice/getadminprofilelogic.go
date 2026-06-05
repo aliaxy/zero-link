@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/domain"
+	"github.com/aliaxy/zero-link/services/link-rpc/internal/rpcerror"
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/svc"
 	"github.com/aliaxy/zero-link/services/link-rpc/pb/link/v1"
 
@@ -32,11 +33,11 @@ func (l *GetAdminProfileLogic) GetAdminProfile(
 ) (*linkv1.GetAdminProfileResponse, error) {
 	admin, err := l.svcCtx.AdminUserModel.FindOne(l.ctx, in.GetAdminId())
 	if err != nil {
-		return nil, rpcError(domain.ErrNotFound)
+		return nil, rpcerror.ToRPC(domain.ErrNotFound)
 	}
 	admin, err = domain.GetActiveAdminProfile(admin)
 	if err != nil {
-		return nil, rpcError(err)
+		return nil, rpcerror.ToRPC(err)
 	}
 
 	return &linkv1.GetAdminProfileResponse{

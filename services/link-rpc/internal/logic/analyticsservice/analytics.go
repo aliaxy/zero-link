@@ -31,6 +31,7 @@ func detectDevice(ua string) string {
 }
 
 const (
+	dateFormat       = "2006-01-02"
 	defaultRangeDays = 30
 	maxRangeDays     = 90
 )
@@ -46,7 +47,7 @@ func parseDateRange(from, to string) (time.Time, time.Time, error) {
 	if from == "" {
 		fromT = now.AddDate(0, 0, -defaultRangeDays)
 	} else {
-		fromT, err = time.Parse("2006-01-02", from)
+		fromT, err = time.Parse(dateFormat, from)
 		if err != nil {
 			return time.Time{}, time.Time{}, errInvalidDateRange
 		}
@@ -55,7 +56,7 @@ func parseDateRange(from, to string) (time.Time, time.Time, error) {
 	if to == "" {
 		toT = now
 	} else {
-		toT, err = time.Parse("2006-01-02", to)
+		toT, err = time.Parse(dateFormat, to)
 		if err != nil {
 			return time.Time{}, time.Time{}, errInvalidDateRange
 		}

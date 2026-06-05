@@ -7,6 +7,7 @@ import (
 
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/metrics"
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/model"
+	"github.com/aliaxy/zero-link/services/link-rpc/internal/rpcerror"
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/svc"
 	linkv1 "github.com/aliaxy/zero-link/services/link-rpc/pb/link/v1"
 
@@ -41,7 +42,7 @@ func (l *RecordVisitLogic) RecordVisit(in *linkv1.RecordVisitRequest) (*linkv1.R
 		if errors.Is(err, model.ErrNotFound) {
 			return &linkv1.RecordVisitResponse{}, nil
 		}
-		return nil, rpcError(err)
+		return nil, rpcerror.ToRPC(err)
 	}
 
 	event := &model.VisitEvent{
@@ -54,10 +55,10 @@ func (l *RecordVisitLogic) RecordVisit(in *linkv1.RecordVisitRequest) (*linkv1.R
 		Device:    detectDevice(in.UserAgent),
 	}
 	if _, err := l.svcCtx.VisitEventModel.Insert(l.ctx, event); err != nil {
-		return nil, rpcError(err)
+		return nil, rpcerror.ToRPC(err)
 	}
 
-	statDate := visitedAt.UTC().Format("2006-01-02")
+	statDate := visitedAt.UTC().Format(dateFormat)
 	if err := l.svcCtx.DailyStatModel.UpsertPV(l.ctx, link.Id, statDate); err != nil {
 		l.Errorw("upsert daily stat failed",
 			logx.Field("link_id", link.Id),

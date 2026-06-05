@@ -22,13 +22,15 @@ func (r *Runner) cleanDailyStats(ctx context.Context) {
 			logx.Errorw("cleanup: link_daily_stat delete failed", logx.Field("error", err.Error()))
 			return
 		}
-		affected, _ := result.RowsAffected()
+		affected, err := result.RowsAffected()
+		if err != nil {
+			logx.Errorw("cleanup: link_daily_stat rows affected failed", logx.Field("error", err.Error()))
+			return
+		}
 		if affected == 0 {
 			break
 		}
-		for range affected {
-			metrics.CleanupDeletedRowsTotal.Inc("link_daily_stat")
-		}
+		metrics.CleanupDeletedRowsTotal.Add(float64(affected), "link_daily_stat")
 		total += affected
 	}
 	logx.Infow("cleanup: link_daily_stat done", logx.Field("deleted", total))

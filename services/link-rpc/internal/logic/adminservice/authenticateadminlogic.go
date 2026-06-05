@@ -6,6 +6,7 @@ import (
 
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/domain"
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/model"
+	"github.com/aliaxy/zero-link/services/link-rpc/internal/rpcerror"
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/svc"
 	linkv1 "github.com/aliaxy/zero-link/services/link-rpc/pb/link/v1"
 
@@ -35,7 +36,7 @@ func (l *AuthenticateAdminLogic) AuthenticateAdmin(
 	admin, err := domain.AuthenticateAdmin(l.ctx, l.svcCtx.AdminUserModel, in.GetUsername(), in.GetPassword())
 	if err != nil {
 		l.Infow("authenticate failed", logx.Field("username", in.GetUsername()))
-		return nil, rpcError(err)
+		return nil, rpcerror.ToRPC(err)
 	}
 
 	l.Infow("authenticate success",

@@ -1,15 +1,16 @@
-package analyticsservicelogic
+// Package rpcerror converts domain errors to gRPC status errors.
+package rpcerror
 
 import (
 	"errors"
 
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/domain"
-
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-func rpcError(err error) error {
+// ToRPC maps a domain error to the appropriate gRPC status error.
+func ToRPC(err error) error {
 	switch {
 	case err == nil:
 		return nil
