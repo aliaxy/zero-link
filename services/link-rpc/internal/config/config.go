@@ -27,7 +27,7 @@ type DependenciesConfig struct {
 
 // AnalyticsConfig contains analytics-specific settings.
 type AnalyticsConfig struct {
-	IPSalt string
+	IPSalt string `json:"IPSalt" validate:"required"`
 }
 
 // RetentionConfig controls data lifecycle cleanup behaviour.

@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 
+	"github.com/aliaxy/zero-link/services/link-api/pkg/configvalidator"
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/config"
 	adminserver "github.com/aliaxy/zero-link/services/link-rpc/internal/server/adminservice"
 	analyticsserver "github.com/aliaxy/zero-link/services/link-rpc/internal/server/analyticsservice"
@@ -27,6 +28,7 @@ func main() {
 
 	var c config.Config
 	conf.MustLoad(*configFile, &c)
+	configvalidator.MustValidate(c)
 	ctx := svc.NewServiceContext(c)
 
 	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
