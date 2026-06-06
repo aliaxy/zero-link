@@ -1,0 +1,28 @@
+# Go build cache
+.cache/
+
+# Frontend
+web/admin/node_modules/
+web/admin/dist/
+web/admin/build/
+
+# Git
+.git/
+.githooks/
+
+# Local config (may contain secrets)
+.env
+.env.local
+.env.compose.local
+etc/*.local.yaml
+
+# Development / docs
+.direnv/
+.claude/
+docs/
+tests/httpyac/
+deploy/
+
+# Misc
+.DS_Store
+*.md

@@ -1,0 +1,42 @@
+Name: link-rpc
+ListenOn: 0.0.0.0:9090
+
+Dependencies:
+  MySQL:
+    Endpoint: mysql:3306
+    Database: ${MYSQL_DATABASE}
+    User: ${MYSQL_USER}
+    DataSource: ${MYSQL_USER}:${MYSQL_PASSWORD}@tcp(mysql:3306)/${MYSQL_DATABASE}?charset=utf8mb4&parseTime=true&loc=Local
+  Redis:
+    Endpoint: redis:6379
+
+CacheRedis:
+  - Host: redis:6379
+    Type: node
+
+Analytics:
+  IPSalt: ${LINK_RPC_IP_SALT}
+
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9101
+  Path: /metrics
+
+Middlewares:
+  Prometheus: true
+
+Log:
+  ServiceName: link-rpc
+  Mode: console
+  Encoding: json
+  Level: info
+  Stat: false
+
+Retention:
+  VisitEventRetentionDays: 90
+  ShortLinkRetentionDays: 365
+  DailyStatRetentionDays: 730
+  CleanupBatchSize: 1000
+
+Cuckoo:
+  Capacity: 1000000

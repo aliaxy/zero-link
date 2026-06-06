@@ -26,7 +26,7 @@ func main() {
 	flag.Parse()
 
 	var c config.Config
-	conf.MustLoad(*configFile, &c)
+	conf.MustLoad(*configFile, &c, conf.UseEnv())
 	configvalidator.MustValidate(c)
 	httpx.SetErrorHandlerCtx(apierror.ErrorHandler)
 
