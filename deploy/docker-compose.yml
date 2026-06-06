@@ -1,0 +1,110 @@
+# Full zero-link application stack.
+#
+# Usage:
+#   cp .env.compose.example .env.compose.local
+#   # Edit .env: set LINK_API_AUTH_SECRET (>=32 chars) and LINK_RPC_IP_SALT
+#   make compose-up
+#
+# This file is mutually exclusive with deploy/docker-compose.infra.yml.
+# Do not run both stacks simultaneously — they share the same volume names
+# and container names.
+
+name: zero-link
+
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: zero-link-mysql
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_0900_ai_ci
+    environment:
+      TZ: Asia/Shanghai
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-zero_link}
+      MYSQL_USER: ${MYSQL_USER:-zerolink}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-zerolink}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-zerolink_root}
+    volumes:
+      - zero-link-mysql-data:/var/lib/mysql
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mysqladmin ping -h 127.0.0.1 -u${MYSQL_USER:-zerolink} -p${MYSQL_PASSWORD:-zerolink} --silent",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+
+  redis:
+    image: redis:7.4
+    container_name: zero-link-redis
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - zero-link-redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
+
+  migrate:
+    image: migrate/migrate:v4.18.3
+    command:
+      - -path=/migrations
+      - -database=mysql://${MYSQL_USER:-zerolink}:${MYSQL_PASSWORD:-zerolink}@tcp(mysql:${MYSQL_PORT:-3306})/${MYSQL_DATABASE:-zero_link}
+      - up
+    volumes:
+      - ../migrations:/migrations:ro
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: "on-failure:3"
+
+  link-rpc:
+    build:
+      context: ..
+      dockerfile: services/link-rpc/Dockerfile
+    container_name: zero-link-rpc
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-zero_link}
+      MYSQL_USER: ${MYSQL_USER:-zerolink}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-zerolink}
+      LINK_RPC_IP_SALT: ${LINK_RPC_IP_SALT}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "nc -w1 127.0.0.1 9090 </dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+    restart: unless-stopped
+
+  link-api:
+    build:
+      context: ..
+      dockerfile: services/link-api/Dockerfile
+    container_name: zero-link-api
+    environment:
+      LINK_API_AUTH_SECRET: ${LINK_API_AUTH_SECRET}
+      LINK_API_CORS_ORIGIN: ${LINK_API_CORS_ORIGIN:-http://localhost:8080}
+    ports:
+      - "8080:8080"
+    depends_on:
+      redis:
+        condition: service_healthy
+      link-rpc:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  zero-link-mysql-data:
+  zero-link-redis-data:

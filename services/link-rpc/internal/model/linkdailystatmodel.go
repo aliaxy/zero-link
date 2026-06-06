@@ -40,7 +40,8 @@ func (m *customLinkDailyStatModel) UpsertStats(ctx context.Context, linkID int64
 	var query string
 	if isNewUV {
 		query = fmt.Sprintf(
-			"insert into %s (`link_id`, `stat_date`, `pv`, `uv`) values (?, ?, 1, 1) on duplicate key update `pv` = `pv` + 1, `uv` = `uv` + 1",
+			"insert into %s (`link_id`, `stat_date`, `pv`, `uv`) values (?, ?, 1, 1)"+
+				" on duplicate key update `pv` = `pv` + 1, `uv` = `uv` + 1",
 			m.table,
 		)
 	} else {

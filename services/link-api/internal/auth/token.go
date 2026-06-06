@@ -9,10 +9,8 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-var (
-	// ErrInvalidToken reports an invalid, expired, or malformed management token.
-	ErrInvalidToken = errors.New("invalid token")
-)
+// ErrInvalidToken reports an invalid, expired, or malformed management token.
+var ErrInvalidToken = errors.New("invalid token")
 
 // Config contains JWT token settings for management authentication.
 type Config struct {
@@ -105,4 +103,3 @@ func (m *TokenManager) Validate(rawToken string) (AdminSubject, error) {
 		Username: parsedClaims.Username,
 	}, nil
 }
-

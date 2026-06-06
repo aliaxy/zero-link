@@ -2,18 +2,32 @@ GO ?= go
 GO_ENV := GOCACHE=$(CURDIR)/.cache/go-build
 DOCKER_COMPOSE ?= docker compose
 INFRA_COMPOSE := deploy/docker-compose.infra.yml
+COMPOSE_FILE := deploy/docker-compose.yml
+COMPOSE_ENV_FILE := .env.compose.local
 MIGRATE ?= migrate
 
 -include .env.local
 export
 
-.PHONY: infra-up infra-down migrate-up migrate-down run-api run-rpc test test-integration test-e2e lint fmt install-hooks web-install web-dev web-build web-preview
+.PHONY: infra-up infra-down migrate-up migrate-down run-api run-rpc test test-integration test-e2e lint fmt install-hooks web-install web-dev web-build web-preview compose-build compose-up compose-down compose-logs
 
 infra-up:
 	$(DOCKER_COMPOSE) -f $(INFRA_COMPOSE) up -d
 
 infra-down:
 	$(DOCKER_COMPOSE) -f $(INFRA_COMPOSE) down
+
+compose-build:
+	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) --env-file $(COMPOSE_ENV_FILE) build
+
+compose-up:
+	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) --env-file $(COMPOSE_ENV_FILE) up -d
+
+compose-down:
+	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) --env-file $(COMPOSE_ENV_FILE) down
+
+compose-logs:
+	$(DOCKER_COMPOSE) -f $(COMPOSE_FILE) logs -f
 
 migrate-up:
 	@if [ -z "$$ZERO_LINK_MIGRATE_DSN" ]; then \

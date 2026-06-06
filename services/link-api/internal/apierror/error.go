@@ -101,7 +101,10 @@ func grpcError(st *status.Status) (int, ErrorEnvelope) {
 	case codes.FailedPrecondition:
 		return http.StatusGone, ErrorEnvelope{Code: "GONE", Message: st.Message()}
 	case codes.Unavailable:
-		return http.StatusServiceUnavailable, ErrorEnvelope{Code: "SERVICE_UNAVAILABLE", Message: "service temporarily unavailable"}
+		return http.StatusServiceUnavailable, ErrorEnvelope{
+			Code:    "SERVICE_UNAVAILABLE",
+			Message: "service temporarily unavailable",
+		}
 	default:
 		return http.StatusInternalServerError, ErrorEnvelope{Code: "INTERNAL", Message: "internal error"}
 	}

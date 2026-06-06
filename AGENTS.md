@@ -4,7 +4,7 @@ This file is the canonical development guide for AI coding agents working in thi
 
 ## Project State
 
-zero-link has completed Stage 8 (cache optimization and data lifecycle). Stages 1–8 are complete.
+zero-link has completed Stage 9 (full Docker Compose deployment). Stages 1–9 are complete.
 
 Do not add management UI, additional business contracts, or new stages unless the user
 explicitly asks for that implementation stage.

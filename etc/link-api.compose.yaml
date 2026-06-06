@@ -1,0 +1,36 @@
+Name: link-api
+Host: 0.0.0.0
+Port: 8080
+MaxConns: 1000
+MaxBytes: 1048576
+
+Auth:
+  Secret: ${LINK_API_AUTH_SECRET}
+  TokenTTLSeconds: 86400
+
+Cors:
+  AllowOrigins:
+    - "${LINK_API_CORS_ORIGIN}"
+
+Redis:
+  Host: redis:6379
+
+RateLimit:
+  RedirectPerIPPerSecond: 20
+  LoginPerIPPerMinute: 10
+  TrustedProxies: []
+
+LinkRPC:
+  Target: link-rpc:9090
+
+Prometheus:
+  Host: 0.0.0.0
+  Port: 9100
+  Path: /metrics
+
+Log:
+  ServiceName: link-api
+  Mode: console
+  Encoding: json
+  Level: info
+  Stat: false

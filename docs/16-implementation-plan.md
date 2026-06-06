@@ -323,13 +323,24 @@ Completed after Stage 8 without advancing the feature stage boundary.
 - gRPC `codes.Unavailable` now maps to `SERVICE_UNAVAILABLE 503` instead of `INTERNAL 500`.
 - See `services/link-api/internal/apierror/error.go` for the full mapping table.
 
+## Stage 9 Progress
+
+Stage 9 full Docker Compose deployment is complete.
+
+Completed:
+
+- `services/link-api/Dockerfile` — multi-stage build (`golang:1.26-alpine` builder, `alpine:3.21` runtime), `CGO_ENABLED=0`, non-root `appuser`, exposes 8080 and 9100.
+- `services/link-rpc/Dockerfile` — same pattern, exposes 9090 and 9101.
+- `etc/link-api.compose.yaml` — `Host: 0.0.0.0`, `Prometheus.Host: 0.0.0.0`, `Mode: console`, `Encoding: json`, all values via `${VAR}` env substitution.
+- `etc/link-rpc.compose.yaml` — `ListenOn: 0.0.0.0:9090`, `loc=UTC` in MySQL DSN, same env var pattern.
+- `.env.compose.example` — documents all required and optional env vars; secrets (`LINK_API_AUTH_SECRET`, `LINK_RPC_IP_SALT`) have no defaults. Copy to `.env.compose.local` (gitignored) for local use.
+- `deploy/docker-compose.yml` — five services: mysql, redis, migrate (one-shot `ghcr.io/golang-migrate/migrate`), link-rpc, link-api. Only port 8080 published to host. `service_completed_successfully` condition on migrate ensures schema is applied before link-rpc starts.
+- `Makefile` — added `compose-build`, `compose-up`, `compose-down`, `compose-logs` targets.
+- `docs/11-deployment-design.md` — Stage 9 Implementation section added.
+
 ## Next Handoff
 
-Stage 9 full Docker Compose deployment:
-
-- Dockerfiles for link-api and link-rpc.
-- Complete `docker-compose.yml` with application and infrastructure services.
-- Deployment documentation.
+Stage 9 is the final planned implementation stage. Future work is tracked in `docs/15-future-roadmap.md`.
 
 ## Git And Commit Rules
 
