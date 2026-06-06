@@ -25,7 +25,9 @@ type IPRateLimitMiddleware struct {
 
 // NewIPRateLimitMiddleware creates an IP rate limiter with the given window period (seconds),
 // quota, Redis store, key prefix, and trusted proxy IPs.
-func NewIPRateLimitMiddleware(store *redis.Redis, period, quota int, keyPrefix string, trustedProxies []string) *IPRateLimitMiddleware {
+func NewIPRateLimitMiddleware(
+	store *redis.Redis, period, quota int, keyPrefix string, trustedProxies []string,
+) *IPRateLimitMiddleware {
 	return &IPRateLimitMiddleware{
 		limiter:        limit.NewPeriodLimit(period, quota, store, keyPrefix),
 		trustedProxies: trustedProxies,

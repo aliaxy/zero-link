@@ -35,7 +35,9 @@ func (m *customVisitEventModel) withSession(session sqlx.Session) VisitEventMode
 }
 
 // HasVisitedToday reports whether an ip_hash has already visited the given link on statDate.
-func (m *customVisitEventModel) HasVisitedToday(ctx context.Context, linkID int64, ipHash, statDate string) (bool, error) {
+func (m *customVisitEventModel) HasVisitedToday(
+	ctx context.Context, linkID int64, ipHash, statDate string,
+) (bool, error) {
 	query := fmt.Sprintf(
 		"select count(1) from %s where `link_id` = ? and `ip_hash` = ? and date(`visited_at`) = ?",
 		m.table,

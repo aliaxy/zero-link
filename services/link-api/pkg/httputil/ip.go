@@ -3,6 +3,7 @@ package httputil
 
 import (
 	"net/http"
+	"slices"
 	"strings"
 )
 
@@ -28,10 +29,5 @@ func directIP(remoteAddr string) string {
 }
 
 func isTrustedProxy(ip string, proxies []string) bool {
-	for _, p := range proxies {
-		if p == ip {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(proxies, ip)
 }

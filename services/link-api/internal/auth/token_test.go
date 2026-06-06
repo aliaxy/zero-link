@@ -88,4 +88,3 @@ func TestTokenManager_ValidateRejectsWrongSecret(t *testing.T) {
 		t.Fatal("Validate() error = nil, want signature error")
 	}
 }
-
