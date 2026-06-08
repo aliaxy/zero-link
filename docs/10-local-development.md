@@ -42,7 +42,8 @@ make migrate-down
 make run-rpc
 make run-api
 make test
-make test-integration
+make test-e2e          # full-stack integration tests (requires infra-up + migrate-up)
+make test-integration  # all integration-tagged tests across the repo
 make web-install
 make web-dev
 make web-build

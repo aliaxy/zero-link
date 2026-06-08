@@ -154,6 +154,8 @@ Risks:
 
 Goal: provide an administrator-facing workflow.
 
+Status: complete.
+
 Outputs:
 
 - Login page.
@@ -249,6 +251,8 @@ Risks:
 ## Stage 9: Full Docker Compose Deployment
 
 Goal: package the full system for deployment.
+
+Status: complete.
 
 Outputs:
 

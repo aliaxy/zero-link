@@ -5,7 +5,7 @@
 - Treat tests as executable specifications.
 - Keep unit tests fast and deterministic.
 - Separate integration tests from normal unit tests.
-- Keep management UI tests deferred until Stage 6.
+- Management UI tests are deferred; UI behavior is verified manually.
 
 ## Unit Tests
 

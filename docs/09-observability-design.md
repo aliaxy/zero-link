@@ -76,6 +76,8 @@ Avoid labels containing raw URL, IP, user ID, or arbitrary short-code values.
 
 ## Tracing
 
+**Not yet implemented.** The design below describes the intended tracing model for a future stage.
+
 Trace path:
 
 ```text

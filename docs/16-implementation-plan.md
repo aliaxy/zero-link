@@ -2,7 +2,7 @@
 
 ## Goal
 
-Track the current zero-link implementation state and define the next safe handoff point. Stages 1–8 are
+Track the current zero-link implementation state and define the next safe handoff point. Stages 1–9 are
 complete.
 
 ## Source Documents
