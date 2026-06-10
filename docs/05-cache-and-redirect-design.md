@@ -9,6 +9,8 @@
 - `rl:login:ip:{ip}`: per-IP login rate counter (go-zero `PeriodLimit`, 10 req/min window).
 - `uv:{link_id}:{date}`: optional UV de-duplication set or bitmap.
 - `zl:code:created` (Pub/Sub channel): published by `link-rpc` after every successful short-link creation; subscribers update their local cuckoo filter.
+- `zl:rt:{hash}`: opaque refresh token entry; value is the administrator ID; TTL 7 days. The raw token is never stored — only the SHA-256 hash.
+- `zl:rt:user:{adminID}`: SET of all active refresh token hashes for an administrator; TTL 7 days. Used by `RevokeAll` to bulk-delete all sessions.
 
 The `cache:shortLink:*` keys are managed by the go-zero goctl cached model. `FindOneByCode` uses a
 two-level index cache (code → id → full row). `Update` and `Delete` invalidate both keys automatically.
@@ -59,10 +61,13 @@ Invalidate `cache:shortLink:id:{id}` and `cache:shortLink:code:{code}` after:
 - Status update.
 - Expiration time update.
 - Soft delete.
+- Archival by the cleanup runner.
 
 The goctl `Update` and `Delete` methods handle invalidation automatically. Soft delete uses a custom
-`ExecCtx` call that invalidates both keys explicitly before executing the SQL. Cache invalidation is
-best effort; if Redis deletion fails the operation still returns success to the caller.
+`ExecCtx` call that invalidates both keys explicitly before executing the SQL. The cleanup runner calls
+`rdb.Del` on both keys immediately after a successful archival transaction, so archived links cannot
+be served stale from Redis. Cache invalidation is best effort; if Redis deletion fails the operation
+still returns success to the caller.
 
 ## Performance Boundary
 

@@ -270,3 +270,70 @@ Risks:
 
 - Config drift between local and Compose modes.
 - Service readiness confused with container startup order.
+
+## Post-Stage-9: Production Hardening
+
+These improvements were made after Stage 9 without advancing the feature stage boundary. Each maps to a
+named sub-stage and corresponds to its own feature branch merged into main.
+
+### Stage A: Atomic Archive And Cache Invalidation
+
+Goal: fix two P0 data-correctness issues in the cleanup and cache layers.
+
+Status: complete.
+
+Completed:
+
+- `cleanup/shortlinks.go:archiveLink` wrapped in `db.TransactCtx`: INSERT archive → INSERT reserved_code →
+  DELETE short_link now succeed or fail atomically. A process crash can no longer leave an un-reserved code.
+- After a successful transaction, the cleanup runner calls `rdb.Del` on the id and code cache keys so that
+  archived links are not served stale from Redis.
+- Cache key constants (`CacheShortLinkIdPrefix`, `CacheShortLinkCodePrefix`) exported from
+  `model/vars.go` and reused by the cleanup package.
+- `cleanup.NewRunner` now accepts a `*redis.Redis` parameter; `svc/servicecontext.go` passes `rdb`.
+- `model/linkarchiver.go` introduced to keep the archival transaction logic separate from the goctl-generated
+  model files.
+
+### Stage B: Dual-Token Authentication And Password Change
+
+Goal: fix JWT revocation gap and add administrator password management.
+
+Status: complete.
+
+Completed:
+
+- Dual-token architecture: stateless access token (JWT, 15 min) paired with an opaque refresh token
+  (7 days, Redis-backed). Access token statelessness is an accepted industry trade-off; short TTL limits
+  the exposure window.
+- `services/link-api/internal/auth/refreshtoken.go` — `RefreshTokenStore` implements `RefreshTokenIssuer`:
+  - `Issue`: generates a 32-byte `crypto/rand` token, stores the SHA-256 hash in `zl:rt:{hash}` (TTL 7d)
+    and adds the hash to the per-user set `zl:rt:user:{adminID}` (TTL 7d).
+  - `Rotate`: verifies the hash exists, deletes it, issues a new token (reuse detection).
+  - `RevokeAll`: reads `SMEMBERS zl:rt:user:{adminID}`, bulk-deletes all token keys and the user set.
+- `POST /admin/login` now returns `access_token`, `access_token_expires_at`, `refresh_token`,
+  `refresh_token_expires_at`, and `admin`.
+- `POST /admin/refresh` — rotates the refresh token and issues a new access token; invalid or expired
+  tokens return `UNAUTHENTICATED 401`.
+- `PATCH /admin/password` — authenticated endpoint; calls `ChangePassword` RPC, then `RevokeAll` to
+  invalidate all sessions.
+- `ChangePassword` RPC added to `AdminService` in `link.proto`; verifies old password, hashes new
+  password with bcrypt, updates `admin_user.password_hash`.
+- httpyac smoke requests updated: `token` → `accessToken`, `refreshToken` added, refresh and
+  change-password requests added.
+
+### Stage C: Performance Critical Path
+
+Goal: eliminate three structural performance problems in analytics, UV queries, and filter loading.
+
+Status: complete.
+
+Completed:
+
+- `AnalyticsMiddleware` replaced unbounded goroutine-per-redirect with a channel-backed worker pool
+  (8 workers, 2 000-slot buffer). Events are dropped gracefully when the buffer is full; `Stop()` closes
+  the channel for clean shutdown.
+- `HasVisitedToday` rewritten from `date(visited_at) = ?` to a half-open range
+  `visited_at >= dayStart AND visited_at < dayEnd`. MySQL can now use the `visited_at` index instead of
+  evaluating `date()` on every row.
+- `loadCodesIntoFilter` switched from `LIMIT n OFFSET m` to id-cursor pagination
+  (`WHERE id > ? ORDER BY id LIMIT ?`). Eliminates O(n) offset scans on large tables.

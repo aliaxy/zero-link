@@ -123,6 +123,8 @@ Public contract decisions:
 The HTTP contracts are documented in `docs/06-api-design.md` and implemented in `services/link-api/`.
 
 - `POST /admin/login`
+- `POST /admin/refresh`
+- `PATCH /admin/password`
 - `GET /admin/profile`
 - `POST /admin/links`
 - `GET /admin/links`
@@ -145,6 +147,7 @@ The RPC contracts are documented in `docs/06-api-design.md` and implemented in `
 
 - `AuthenticateAdmin`
 - `GetAdminProfile`
+- `ChangePassword`
 - `CreateShortLink`
 - `ListShortLinks`
 - `GetShortLink`
@@ -219,7 +222,8 @@ httpyac send tests/httpyac/health.http -e local --all
 httpyac send tests/httpyac/admin.http -e local -n login
 ```
 
-After login, copy the returned token into `tests/httpyac/http-client.private.env.json`. After creating a
+After login, copy the returned `access_token` and `refresh_token` into
+`tests/httpyac/http-client.private.env.json` as `accessToken` and `refreshToken`. After creating a
 link, copy the returned ID into `linkId` before running detail, update, or delete requests.
 
 ## Current Verification
@@ -338,9 +342,49 @@ Completed:
 - `Makefile` — added `compose-build`, `compose-up`, `compose-down`, `compose-logs` targets.
 - `docs/11-deployment-design.md` — Stage 9 Implementation section added.
 
+## Post-Stage-9 Production Hardening
+
+Production hardening work done after Stage 9. Each sub-stage has its own feature branch merged into main.
+
+### Stage A: Atomic Archive And Cache Invalidation
+
+Completed:
+
+- `cleanup/shortlinks.go:archiveLink` wrapped in `db.TransactCtx`. The three-step sequence
+  (INSERT archive → INSERT reserved_code → DELETE short_link) is now atomic.
+- Cleanup runner calls `rdb.Del` on id and code cache keys after each successful archival transaction.
+- `CacheShortLinkIdPrefix` and `CacheShortLinkCodePrefix` exported from `model/vars.go`.
+- `cleanup.NewRunner` accepts a `*redis.Redis` parameter.
+- `model/linkarchiver.go` added to hold archival transaction logic outside the goctl-generated files.
+
+### Stage B: Dual-Token Authentication And Password Change
+
+Completed:
+
+- `services/link-api/internal/auth/refreshtoken.go` — `RefreshTokenIssuer` interface and
+  `RefreshTokenStore` implementation.
+- `POST /admin/login` response updated to include `access_token`, `access_token_expires_at`,
+  `refresh_token`, `refresh_token_expires_at`.
+- `POST /admin/refresh` — rotates refresh token, issues new access token; 401 on invalid token.
+- `PATCH /admin/password` — changes password via `ChangePassword` RPC, then calls `RevokeAll`.
+- `ChangePassword` RPC added to `AdminService` proto and implemented in `link-rpc`.
+- httpyac smoke requests updated: `token` → `accessToken`; `refreshToken` added; new requests for
+  refresh and change-password flows.
+
+### Stage C: Performance Critical Path
+
+Completed:
+
+- `AnalyticsMiddleware`: channel-backed worker pool (8 workers, 2 000 buffer) replaces unbounded
+  goroutine-per-redirect. `Stop()` added for clean shutdown; tests register `t.Cleanup(mw.Stop)`.
+- `HasVisitedToday`: half-open range query `visited_at >= dayStart AND visited_at < dayEnd` replaces
+  `date(visited_at) = ?`, enabling index seek instead of full scan.
+- `loadCodesIntoFilter`: id-cursor pagination (`WHERE id > lastID ORDER BY id LIMIT batch`) replaces
+  `LIMIT n OFFSET m`, eliminating O(n) offset scans.
+
 ## Next Handoff
 
-Stage 9 is the final planned implementation stage. Future work is tracked in `docs/15-future-roadmap.md`.
+Stage 9 and post-Stage-9 hardening (A/B/C) are complete. Future work is tracked in `docs/15-future-roadmap.md`.
 
 ## Git And Commit Rules
 

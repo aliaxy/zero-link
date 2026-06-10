@@ -45,12 +45,14 @@ Rules:
 
 ## Write Strategy
 
-First stage:
+Current implementation:
 
-- Redirect path emits a lightweight event.
-- A goroutine or worker writes visit events to MySQL.
-- Failures increment metrics and emit structured logs.
+- `AnalyticsMiddleware` dispatches a job to a bounded channel-backed worker pool after every 302 response.
+- Pool size: 8 workers, 2 000-slot buffer. Jobs are dropped (with a log line) when the buffer is full,
+  preventing memory exhaustion under traffic spikes.
+- Each worker opens a 3-second context for the `RecordVisit` RPC call.
 - Redirect response is not delayed by analytics write completion.
+- Failures increment metrics and emit structured logs.
 
 Future stage:
 

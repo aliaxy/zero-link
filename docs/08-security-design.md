@@ -11,10 +11,19 @@
 ## Authentication
 
 - Administrators authenticate with username and password.
-- Passwords are stored using bcrypt or Argon2id.
-- Successful login returns a JWT or equivalent signed token.
-- Tokens must expire.
-- Login failures should return generic messages.
+- Passwords are stored using bcrypt (`bcrypt.DefaultCost`).
+- Successful login returns a dual-token pair:
+  - **Access token** — short-lived JWT (≤ 15 min). Stateless; validated locally without a Redis lookup.
+    Cannot be revoked before expiry; the short TTL is the accepted trade-off.
+  - **Refresh token** — opaque 32-byte `crypto/rand` token (7-day TTL). Only the SHA-256 hash is stored
+    in Redis (`zl:rt:{hash}`). Rotation deletes the old hash and issues a new token; submitting an
+    already-rotated token is treated as a reuse attempt and returns `UNAUTHENTICATED`.
+- `POST /admin/refresh` rotates the refresh token and issues a new access token.
+- `PATCH /admin/password` changes the password and calls `RevokeAll`, which bulk-deletes all refresh
+  token hashes for the account from Redis. All sessions must re-authenticate; in-flight access tokens
+  remain valid until their natural expiry.
+- Login failures return generic messages.
+- Refresh token raw values are never logged or stored; only the SHA-256 hash persists in Redis.
 
 ## Startup Config Validation
 
