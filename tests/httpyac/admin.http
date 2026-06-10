@@ -8,20 +8,40 @@ Content-Type: application/json
   "password": "{{adminPassword}}"
 }
 
+### refresh - rotate refresh token and get new access token
+# @name refresh
+POST {{baseUrl}}/admin/refresh
+Content-Type: application/json
+
+{
+  "refresh_token": "{{refreshToken}}"
+}
+
+### change-password - change admin password (revokes all refresh tokens)
+# @name changePassword
+PATCH {{baseUrl}}/admin/password
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "old_password": "{{adminPassword}}",
+  "new_password": "newpass123"
+}
+
 ### profile - get admin profile
 # @name profile
 GET {{baseUrl}}/admin/profile
-Authorization: Bearer {{token}}
+Authorization: Bearer {{accessToken}}
 
 ### list-links - get all links
 # @name listLinks
 GET {{baseUrl}}/admin/links
-Authorization: Bearer {{token}}
+Authorization: Bearer {{accessToken}}
 
 ### create-link - create a new link
 # @name createLink
 POST {{baseUrl}}/admin/links
-Authorization: Bearer {{token}}
+Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
@@ -31,12 +51,12 @@ Content-Type: application/json
 ### get-link - get a link by id
 # @name getLink
 GET {{baseUrl}}/admin/links/{{linkId}}
-Authorization: Bearer {{token}}
+Authorization: Bearer {{accessToken}}
 
 ### update-link - update a link by id
 # @name updateLink
 PATCH {{baseUrl}}/admin/links/{{linkId}}
-Authorization: Bearer {{token}}
+Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
@@ -47,4 +67,4 @@ Content-Type: application/json
 ### delete-link - delete a link by id
 # @name deleteLink
 DELETE {{baseUrl}}/admin/links/{{linkId}}
-Authorization: Bearer {{token}}
+Authorization: Bearer {{accessToken}}

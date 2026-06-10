@@ -17,6 +17,8 @@ type (
 	AdminProfile              = linkv1.AdminProfile
 	AuthenticateAdminRequest  = linkv1.AuthenticateAdminRequest
 	AuthenticateAdminResponse = linkv1.AuthenticateAdminResponse
+	ChangePasswordRequest     = linkv1.ChangePasswordRequest
+	ChangePasswordResponse    = linkv1.ChangePasswordResponse
 	CheckRequest              = linkv1.CheckRequest
 	CheckResponse             = linkv1.CheckResponse
 	CreateShortLinkRequest    = linkv1.CreateShortLinkRequest

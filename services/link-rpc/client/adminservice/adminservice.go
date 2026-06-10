@@ -17,6 +17,8 @@ type (
 	AdminProfile              = linkv1.AdminProfile
 	AuthenticateAdminRequest  = linkv1.AuthenticateAdminRequest
 	AuthenticateAdminResponse = linkv1.AuthenticateAdminResponse
+	ChangePasswordRequest     = linkv1.ChangePasswordRequest
+	ChangePasswordResponse    = linkv1.ChangePasswordResponse
 	CheckRequest              = linkv1.CheckRequest
 	CheckResponse             = linkv1.CheckResponse
 	CreateShortLinkRequest    = linkv1.CreateShortLinkRequest
@@ -44,6 +46,7 @@ type (
 	AdminService interface {
 		AuthenticateAdmin(ctx context.Context, in *AuthenticateAdminRequest, opts ...grpc.CallOption) (*AuthenticateAdminResponse, error)
 		GetAdminProfile(ctx context.Context, in *GetAdminProfileRequest, opts ...grpc.CallOption) (*GetAdminProfileResponse, error)
+		ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*ChangePasswordResponse, error)
 	}
 
 	defaultAdminService struct {
@@ -65,4 +68,9 @@ func (m *defaultAdminService) AuthenticateAdmin(ctx context.Context, in *Authent
 func (m *defaultAdminService) GetAdminProfile(ctx context.Context, in *GetAdminProfileRequest, opts ...grpc.CallOption) (*GetAdminProfileResponse, error) {
 	client := linkv1.NewAdminServiceClient(m.cli.Conn())
 	return client.GetAdminProfile(ctx, in, opts...)
+}
+
+func (m *defaultAdminService) ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*ChangePasswordResponse, error) {
+	client := linkv1.NewAdminServiceClient(m.cli.Conn())
+	return client.ChangePassword(ctx, in, opts...)
 }

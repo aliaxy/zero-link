@@ -22,6 +22,15 @@ type (
 		FindOneNotDeleted(ctx context.Context, id int64) (*ShortLink, error)
 		List(ctx context.Context, filter ShortLinkListFilter) ([]*ShortLink, int64, error)
 		SoftDelete(ctx context.Context, id int64, deletedAt time.Time) error
+		// HardDelete permanently removes a short link row and invalidates its Redis cache entries.
+		// Used by the cleanup runner after the archive transaction commits.
+		HardDelete(ctx context.Context, id int64, code string) error
+		// ArchiveInsertIgnore copies a short link row into short_link_archive.
+		// Idempotent: duplicate ids are silently skipped (INSERT IGNORE).
+		ArchiveInsertIgnore(ctx context.Context, link *ShortLink) error
+		// ListSoftDeletedBefore returns at most limit soft-deleted rows whose
+		// deleted_at is earlier than cutoff. Used by the cleanup runner.
+		ListSoftDeletedBefore(ctx context.Context, cutoff time.Time, limit int) ([]*ShortLink, error)
 		withSession(session sqlx.Session) ShortLinkModel
 	}
 
@@ -115,6 +124,46 @@ func (m *customShortLinkModel) SoftDelete(ctx context.Context, id int64, deleted
 		return ErrNotFound
 	}
 	return nil
+}
+
+func (m *customShortLinkModel) HardDelete(ctx context.Context, id int64, code string) error {
+	idKey := fmt.Sprintf("%s%v", cacheShortLinkIdPrefix, id)
+	codeKey := fmt.Sprintf("%s%v", cacheShortLinkCodePrefix, code)
+	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (sql.Result, error) {
+		query := fmt.Sprintf("delete from %s where `id` = ?", m.table)
+		return conn.ExecCtx(ctx, query, id)
+	}, idKey, codeKey)
+	return err
+}
+
+func (m *customShortLinkModel) ArchiveInsertIgnore(ctx context.Context, link *ShortLink) error {
+	const archiveTable = "`short_link_archive`"
+	const columns = "`id`,`code`,`origin_url`,`title`,`description`," +
+		"`status`,`expire_at`,`created_by`,`created_at`,`updated_at`,`deleted_at`"
+	query := fmt.Sprintf("insert ignore into %s (%s) values (?,?,?,?,?,?,?,?,?,?,?)", archiveTable, columns)
+	// ExecCtx with no cache keys: uses the underlying connection (session-aware)
+	// without touching Redis, since the archive table has no cache layer.
+	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (sql.Result, error) {
+		return conn.ExecCtx(ctx, query,
+			link.Id, link.Code, link.OriginUrl, link.Title, link.Description,
+			link.Status, link.ExpireAt, link.CreatedBy, link.CreatedAt, link.UpdatedAt, link.DeletedAt,
+		)
+	})
+	return err
+}
+
+func (m *customShortLinkModel) ListSoftDeletedBefore(
+	ctx context.Context, cutoff time.Time, limit int,
+) ([]*ShortLink, error) {
+	query := fmt.Sprintf(
+		"select %s from %s where `deleted_at` is not null and `deleted_at` < ? limit ?",
+		shortLinkRows, m.table,
+	)
+	var rows []*ShortLink
+	if err := m.QueryRowsNoCacheCtx(ctx, &rows, query, cutoff, limit); err != nil {
+		return nil, err
+	}
+	return rows, nil
 }
 
 func buildShortLinkListWhere(filter ShortLinkListFilter) (string, []any) {

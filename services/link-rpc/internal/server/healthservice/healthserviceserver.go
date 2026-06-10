@@ -7,9 +7,9 @@ package server
 import (
 	"context"
 
-	healthservicelogic "github.com/aliaxy/zero-link/services/link-rpc/internal/logic/healthservice"
+	"github.com/aliaxy/zero-link/services/link-rpc/internal/logic/healthservice"
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/svc"
-	linkv1 "github.com/aliaxy/zero-link/services/link-rpc/pb/link/v1"
+	"github.com/aliaxy/zero-link/services/link-rpc/pb/link/v1"
 )
 
 type HealthServiceServer struct {

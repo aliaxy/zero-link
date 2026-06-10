@@ -10,6 +10,16 @@ type AdminInfo struct {
 	CreatedAt string `json:"created_at,optional"`
 }
 
+type ChangePasswordRequest struct {
+	OldPassword string `json:"old_password"`
+	NewPassword string `json:"new_password"`
+}
+
+type ChangePasswordResponse struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+}
+
 type CreateShortLinkRequest struct {
 	OriginUrl   string `json:"origin_url"`
 	Code        string `json:"code,optional"`
@@ -87,9 +97,11 @@ type ListShortLinksResponse struct {
 }
 
 type LoginData struct {
-	Token     string    `json:"token"`
-	ExpiresAt string    `json:"expires_at"`
-	Admin     AdminInfo `json:"admin"`
+	AccessToken           string    `json:"access_token"`
+	AccessTokenExpiresAt  string    `json:"access_token_expires_at"`
+	RefreshToken          string    `json:"refresh_token"`
+	RefreshTokenExpiresAt string    `json:"refresh_token_expires_at"`
+	Admin                 AdminInfo `json:"admin"`
 }
 
 type LoginRequest struct {
@@ -120,6 +132,23 @@ type RedirectRequest struct {
 
 type RedirectResponse struct {
 	OriginUrl string `json:"origin_url"`
+}
+
+type RefreshTokenData struct {
+	AccessToken           string `json:"access_token"`
+	AccessTokenExpiresAt  string `json:"access_token_expires_at"`
+	RefreshToken          string `json:"refresh_token"`
+	RefreshTokenExpiresAt string `json:"refresh_token_expires_at"`
+}
+
+type RefreshTokenRequest struct {
+	RefreshToken string `json:"refresh_token"`
+}
+
+type RefreshTokenResponse struct {
+	Code    string           `json:"code"`
+	Message string           `json:"message"`
+	Data    RefreshTokenData `json:"data"`
 }
 
 type ShortLinkInfo struct {

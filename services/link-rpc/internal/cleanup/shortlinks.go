@@ -2,7 +2,6 @@ package cleanup
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/metrics"
@@ -11,20 +10,12 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
-const shortLinkColumns = "`id`,`code`,`origin_url`,`title`,`description`," +
-	"`status`,`expire_at`,`created_by`,`created_at`,`updated_at`,`deleted_at`"
-
 func (r *Runner) cleanArchivedLinks(ctx context.Context) {
 	cutoff := time.Now().UTC().AddDate(0, 0, -r.cfg.ShortLinkRetentionDays)
 	total := int64(0)
 	for {
-		var rows []*model.ShortLink
-		fetchQuery := fmt.Sprintf(
-			"select "+shortLinkColumns+
-				" from `short_link` where `deleted_at` is not null and `deleted_at` < ? limit %d",
-			r.cfg.CleanupBatchSize,
-		)
-		if err := r.db.QueryRowsCtx(ctx, &rows, fetchQuery, cutoff); err != nil {
+		rows, err := r.shortLinkModel.ListSoftDeletedBefore(ctx, cutoff, r.cfg.CleanupBatchSize)
+		if err != nil {
 			logx.Errorw("cleanup: short_link fetch failed", logx.Field("error", err.Error()))
 			return
 		}
@@ -51,26 +42,13 @@ func (r *Runner) cleanArchivedLinks(ctx context.Context) {
 }
 
 func (r *Runner) archiveLink(ctx context.Context, link *model.ShortLink) error {
-	// 1. Insert into archive — idempotent on re-run.
-	archiveQuery := "insert ignore into `short_link_archive` (" + shortLinkColumns + ")" +
-		" values (?,?,?,?,?,?,?,?,?,?,?)"
-	if _, err := r.db.ExecCtx(ctx, archiveQuery,
-		link.Id, link.Code, link.OriginUrl, link.Title, link.Description,
-		link.Status, link.ExpireAt, link.CreatedBy, link.CreatedAt, link.UpdatedAt, link.DeletedAt,
-	); err != nil {
-		return fmt.Errorf("insert archive: %w", err)
+	// Phase 1 (atomic): copy row to short_link_archive + insert into reserved_code.
+	// If the process crashes after this but before phase 2, the next cleanup run
+	// retries: both inserts are INSERT IGNORE (idempotent), then phase 2 succeeds.
+	if err := r.archiver.ArchiveAndReserveCode(ctx, link); err != nil {
+		return err
 	}
-	// 2. Reserve the code permanently so it can never be recreated.
-	if _, err := r.db.ExecCtx(ctx,
-		"insert ignore into `reserved_code` (`code`, `reserved_at`) values (?, now())", link.Code,
-	); err != nil {
-		return fmt.Errorf("insert reserved_code: %w", err)
-	}
-	// 3. Hard-delete from short_link.
-	if _, err := r.db.ExecCtx(ctx,
-		"delete from `short_link` where `id` = ?", link.Id,
-	); err != nil {
-		return fmt.Errorf("delete short_link: %w", err)
-	}
-	return nil
+	// Phase 2: hard-delete from short_link via the model layer so the Redis cache
+	// entries for this id/code are evicted immediately.
+	return r.shortLinkModel.HardDelete(ctx, link.Id, link.Code)
 }

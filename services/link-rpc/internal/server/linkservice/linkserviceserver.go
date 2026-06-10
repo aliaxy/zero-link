@@ -7,9 +7,9 @@ package server
 import (
 	"context"
 
-	linkservicelogic "github.com/aliaxy/zero-link/services/link-rpc/internal/logic/linkservice"
+	"github.com/aliaxy/zero-link/services/link-rpc/internal/logic/linkservice"
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/svc"
-	linkv1 "github.com/aliaxy/zero-link/services/link-rpc/pb/link/v1"
+	"github.com/aliaxy/zero-link/services/link-rpc/pb/link/v1"
 )
 
 type LinkServiceServer struct {

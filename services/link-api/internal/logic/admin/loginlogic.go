@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/aliaxy/zero-link/services/link-api/internal/apierror"
+	"github.com/aliaxy/zero-link/services/link-api/internal/auth"
 	"github.com/aliaxy/zero-link/services/link-api/internal/convert"
 	"github.com/aliaxy/zero-link/services/link-api/internal/svc"
 	"github.com/aliaxy/zero-link/services/link-api/internal/types"
@@ -49,7 +50,12 @@ func (l *LoginLogic) Login(req *types.LoginRequest) (resp *types.LoginResponse, 
 		return nil, apierror.FromRPCError(err)
 	}
 
-	token, expiresAt, err := l.svcCtx.TokenManager.Create(convert.AdminSubjectFromRPC(rpcResp.Admin))
+	accessToken, accessExpiresAt, err := l.svcCtx.TokenManager.Create(convert.AdminSubjectFromRPC(rpcResp.Admin))
+	if err != nil {
+		return nil, err
+	}
+
+	refreshToken, err := l.svcCtx.RefreshTokenStore.Issue(l.ctx, rpcResp.Admin.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -63,9 +69,11 @@ func (l *LoginLogic) Login(req *types.LoginRequest) (resp *types.LoginResponse, 
 		Code:    "OK",
 		Message: "ok",
 		Data: types.LoginData{
-			Token:     token,
-			ExpiresAt: expiresAt.Format(time.RFC3339),
-			Admin:     convert.AdminInfoFromRPC(rpcResp.Admin),
+			AccessToken:           accessToken,
+			AccessTokenExpiresAt:  accessExpiresAt.Format(time.RFC3339),
+			RefreshToken:          refreshToken,
+			RefreshTokenExpiresAt: auth.ExpiresAt().Format(time.RFC3339),
+			Admin:                 convert.AdminInfoFromRPC(rpcResp.Admin),
 		},
 	}, nil
 }

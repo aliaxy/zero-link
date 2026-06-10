@@ -47,7 +47,11 @@ func NewServiceContext(c config.Config) *ServiceContext {
 
 	loadCodesIntoFilter(context.Background(), db, cf)
 
-	cleanupRunner := cleanup.NewRunner(db, c.Retention)
+	// Models are created before the cleanup runner so they can be shared.
+	shortLinkModel := model.NewShortLinkModel(db, c.CacheRedis)
+	reservedCodeModel := model.NewReservedCodeModel(db)
+	archiver := model.NewLinkArchiver(db, shortLinkModel, reservedCodeModel)
+	cleanupRunner := cleanup.NewRunner(db, shortLinkModel, archiver, c.Retention)
 	cleanupRunner.Start(context.Background())
 
 	return &ServiceContext{
@@ -56,10 +60,10 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		Redis:             rdb,
 		CodeFilter:        cf,
 		AdminUserModel:    model.NewAdminUserModel(db, c.CacheRedis),
-		ShortLinkModel:    model.NewShortLinkModel(db, c.CacheRedis),
+		ShortLinkModel:    shortLinkModel,
 		VisitEventModel:   model.NewVisitEventModel(db),
 		DailyStatModel:    model.NewLinkDailyStatModel(db),
-		ReservedCodeModel: model.NewReservedCodeModel(db),
+		ReservedCodeModel: reservedCodeModel,
 	}
 }
 

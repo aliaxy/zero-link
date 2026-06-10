@@ -14,6 +14,19 @@ import (
 	"google.golang.org/grpc"
 )
 
+// fakeRefreshTokenStore is an in-memory stub for tests.
+type fakeRefreshTokenStore struct{}
+
+func (fakeRefreshTokenStore) Issue(_ context.Context, _ int64) (string, error) {
+	return "fake-refresh-token", nil
+}
+
+func (fakeRefreshTokenStore) Rotate(_ context.Context, _ string) (string, int64, error) {
+	return "fake-refresh-token-new", 42, nil
+}
+
+func (fakeRefreshTokenStore) RevokeAll(_ context.Context, _ int64) error { return nil }
+
 // fakeAdminService embeds AdminService so only exercised methods need overriding.
 type fakeAdminService struct {
 	adminservice.AdminService
@@ -116,7 +129,8 @@ func TestLoginLogic_Login(t *testing.T) {
 		TokenTTLSeconds: 3600,
 	})
 	svcCtx := &svc.ServiceContext{
-		TokenManager: tokenManager,
+		TokenManager:      tokenManager,
+		RefreshTokenStore: fakeRefreshTokenStore{},
 		AdminRPC: fakeAdminService{
 			authResp: &adminservice.AuthenticateAdminResponse{
 				Admin: &adminservice.AdminProfile{
@@ -139,8 +153,11 @@ func TestLoginLogic_Login(t *testing.T) {
 	if resp.Code != "OK" {
 		t.Fatalf("response code = %q, want OK", resp.Code)
 	}
-	if resp.Data.Token == "" {
-		t.Fatal("response token is empty")
+	if resp.Data.AccessToken == "" {
+		t.Fatal("response access_token is empty")
+	}
+	if resp.Data.RefreshToken == "" {
+		t.Fatal("response refresh_token is empty")
 	}
 	if resp.Data.Admin.Id != 42 {
 		t.Fatalf("admin ID = %d, want 42", resp.Data.Admin.Id)

@@ -15,6 +15,9 @@ type (
 		reservedCodeModel
 		withSession(session sqlx.Session) ReservedCodeModel
 		Exists(ctx context.Context, code string) (bool, error)
+		// Reserve inserts a code into reserved_code with INSERT IGNORE, permanently
+		// preventing that code from being reused after a link is archived.
+		Reserve(ctx context.Context, code string) error
 	}
 
 	customReservedCodeModel struct {
@@ -38,4 +41,10 @@ func (m *customReservedCodeModel) Exists(ctx context.Context, code string) (bool
 	query := "select count(*) from `reserved_code` where `code` = ? limit 1"
 	err := m.conn.QueryRowCtx(ctx, &count, query, code)
 	return count > 0, err
+}
+
+func (m *customReservedCodeModel) Reserve(ctx context.Context, code string) error {
+	query := "insert ignore into `reserved_code` (`code`, `reserved_at`) values (?, now())"
+	_, err := m.conn.ExecCtx(ctx, query, code)
+	return err
 }
