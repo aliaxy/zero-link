@@ -152,7 +152,9 @@ func (m *customShortLinkModel) ArchiveInsertIgnore(ctx context.Context, link *Sh
 	return err
 }
 
-func (m *customShortLinkModel) ListSoftDeletedBefore(ctx context.Context, cutoff time.Time, limit int) ([]*ShortLink, error) {
+func (m *customShortLinkModel) ListSoftDeletedBefore(
+	ctx context.Context, cutoff time.Time, limit int,
+) ([]*ShortLink, error) {
 	query := fmt.Sprintf(
 		"select %s from %s where `deleted_at` is not null and `deleted_at` < ? limit ?",
 		shortLinkRows, m.table,

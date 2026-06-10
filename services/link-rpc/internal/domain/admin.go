@@ -34,6 +34,12 @@ type AdminFinder interface {
 	FindOneByUsername(ctx context.Context, username string) (*model.AdminUser, error)
 }
 
+// AdminUpdater finds and updates administrator records.
+type AdminUpdater interface {
+	FindOne(ctx context.Context, id int64) (*model.AdminUser, error)
+	Update(ctx context.Context, data *model.AdminUser) error
+}
+
 // AuthenticateAdmin validates administrator credentials and status.
 func AuthenticateAdmin(ctx context.Context, finder AdminFinder, username, password string) (*model.AdminUser, error) {
 	if username == "" || password == "" {
@@ -60,4 +66,30 @@ func GetActiveAdminProfile(admin *model.AdminUser) (*model.AdminUser, error) {
 		return nil, ErrNotFound
 	}
 	return admin, nil
+}
+
+// ChangePassword verifies the old password and updates to the new hash.
+func ChangePassword(ctx context.Context, updater AdminUpdater, adminID int64, oldPassword, newPassword string) error {
+	if oldPassword == "" || newPassword == "" {
+		return ErrInvalidArgument
+	}
+
+	admin, err := updater.FindOne(ctx, adminID)
+	if err != nil {
+		return ErrNotFound
+	}
+	if admin.Status != AdminStatusActive {
+		return ErrUnauthenticated
+	}
+	if !VerifyPassword(admin.PasswordHash, oldPassword) {
+		return ErrUnauthenticated
+	}
+
+	newHash, err := HashPassword(newPassword)
+	if err != nil {
+		return err
+	}
+
+	admin.PasswordHash = newHash
+	return updater.Update(ctx, admin)
 }

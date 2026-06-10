@@ -26,6 +26,7 @@ type ServiceContext struct {
 	IPRateLimitMiddleware    rest.Middleware
 	LoginRateLimitMiddleware rest.Middleware
 	TokenManager             *auth.TokenManager
+	RefreshTokenStore        auth.RefreshTokenIssuer
 	Redis                    *redis.Redis
 	HealthRPC                healthservice.HealthService
 	AdminRPC                 adminservice.AdminService
@@ -47,6 +48,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	return &ServiceContext{
 		Config:              c,
 		TokenManager:        tokenManager,
+		RefreshTokenStore:   auth.NewRefreshTokenStore(redisClient),
 		Redis:               redisClient,
 		AuthMiddleware:      middleware.NewAuthMiddleware(tokenManager).Handle,
 		AnalyticsMiddleware: middleware.NewAnalyticsMiddleware(analyticsRPC, c.RateLimit.TrustedProxies).Handle,

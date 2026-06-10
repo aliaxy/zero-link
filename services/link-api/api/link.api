@@ -1,9 +1,9 @@
 syntax = "v1"
 
 info (
-	title:  "zero-link API"
-	desc:   "Health, readiness, management, redirect, analytics, rate limiting, and observability"
-	author: "zero-link"
+	title:   "zero-link API"
+	desc:    "Health, readiness, management, redirect, analytics, rate limiting, and observability"
+	author:  "zero-link"
 	version: "stage7"
 )
 
@@ -35,9 +35,38 @@ type LoginRequest {
 }
 
 type LoginData {
-	Token     string    `json:"token"`
-	ExpiresAt string    `json:"expires_at"`
-	Admin     AdminInfo `json:"admin"`
+	AccessToken           string    `json:"access_token"`
+	AccessTokenExpiresAt  string    `json:"access_token_expires_at"`
+	RefreshToken          string    `json:"refresh_token"`
+	RefreshTokenExpiresAt string    `json:"refresh_token_expires_at"`
+	Admin                 AdminInfo `json:"admin"`
+}
+
+type RefreshTokenRequest {
+	RefreshToken string `json:"refresh_token"`
+}
+
+type RefreshTokenData {
+	AccessToken           string `json:"access_token"`
+	AccessTokenExpiresAt  string `json:"access_token_expires_at"`
+	RefreshToken          string `json:"refresh_token"`
+	RefreshTokenExpiresAt string `json:"refresh_token_expires_at"`
+}
+
+type RefreshTokenResponse {
+	Code    string           `json:"code"`
+	Message string           `json:"message"`
+	Data    RefreshTokenData `json:"data"`
+}
+
+type ChangePasswordRequest {
+	OldPassword string `json:"old_password"`
+	NewPassword string `json:"new_password"`
+}
+
+type ChangePasswordResponse {
+	Code    string `json:"code"`
+	Message string `json:"message"`
 }
 
 type LoginResponse {
@@ -183,6 +212,9 @@ service link-api {
 service link-api {
 	@handler LoginHandler
 	post /admin/login (LoginRequest) returns (LoginResponse)
+
+	@handler RefreshTokenHandler
+	post /admin/refresh (RefreshTokenRequest) returns (RefreshTokenResponse)
 }
 
 @server (
@@ -219,5 +251,8 @@ service link-api {
 
 	@handler GetLinkStatsHandler
 	get /admin/links/:id/stats (GetLinkStatsRequest) returns (GetLinkStatsResponse)
+
+	@handler ChangePasswordHandler
+	patch /admin/password (ChangePasswordRequest) returns (ChangePasswordResponse)
 }
 

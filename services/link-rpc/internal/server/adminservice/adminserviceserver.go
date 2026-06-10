@@ -7,9 +7,9 @@ package server
 import (
 	"context"
 
-	adminservicelogic "github.com/aliaxy/zero-link/services/link-rpc/internal/logic/adminservice"
+	"github.com/aliaxy/zero-link/services/link-rpc/internal/logic/adminservice"
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/svc"
-	linkv1 "github.com/aliaxy/zero-link/services/link-rpc/pb/link/v1"
+	"github.com/aliaxy/zero-link/services/link-rpc/pb/link/v1"
 )
 
 type AdminServiceServer struct {
@@ -31,4 +31,9 @@ func (s *AdminServiceServer) AuthenticateAdmin(ctx context.Context, in *linkv1.A
 func (s *AdminServiceServer) GetAdminProfile(ctx context.Context, in *linkv1.GetAdminProfileRequest) (*linkv1.GetAdminProfileResponse, error) {
 	l := adminservicelogic.NewGetAdminProfileLogic(ctx, s.svcCtx)
 	return l.GetAdminProfile(in)
+}
+
+func (s *AdminServiceServer) ChangePassword(ctx context.Context, in *linkv1.ChangePasswordRequest) (*linkv1.ChangePasswordResponse, error) {
+	l := adminservicelogic.NewChangePasswordLogic(ctx, s.svcCtx)
+	return l.ChangePassword(in)
 }

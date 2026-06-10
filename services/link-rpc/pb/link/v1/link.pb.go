@@ -637,6 +637,102 @@ func (x *GetAdminProfileResponse) GetAdmin() *AdminProfile {
 	return nil
 }
 
+type ChangePasswordRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AdminId       int64                  `protobuf:"varint,1,opt,name=admin_id,json=adminId,proto3" json:"admin_id,omitempty"`
+	OldPassword   string                 `protobuf:"bytes,2,opt,name=old_password,json=oldPassword,proto3" json:"old_password,omitempty"`
+	NewPassword   string                 `protobuf:"bytes,3,opt,name=new_password,json=newPassword,proto3" json:"new_password,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ChangePasswordRequest) Reset() {
+	*x = ChangePasswordRequest{}
+	mi := &file_link_v1_link_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ChangePasswordRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ChangePasswordRequest) ProtoMessage() {}
+
+func (x *ChangePasswordRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_link_v1_link_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ChangePasswordRequest.ProtoReflect.Descriptor instead.
+func (*ChangePasswordRequest) Descriptor() ([]byte, []int) {
+	return file_link_v1_link_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *ChangePasswordRequest) GetAdminId() int64 {
+	if x != nil {
+		return x.AdminId
+	}
+	return 0
+}
+
+func (x *ChangePasswordRequest) GetOldPassword() string {
+	if x != nil {
+		return x.OldPassword
+	}
+	return ""
+}
+
+func (x *ChangePasswordRequest) GetNewPassword() string {
+	if x != nil {
+		return x.NewPassword
+	}
+	return ""
+}
+
+type ChangePasswordResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ChangePasswordResponse) Reset() {
+	*x = ChangePasswordResponse{}
+	mi := &file_link_v1_link_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ChangePasswordResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ChangePasswordResponse) ProtoMessage() {}
+
+func (x *ChangePasswordResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_link_v1_link_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ChangePasswordResponse.ProtoReflect.Descriptor instead.
+func (*ChangePasswordResponse) Descriptor() ([]byte, []int) {
+	return file_link_v1_link_proto_rawDescGZIP(), []int{11}
+}
+
 type CreateShortLinkRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	OriginUrl     string                 `protobuf:"bytes,1,opt,name=origin_url,json=originUrl,proto3" json:"origin_url,omitempty"`
@@ -651,7 +747,7 @@ type CreateShortLinkRequest struct {
 
 func (x *CreateShortLinkRequest) Reset() {
 	*x = CreateShortLinkRequest{}
-	mi := &file_link_v1_link_proto_msgTypes[10]
+	mi := &file_link_v1_link_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -663,7 +759,7 @@ func (x *CreateShortLinkRequest) String() string {
 func (*CreateShortLinkRequest) ProtoMessage() {}
 
 func (x *CreateShortLinkRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_link_v1_link_proto_msgTypes[10]
+	mi := &file_link_v1_link_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -676,7 +772,7 @@ func (x *CreateShortLinkRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateShortLinkRequest.ProtoReflect.Descriptor instead.
 func (*CreateShortLinkRequest) Descriptor() ([]byte, []int) {
-	return file_link_v1_link_proto_rawDescGZIP(), []int{10}
+	return file_link_v1_link_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *CreateShortLinkRequest) GetOriginUrl() string {
@@ -730,7 +826,7 @@ type CreateShortLinkResponse struct {
 
 func (x *CreateShortLinkResponse) Reset() {
 	*x = CreateShortLinkResponse{}
-	mi := &file_link_v1_link_proto_msgTypes[11]
+	mi := &file_link_v1_link_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -742,7 +838,7 @@ func (x *CreateShortLinkResponse) String() string {
 func (*CreateShortLinkResponse) ProtoMessage() {}
 
 func (x *CreateShortLinkResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_link_v1_link_proto_msgTypes[11]
+	mi := &file_link_v1_link_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -755,7 +851,7 @@ func (x *CreateShortLinkResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateShortLinkResponse.ProtoReflect.Descriptor instead.
 func (*CreateShortLinkResponse) Descriptor() ([]byte, []int) {
-	return file_link_v1_link_proto_rawDescGZIP(), []int{11}
+	return file_link_v1_link_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *CreateShortLinkResponse) GetLink() *ShortLink {
@@ -777,7 +873,7 @@ type ListShortLinksRequest struct {
 
 func (x *ListShortLinksRequest) Reset() {
 	*x = ListShortLinksRequest{}
-	mi := &file_link_v1_link_proto_msgTypes[12]
+	mi := &file_link_v1_link_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -789,7 +885,7 @@ func (x *ListShortLinksRequest) String() string {
 func (*ListShortLinksRequest) ProtoMessage() {}
 
 func (x *ListShortLinksRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_link_v1_link_proto_msgTypes[12]
+	mi := &file_link_v1_link_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -802,7 +898,7 @@ func (x *ListShortLinksRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListShortLinksRequest.ProtoReflect.Descriptor instead.
 func (*ListShortLinksRequest) Descriptor() ([]byte, []int) {
-	return file_link_v1_link_proto_rawDescGZIP(), []int{12}
+	return file_link_v1_link_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *ListShortLinksRequest) GetPage() int64 {
@@ -845,7 +941,7 @@ type ListShortLinksResponse struct {
 
 func (x *ListShortLinksResponse) Reset() {
 	*x = ListShortLinksResponse{}
-	mi := &file_link_v1_link_proto_msgTypes[13]
+	mi := &file_link_v1_link_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -857,7 +953,7 @@ func (x *ListShortLinksResponse) String() string {
 func (*ListShortLinksResponse) ProtoMessage() {}
 
 func (x *ListShortLinksResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_link_v1_link_proto_msgTypes[13]
+	mi := &file_link_v1_link_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -870,7 +966,7 @@ func (x *ListShortLinksResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListShortLinksResponse.ProtoReflect.Descriptor instead.
 func (*ListShortLinksResponse) Descriptor() ([]byte, []int) {
-	return file_link_v1_link_proto_rawDescGZIP(), []int{13}
+	return file_link_v1_link_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *ListShortLinksResponse) GetItems() []*ShortLinkSummary {
@@ -910,7 +1006,7 @@ type GetShortLinkRequest struct {
 
 func (x *GetShortLinkRequest) Reset() {
 	*x = GetShortLinkRequest{}
-	mi := &file_link_v1_link_proto_msgTypes[14]
+	mi := &file_link_v1_link_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -922,7 +1018,7 @@ func (x *GetShortLinkRequest) String() string {
 func (*GetShortLinkRequest) ProtoMessage() {}
 
 func (x *GetShortLinkRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_link_v1_link_proto_msgTypes[14]
+	mi := &file_link_v1_link_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -935,7 +1031,7 @@ func (x *GetShortLinkRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetShortLinkRequest.ProtoReflect.Descriptor instead.
 func (*GetShortLinkRequest) Descriptor() ([]byte, []int) {
-	return file_link_v1_link_proto_rawDescGZIP(), []int{14}
+	return file_link_v1_link_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *GetShortLinkRequest) GetId() int64 {
@@ -954,7 +1050,7 @@ type GetShortLinkResponse struct {
 
 func (x *GetShortLinkResponse) Reset() {
 	*x = GetShortLinkResponse{}
-	mi := &file_link_v1_link_proto_msgTypes[15]
+	mi := &file_link_v1_link_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -966,7 +1062,7 @@ func (x *GetShortLinkResponse) String() string {
 func (*GetShortLinkResponse) ProtoMessage() {}
 
 func (x *GetShortLinkResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_link_v1_link_proto_msgTypes[15]
+	mi := &file_link_v1_link_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -979,7 +1075,7 @@ func (x *GetShortLinkResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetShortLinkResponse.ProtoReflect.Descriptor instead.
 func (*GetShortLinkResponse) Descriptor() ([]byte, []int) {
-	return file_link_v1_link_proto_rawDescGZIP(), []int{15}
+	return file_link_v1_link_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *GetShortLinkResponse) GetLink() *ShortLink {
@@ -1003,7 +1099,7 @@ type UpdateShortLinkRequest struct {
 
 func (x *UpdateShortLinkRequest) Reset() {
 	*x = UpdateShortLinkRequest{}
-	mi := &file_link_v1_link_proto_msgTypes[16]
+	mi := &file_link_v1_link_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1015,7 +1111,7 @@ func (x *UpdateShortLinkRequest) String() string {
 func (*UpdateShortLinkRequest) ProtoMessage() {}
 
 func (x *UpdateShortLinkRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_link_v1_link_proto_msgTypes[16]
+	mi := &file_link_v1_link_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1028,7 +1124,7 @@ func (x *UpdateShortLinkRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateShortLinkRequest.ProtoReflect.Descriptor instead.
 func (*UpdateShortLinkRequest) Descriptor() ([]byte, []int) {
-	return file_link_v1_link_proto_rawDescGZIP(), []int{16}
+	return file_link_v1_link_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *UpdateShortLinkRequest) GetId() int64 {
@@ -1082,7 +1178,7 @@ type UpdateShortLinkResponse struct {
 
 func (x *UpdateShortLinkResponse) Reset() {
 	*x = UpdateShortLinkResponse{}
-	mi := &file_link_v1_link_proto_msgTypes[17]
+	mi := &file_link_v1_link_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1094,7 +1190,7 @@ func (x *UpdateShortLinkResponse) String() string {
 func (*UpdateShortLinkResponse) ProtoMessage() {}
 
 func (x *UpdateShortLinkResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_link_v1_link_proto_msgTypes[17]
+	mi := &file_link_v1_link_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1107,7 +1203,7 @@ func (x *UpdateShortLinkResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateShortLinkResponse.ProtoReflect.Descriptor instead.
 func (*UpdateShortLinkResponse) Descriptor() ([]byte, []int) {
-	return file_link_v1_link_proto_rawDescGZIP(), []int{17}
+	return file_link_v1_link_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *UpdateShortLinkResponse) GetLink() *ShortLink {
@@ -1126,7 +1222,7 @@ type DeleteShortLinkRequest struct {
 
 func (x *DeleteShortLinkRequest) Reset() {
 	*x = DeleteShortLinkRequest{}
-	mi := &file_link_v1_link_proto_msgTypes[18]
+	mi := &file_link_v1_link_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1138,7 +1234,7 @@ func (x *DeleteShortLinkRequest) String() string {
 func (*DeleteShortLinkRequest) ProtoMessage() {}
 
 func (x *DeleteShortLinkRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_link_v1_link_proto_msgTypes[18]
+	mi := &file_link_v1_link_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1151,7 +1247,7 @@ func (x *DeleteShortLinkRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteShortLinkRequest.ProtoReflect.Descriptor instead.
 func (*DeleteShortLinkRequest) Descriptor() ([]byte, []int) {
-	return file_link_v1_link_proto_rawDescGZIP(), []int{18}
+	return file_link_v1_link_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *DeleteShortLinkRequest) GetId() int64 {
@@ -1171,7 +1267,7 @@ type DeleteShortLinkResponse struct {
 
 func (x *DeleteShortLinkResponse) Reset() {
 	*x = DeleteShortLinkResponse{}
-	mi := &file_link_v1_link_proto_msgTypes[19]
+	mi := &file_link_v1_link_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1183,7 +1279,7 @@ func (x *DeleteShortLinkResponse) String() string {
 func (*DeleteShortLinkResponse) ProtoMessage() {}
 
 func (x *DeleteShortLinkResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_link_v1_link_proto_msgTypes[19]
+	mi := &file_link_v1_link_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1196,7 +1292,7 @@ func (x *DeleteShortLinkResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteShortLinkResponse.ProtoReflect.Descriptor instead.
 func (*DeleteShortLinkResponse) Descriptor() ([]byte, []int) {
-	return file_link_v1_link_proto_rawDescGZIP(), []int{19}
+	return file_link_v1_link_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *DeleteShortLinkResponse) GetId() int64 {
@@ -1222,7 +1318,7 @@ type ResolveShortLinkRequest struct {
 
 func (x *ResolveShortLinkRequest) Reset() {
 	*x = ResolveShortLinkRequest{}
-	mi := &file_link_v1_link_proto_msgTypes[20]
+	mi := &file_link_v1_link_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1234,7 +1330,7 @@ func (x *ResolveShortLinkRequest) String() string {
 func (*ResolveShortLinkRequest) ProtoMessage() {}
 
 func (x *ResolveShortLinkRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_link_v1_link_proto_msgTypes[20]
+	mi := &file_link_v1_link_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1247,7 +1343,7 @@ func (x *ResolveShortLinkRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResolveShortLinkRequest.ProtoReflect.Descriptor instead.
 func (*ResolveShortLinkRequest) Descriptor() ([]byte, []int) {
-	return file_link_v1_link_proto_rawDescGZIP(), []int{20}
+	return file_link_v1_link_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *ResolveShortLinkRequest) GetCode() string {
@@ -1266,7 +1362,7 @@ type ResolveShortLinkResponse struct {
 
 func (x *ResolveShortLinkResponse) Reset() {
 	*x = ResolveShortLinkResponse{}
-	mi := &file_link_v1_link_proto_msgTypes[21]
+	mi := &file_link_v1_link_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1278,7 +1374,7 @@ func (x *ResolveShortLinkResponse) String() string {
 func (*ResolveShortLinkResponse) ProtoMessage() {}
 
 func (x *ResolveShortLinkResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_link_v1_link_proto_msgTypes[21]
+	mi := &file_link_v1_link_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1291,7 +1387,7 @@ func (x *ResolveShortLinkResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResolveShortLinkResponse.ProtoReflect.Descriptor instead.
 func (*ResolveShortLinkResponse) Descriptor() ([]byte, []int) {
-	return file_link_v1_link_proto_rawDescGZIP(), []int{21}
+	return file_link_v1_link_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *ResolveShortLinkResponse) GetOriginUrl() string {
@@ -1314,7 +1410,7 @@ type RecordVisitRequest struct {
 
 func (x *RecordVisitRequest) Reset() {
 	*x = RecordVisitRequest{}
-	mi := &file_link_v1_link_proto_msgTypes[22]
+	mi := &file_link_v1_link_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1326,7 +1422,7 @@ func (x *RecordVisitRequest) String() string {
 func (*RecordVisitRequest) ProtoMessage() {}
 
 func (x *RecordVisitRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_link_v1_link_proto_msgTypes[22]
+	mi := &file_link_v1_link_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1339,7 +1435,7 @@ func (x *RecordVisitRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RecordVisitRequest.ProtoReflect.Descriptor instead.
 func (*RecordVisitRequest) Descriptor() ([]byte, []int) {
-	return file_link_v1_link_proto_rawDescGZIP(), []int{22}
+	return file_link_v1_link_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *RecordVisitRequest) GetCode() string {
@@ -1385,7 +1481,7 @@ type RecordVisitResponse struct {
 
 func (x *RecordVisitResponse) Reset() {
 	*x = RecordVisitResponse{}
-	mi := &file_link_v1_link_proto_msgTypes[23]
+	mi := &file_link_v1_link_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1397,7 +1493,7 @@ func (x *RecordVisitResponse) String() string {
 func (*RecordVisitResponse) ProtoMessage() {}
 
 func (x *RecordVisitResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_link_v1_link_proto_msgTypes[23]
+	mi := &file_link_v1_link_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1410,7 +1506,7 @@ func (x *RecordVisitResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RecordVisitResponse.ProtoReflect.Descriptor instead.
 func (*RecordVisitResponse) Descriptor() ([]byte, []int) {
-	return file_link_v1_link_proto_rawDescGZIP(), []int{23}
+	return file_link_v1_link_proto_rawDescGZIP(), []int{25}
 }
 
 type GetLinkStatsRequest struct {
@@ -1424,7 +1520,7 @@ type GetLinkStatsRequest struct {
 
 func (x *GetLinkStatsRequest) Reset() {
 	*x = GetLinkStatsRequest{}
-	mi := &file_link_v1_link_proto_msgTypes[24]
+	mi := &file_link_v1_link_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1436,7 +1532,7 @@ func (x *GetLinkStatsRequest) String() string {
 func (*GetLinkStatsRequest) ProtoMessage() {}
 
 func (x *GetLinkStatsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_link_v1_link_proto_msgTypes[24]
+	mi := &file_link_v1_link_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1449,7 +1545,7 @@ func (x *GetLinkStatsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetLinkStatsRequest.ProtoReflect.Descriptor instead.
 func (*GetLinkStatsRequest) Descriptor() ([]byte, []int) {
-	return file_link_v1_link_proto_rawDescGZIP(), []int{24}
+	return file_link_v1_link_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *GetLinkStatsRequest) GetLinkId() int64 {
@@ -1483,7 +1579,7 @@ type GetLinkStatsResponse struct {
 
 func (x *GetLinkStatsResponse) Reset() {
 	*x = GetLinkStatsResponse{}
-	mi := &file_link_v1_link_proto_msgTypes[25]
+	mi := &file_link_v1_link_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1495,7 +1591,7 @@ func (x *GetLinkStatsResponse) String() string {
 func (*GetLinkStatsResponse) ProtoMessage() {}
 
 func (x *GetLinkStatsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_link_v1_link_proto_msgTypes[25]
+	mi := &file_link_v1_link_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1508,7 +1604,7 @@ func (x *GetLinkStatsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetLinkStatsResponse.ProtoReflect.Descriptor instead.
 func (*GetLinkStatsResponse) Descriptor() ([]byte, []int) {
-	return file_link_v1_link_proto_rawDescGZIP(), []int{25}
+	return file_link_v1_link_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *GetLinkStatsResponse) GetLinkId() int64 {
@@ -1580,7 +1676,12 @@ const file_link_v1_link_proto_rawDesc = "" +
 	"\x16GetAdminProfileRequest\x12\x19\n" +
 	"\badmin_id\x18\x01 \x01(\x03R\aadminId\"F\n" +
 	"\x17GetAdminProfileResponse\x12+\n" +
-	"\x05admin\x18\x01 \x01(\v2\x15.link.v1.AdminProfileR\x05admin\"\xbf\x01\n" +
+	"\x05admin\x18\x01 \x01(\v2\x15.link.v1.AdminProfileR\x05admin\"x\n" +
+	"\x15ChangePasswordRequest\x12\x19\n" +
+	"\badmin_id\x18\x01 \x01(\x03R\aadminId\x12!\n" +
+	"\fold_password\x18\x02 \x01(\tR\voldPassword\x12!\n" +
+	"\fnew_password\x18\x03 \x01(\tR\vnewPassword\"\x18\n" +
+	"\x16ChangePasswordResponse\"\xbf\x01\n" +
 	"\x16CreateShortLinkRequest\x12\x1d\n" +
 	"\n" +
 	"origin_url\x18\x01 \x01(\tR\toriginUrl\x12\x12\n" +
@@ -1643,10 +1744,11 @@ const file_link_v1_link_proto_rawDesc = "" +
 	"\alink_id\x18\x01 \x01(\x03R\x06linkId\x12(\n" +
 	"\x05items\x18\x02 \x03(\v2\x12.link.v1.DailyStatR\x05items2G\n" +
 	"\rHealthService\x126\n" +
-	"\x05Check\x12\x15.link.v1.CheckRequest\x1a\x16.link.v1.CheckResponse2\xc0\x01\n" +
+	"\x05Check\x12\x15.link.v1.CheckRequest\x1a\x16.link.v1.CheckResponse2\x93\x02\n" +
 	"\fAdminService\x12Z\n" +
 	"\x11AuthenticateAdmin\x12!.link.v1.AuthenticateAdminRequest\x1a\".link.v1.AuthenticateAdminResponse\x12T\n" +
-	"\x0fGetAdminProfile\x12\x1f.link.v1.GetAdminProfileRequest\x1a .link.v1.GetAdminProfileResponse2\x88\x04\n" +
+	"\x0fGetAdminProfile\x12\x1f.link.v1.GetAdminProfileRequest\x1a .link.v1.GetAdminProfileResponse\x12Q\n" +
+	"\x0eChangePassword\x12\x1e.link.v1.ChangePasswordRequest\x1a\x1f.link.v1.ChangePasswordResponse2\x88\x04\n" +
 	"\vLinkService\x12T\n" +
 	"\x0fCreateShortLink\x12\x1f.link.v1.CreateShortLinkRequest\x1a .link.v1.CreateShortLinkResponse\x12Q\n" +
 	"\x0eListShortLinks\x12\x1e.link.v1.ListShortLinksRequest\x1a\x1f.link.v1.ListShortLinksResponse\x12K\n" +
@@ -1670,7 +1772,7 @@ func file_link_v1_link_proto_rawDescGZIP() []byte {
 	return file_link_v1_link_proto_rawDescData
 }
 
-var file_link_v1_link_proto_msgTypes = make([]protoimpl.MessageInfo, 26)
+var file_link_v1_link_proto_msgTypes = make([]protoimpl.MessageInfo, 28)
 var file_link_v1_link_proto_goTypes = []any{
 	(*AdminProfile)(nil),              // 0: link.v1.AdminProfile
 	(*ShortLink)(nil),                 // 1: link.v1.ShortLink
@@ -1682,22 +1784,24 @@ var file_link_v1_link_proto_goTypes = []any{
 	(*AuthenticateAdminResponse)(nil), // 7: link.v1.AuthenticateAdminResponse
 	(*GetAdminProfileRequest)(nil),    // 8: link.v1.GetAdminProfileRequest
 	(*GetAdminProfileResponse)(nil),   // 9: link.v1.GetAdminProfileResponse
-	(*CreateShortLinkRequest)(nil),    // 10: link.v1.CreateShortLinkRequest
-	(*CreateShortLinkResponse)(nil),   // 11: link.v1.CreateShortLinkResponse
-	(*ListShortLinksRequest)(nil),     // 12: link.v1.ListShortLinksRequest
-	(*ListShortLinksResponse)(nil),    // 13: link.v1.ListShortLinksResponse
-	(*GetShortLinkRequest)(nil),       // 14: link.v1.GetShortLinkRequest
-	(*GetShortLinkResponse)(nil),      // 15: link.v1.GetShortLinkResponse
-	(*UpdateShortLinkRequest)(nil),    // 16: link.v1.UpdateShortLinkRequest
-	(*UpdateShortLinkResponse)(nil),   // 17: link.v1.UpdateShortLinkResponse
-	(*DeleteShortLinkRequest)(nil),    // 18: link.v1.DeleteShortLinkRequest
-	(*DeleteShortLinkResponse)(nil),   // 19: link.v1.DeleteShortLinkResponse
-	(*ResolveShortLinkRequest)(nil),   // 20: link.v1.ResolveShortLinkRequest
-	(*ResolveShortLinkResponse)(nil),  // 21: link.v1.ResolveShortLinkResponse
-	(*RecordVisitRequest)(nil),        // 22: link.v1.RecordVisitRequest
-	(*RecordVisitResponse)(nil),       // 23: link.v1.RecordVisitResponse
-	(*GetLinkStatsRequest)(nil),       // 24: link.v1.GetLinkStatsRequest
-	(*GetLinkStatsResponse)(nil),      // 25: link.v1.GetLinkStatsResponse
+	(*ChangePasswordRequest)(nil),     // 10: link.v1.ChangePasswordRequest
+	(*ChangePasswordResponse)(nil),    // 11: link.v1.ChangePasswordResponse
+	(*CreateShortLinkRequest)(nil),    // 12: link.v1.CreateShortLinkRequest
+	(*CreateShortLinkResponse)(nil),   // 13: link.v1.CreateShortLinkResponse
+	(*ListShortLinksRequest)(nil),     // 14: link.v1.ListShortLinksRequest
+	(*ListShortLinksResponse)(nil),    // 15: link.v1.ListShortLinksResponse
+	(*GetShortLinkRequest)(nil),       // 16: link.v1.GetShortLinkRequest
+	(*GetShortLinkResponse)(nil),      // 17: link.v1.GetShortLinkResponse
+	(*UpdateShortLinkRequest)(nil),    // 18: link.v1.UpdateShortLinkRequest
+	(*UpdateShortLinkResponse)(nil),   // 19: link.v1.UpdateShortLinkResponse
+	(*DeleteShortLinkRequest)(nil),    // 20: link.v1.DeleteShortLinkRequest
+	(*DeleteShortLinkResponse)(nil),   // 21: link.v1.DeleteShortLinkResponse
+	(*ResolveShortLinkRequest)(nil),   // 22: link.v1.ResolveShortLinkRequest
+	(*ResolveShortLinkResponse)(nil),  // 23: link.v1.ResolveShortLinkResponse
+	(*RecordVisitRequest)(nil),        // 24: link.v1.RecordVisitRequest
+	(*RecordVisitResponse)(nil),       // 25: link.v1.RecordVisitResponse
+	(*GetLinkStatsRequest)(nil),       // 26: link.v1.GetLinkStatsRequest
+	(*GetLinkStatsResponse)(nil),      // 27: link.v1.GetLinkStatsResponse
 }
 var file_link_v1_link_proto_depIdxs = []int32{
 	0,  // 0: link.v1.AuthenticateAdminResponse.admin:type_name -> link.v1.AdminProfile
@@ -1710,27 +1814,29 @@ var file_link_v1_link_proto_depIdxs = []int32{
 	4,  // 7: link.v1.HealthService.Check:input_type -> link.v1.CheckRequest
 	6,  // 8: link.v1.AdminService.AuthenticateAdmin:input_type -> link.v1.AuthenticateAdminRequest
 	8,  // 9: link.v1.AdminService.GetAdminProfile:input_type -> link.v1.GetAdminProfileRequest
-	10, // 10: link.v1.LinkService.CreateShortLink:input_type -> link.v1.CreateShortLinkRequest
-	12, // 11: link.v1.LinkService.ListShortLinks:input_type -> link.v1.ListShortLinksRequest
-	14, // 12: link.v1.LinkService.GetShortLink:input_type -> link.v1.GetShortLinkRequest
-	16, // 13: link.v1.LinkService.UpdateShortLink:input_type -> link.v1.UpdateShortLinkRequest
-	18, // 14: link.v1.LinkService.DeleteShortLink:input_type -> link.v1.DeleteShortLinkRequest
-	20, // 15: link.v1.LinkService.ResolveShortLink:input_type -> link.v1.ResolveShortLinkRequest
-	22, // 16: link.v1.AnalyticsService.RecordVisit:input_type -> link.v1.RecordVisitRequest
-	24, // 17: link.v1.AnalyticsService.GetLinkStats:input_type -> link.v1.GetLinkStatsRequest
-	5,  // 18: link.v1.HealthService.Check:output_type -> link.v1.CheckResponse
-	7,  // 19: link.v1.AdminService.AuthenticateAdmin:output_type -> link.v1.AuthenticateAdminResponse
-	9,  // 20: link.v1.AdminService.GetAdminProfile:output_type -> link.v1.GetAdminProfileResponse
-	11, // 21: link.v1.LinkService.CreateShortLink:output_type -> link.v1.CreateShortLinkResponse
-	13, // 22: link.v1.LinkService.ListShortLinks:output_type -> link.v1.ListShortLinksResponse
-	15, // 23: link.v1.LinkService.GetShortLink:output_type -> link.v1.GetShortLinkResponse
-	17, // 24: link.v1.LinkService.UpdateShortLink:output_type -> link.v1.UpdateShortLinkResponse
-	19, // 25: link.v1.LinkService.DeleteShortLink:output_type -> link.v1.DeleteShortLinkResponse
-	21, // 26: link.v1.LinkService.ResolveShortLink:output_type -> link.v1.ResolveShortLinkResponse
-	23, // 27: link.v1.AnalyticsService.RecordVisit:output_type -> link.v1.RecordVisitResponse
-	25, // 28: link.v1.AnalyticsService.GetLinkStats:output_type -> link.v1.GetLinkStatsResponse
-	18, // [18:29] is the sub-list for method output_type
-	7,  // [7:18] is the sub-list for method input_type
+	10, // 10: link.v1.AdminService.ChangePassword:input_type -> link.v1.ChangePasswordRequest
+	12, // 11: link.v1.LinkService.CreateShortLink:input_type -> link.v1.CreateShortLinkRequest
+	14, // 12: link.v1.LinkService.ListShortLinks:input_type -> link.v1.ListShortLinksRequest
+	16, // 13: link.v1.LinkService.GetShortLink:input_type -> link.v1.GetShortLinkRequest
+	18, // 14: link.v1.LinkService.UpdateShortLink:input_type -> link.v1.UpdateShortLinkRequest
+	20, // 15: link.v1.LinkService.DeleteShortLink:input_type -> link.v1.DeleteShortLinkRequest
+	22, // 16: link.v1.LinkService.ResolveShortLink:input_type -> link.v1.ResolveShortLinkRequest
+	24, // 17: link.v1.AnalyticsService.RecordVisit:input_type -> link.v1.RecordVisitRequest
+	26, // 18: link.v1.AnalyticsService.GetLinkStats:input_type -> link.v1.GetLinkStatsRequest
+	5,  // 19: link.v1.HealthService.Check:output_type -> link.v1.CheckResponse
+	7,  // 20: link.v1.AdminService.AuthenticateAdmin:output_type -> link.v1.AuthenticateAdminResponse
+	9,  // 21: link.v1.AdminService.GetAdminProfile:output_type -> link.v1.GetAdminProfileResponse
+	11, // 22: link.v1.AdminService.ChangePassword:output_type -> link.v1.ChangePasswordResponse
+	13, // 23: link.v1.LinkService.CreateShortLink:output_type -> link.v1.CreateShortLinkResponse
+	15, // 24: link.v1.LinkService.ListShortLinks:output_type -> link.v1.ListShortLinksResponse
+	17, // 25: link.v1.LinkService.GetShortLink:output_type -> link.v1.GetShortLinkResponse
+	19, // 26: link.v1.LinkService.UpdateShortLink:output_type -> link.v1.UpdateShortLinkResponse
+	21, // 27: link.v1.LinkService.DeleteShortLink:output_type -> link.v1.DeleteShortLinkResponse
+	23, // 28: link.v1.LinkService.ResolveShortLink:output_type -> link.v1.ResolveShortLinkResponse
+	25, // 29: link.v1.AnalyticsService.RecordVisit:output_type -> link.v1.RecordVisitResponse
+	27, // 30: link.v1.AnalyticsService.GetLinkStats:output_type -> link.v1.GetLinkStatsResponse
+	19, // [19:31] is the sub-list for method output_type
+	7,  // [7:19] is the sub-list for method input_type
 	7,  // [7:7] is the sub-list for extension type_name
 	7,  // [7:7] is the sub-list for extension extendee
 	0,  // [0:7] is the sub-list for field type_name
@@ -1747,7 +1853,7 @@ func file_link_v1_link_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_link_v1_link_proto_rawDesc), len(file_link_v1_link_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   26,
+			NumMessages:   28,
 			NumExtensions: 0,
 			NumServices:   4,
 		},

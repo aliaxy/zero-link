@@ -7,9 +7,9 @@ package server
 import (
 	"context"
 
-	analyticsservicelogic "github.com/aliaxy/zero-link/services/link-rpc/internal/logic/analyticsservice"
+	"github.com/aliaxy/zero-link/services/link-rpc/internal/logic/analyticsservice"
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/svc"
-	linkv1 "github.com/aliaxy/zero-link/services/link-rpc/pb/link/v1"
+	"github.com/aliaxy/zero-link/services/link-rpc/pb/link/v1"
 )
 
 type AnalyticsServiceServer struct {

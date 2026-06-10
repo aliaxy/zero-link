@@ -75,9 +75,18 @@ message GetAdminProfileResponse {
   AdminProfile admin = 1;
 }
 
+message ChangePasswordRequest {
+  int64  admin_id     = 1;
+  string old_password = 2;
+  string new_password = 3;
+}
+
+message ChangePasswordResponse {}
+
 service AdminService {
   rpc AuthenticateAdmin(AuthenticateAdminRequest) returns (AuthenticateAdminResponse);
   rpc GetAdminProfile(GetAdminProfileRequest) returns (GetAdminProfileResponse);
+  rpc ChangePassword(ChangePasswordRequest) returns (ChangePasswordResponse);
 }
 
 // ─── LinkService ─────────────────────────────────────────────────────────────

@@ -24,6 +24,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Path:    "/admin/login",
 					Handler: admin.LoginHandler(serverCtx),
 				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/admin/refresh",
+					Handler: admin.RefreshTokenHandler(serverCtx),
+				},
 			}...,
 		),
 	)
@@ -61,6 +66,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Method:  http.MethodGet,
 					Path:    "/admin/links/:id/stats",
 					Handler: admin.GetLinkStatsHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPatch,
+					Path:    "/admin/password",
+					Handler: admin.ChangePasswordHandler(serverCtx),
 				},
 				{
 					Method:  http.MethodGet,
