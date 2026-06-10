@@ -44,20 +44,27 @@ Common public error codes:
 
 ## Authentication And Token Configuration
 
-Stage 3 administrator authentication uses JWT bearer tokens issued by `link-api` after `link-rpc` authenticates administrator credentials.
+Administrator authentication uses a dual-token scheme:
+
+- **Access token** — short-lived JWT (default 15 min, configurable via `Auth.TokenTTLSeconds`) signed with
+  `Auth.Secret`. Stateless; validated locally on every management request without a Redis lookup.
+- **Refresh token** — opaque 32-byte random token (7-day TTL) stored as a SHA-256 hash in Redis under
+  `zl:rt:{hash}`. The raw token is returned to the client and never stored. Rotation issues a new token
+  and deletes the old hash, providing reuse detection.
 
 Configuration fields:
 
-- `Auth.Secret`: local service signing secret for management JWTs.
-- `Auth.TokenTTLSeconds`: token lifetime in seconds.
+- `Auth.Secret`: signing secret for access JWTs. Minimum 32 bytes; validated at startup.
+- `Auth.TokenTTLSeconds`: access token lifetime in seconds.
 
 Configuration rules:
 
 - Example configuration documents the fields with non-secret placeholder values.
 - Local ignored configuration stores machine-local development values.
 - Real secrets must not be committed.
-- Token claims include the administrator ID and username.
+- Access token claims include the administrator ID and username.
 - Management handlers must reject missing, malformed, expired, or invalid bearer tokens before calling business RPC methods.
+- Refresh token rotation must be the only way to extend a session; access tokens cannot be renewed directly.
 
 ## Management HTTP API
 
@@ -82,8 +89,10 @@ Response data:
 
 ```json
 {
-  "token": "jwt-token",
-  "expires_at": "2026-12-31T12:00:00Z",
+  "access_token": "jwt-token",
+  "access_token_expires_at": "2026-06-10T08:00:00Z",
+  "refresh_token": "opaque-random-token",
+  "refresh_token_expires_at": "2026-06-17T07:45:00Z",
   "admin": {
     "id": 1,
     "username": "admin"
@@ -97,6 +106,68 @@ Errors:
 - `UNAUTHENTICATED` for invalid credentials or inactive administrators.
 - `INTERNAL` for unexpected authentication failures.
 - `429 Too Many Requests` when the per-IP rate limit (10 req/min) is exceeded.
+
+### POST /admin/refresh
+
+Rotates the refresh token and issues a new access token. The submitted refresh token is invalidated
+immediately; its replacement is included in the response.
+
+Authentication:
+
+- Not required (uses refresh token in body).
+- Subject to `LoginRateLimitMiddleware` (10 req/min per IP).
+
+Request:
+
+```json
+{
+  "refresh_token": "opaque-random-token"
+}
+```
+
+Response data:
+
+```json
+{
+  "access_token": "new-jwt-token",
+  "access_token_expires_at": "2026-06-10T08:15:00Z",
+  "refresh_token": "new-opaque-token",
+  "refresh_token_expires_at": "2026-06-17T08:00:00Z"
+}
+```
+
+Errors:
+
+- `UNAUTHENTICATED` for an invalid, expired, or already-rotated refresh token.
+
+### PATCH /admin/password
+
+Changes the authenticated administrator's password and revokes all active refresh tokens, forcing all
+other sessions to re-authenticate.
+
+Authentication:
+
+- Required.
+
+Request:
+
+```json
+{
+  "old_password": "current-secret",
+  "new_password": "new-secret"
+}
+```
+
+Errors:
+
+- `UNAUTHENTICATED` for missing or invalid bearer token.
+- `PERMISSION_DENIED` when the old password does not match.
+
+Notes:
+
+- Active access tokens remain valid until their natural expiry (≤ 15 min). This is the accepted
+  trade-off for stateless JWTs.
+- All refresh tokens for the account are revoked synchronously before the response is returned.
 
 ### GET /admin/profile
 
@@ -339,6 +410,21 @@ Errors:
 
 Fetches the authenticated administrator profile by administrator ID.
 
+### ChangePassword
+
+Verifies the old password, hashes the new password with bcrypt, and updates `admin_user.password_hash`.
+
+Input:
+
+- `admin_id`
+- `old_password`
+- `new_password`
+
+Errors:
+
+- `PermissionDenied` when the old password does not match.
+- `NotFound` when the administrator does not exist.
+
 ### CreateShortLink
 
 Creates a link, validates URL and code, generates a 6-character base62 code when code is omitted, and returns the created link.
@@ -407,7 +493,9 @@ Results:
 
 Notes:
 
-- `AnalyticsMiddleware` fires a non-blocking `RecordVisit` RPC goroutine after every 302 response.
+- `AnalyticsMiddleware` dispatches a `RecordVisit` job to a bounded worker pool (8 workers, 2 000-slot
+  channel) after every 302 response. Events are dropped when the buffer is full rather than spawning
+  unbounded goroutines.
 - Non-302 responses are not recorded.
 
 ## Analytics RPC Methods

@@ -86,30 +86,31 @@ func applyDefaults(c *config.Config) {
 }
 
 type codeRow struct {
+	ID   int64  `db:"id"`
 	Code string `db:"code"`
 }
 
 func loadCodesIntoFilter(ctx context.Context, db sqlx.SqlConn, cf *filter.CodeFilter) {
 	const batch = 10_000
-	var offset int64
+	var lastID int64
 	total := 0
 	for {
 		var rows []codeRow
 		if err := db.QueryRowsCtx(ctx, &rows,
-			fmt.Sprintf("select `code` from `short_link` limit %d offset %d", batch, offset),
+			fmt.Sprintf("select `id`, `code` from `short_link` where `id` > %d order by `id` limit %d", lastID, batch),
 		); err != nil {
 			logx.Errorw("filter: load codes failed",
-				logx.Field("offset", offset), logx.Field("error", err.Error()))
+				logx.Field("last_id", lastID), logx.Field("error", err.Error()))
 			return
 		}
 		for _, r := range rows {
 			cf.Insert(r.Code)
+			lastID = r.ID
 		}
 		total += len(rows)
 		if len(rows) < batch {
 			break
 		}
-		offset += batch
 	}
 	logx.Infow("filter: loaded codes into cuckoo filter", logx.Field("total", total))
 }

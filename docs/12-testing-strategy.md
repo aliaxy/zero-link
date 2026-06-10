@@ -48,6 +48,11 @@ Implemented unit areas (Stage 8):
 - `linkservice/createshortlinklogic_test.go`: `TestCreateShortLink_ReservedCode_Conflict` verifies that a code absent from `short_link` but present in `reserved_code` returns `AlreadyExists`.
 - `linkservice/resolveshortlinklogic_test.go`: `TestResolveShortLink_FilterMiss_SkipsDB` verifies that an empty filter returns `NotFound` without reaching the model. `TestResolveShortLink_FilterHit_ProceedsToModel` verifies that a filter containing the code proceeds to the model and returns the origin URL.
 
+Implemented unit areas (Post-Stage-9 B and C):
+
+- `logic/admin/adminlogic_test.go`: updated to use `fakeRefreshTokenStore` stub implementing `RefreshTokenIssuer`; assertions updated from `resp.Data.Token` to `resp.Data.AccessToken` and `resp.Data.RefreshToken`.
+- `middleware/analyticsmiddleware_test.go`: `newRecordingMiddleware` accepts `*testing.T` and registers `t.Cleanup(mw.Stop)` to close the worker-pool channel after each test, preventing goleak from detecting leaked worker goroutines. This is the standard pattern when a struct owns background goroutines that must be stopped for test cleanup.
+
 Deferred unit areas:
 
 - Admin UI behavior.
@@ -159,8 +164,11 @@ Documentation and smoke assets are accepted when:
 ## Race And Leak Detection
 
 - Run `go test -race ./...` before merging implementation changes.
-- `AnalyticsMiddleware` tests use `go.uber.org/goleak` to verify no goroutines leak after the 3-second timeout expires.
-- Background goroutines must have a clear exit condition (context cancellation or timeout).
+- `AnalyticsMiddleware` tests use `go.uber.org/goleak` to verify no goroutines leak after each test.
+- Any struct that owns background goroutines must expose a `Stop()` (or equivalent) method that signals
+  them to exit (e.g., by closing a channel). Tests must call `t.Cleanup(obj.Stop)` immediately after
+  construction so goleak does not report the workers as leaked goroutines.
+- Background goroutines must have a clear exit condition (context cancellation, channel close, or timeout).
 
 ## Test Data
 
