@@ -36,13 +36,17 @@ func (r *recordingLinkService) RecordVisit(
 
 // newRecordingMiddleware creates a test middleware with httptest's default RemoteAddr
 // (192.0.2.1) trusted so X-Forwarded-For is honoured in tests.
-func newRecordingMiddleware() (*AnalyticsMiddleware, chan *analyticsservice.RecordVisitRequest) {
+// Workers are stopped via t.Cleanup to prevent goroutine leaks detected by goleak.
+func newRecordingMiddleware(t *testing.T) (*AnalyticsMiddleware, chan *analyticsservice.RecordVisitRequest) {
+	t.Helper()
 	ch := make(chan *analyticsservice.RecordVisitRequest, 1)
-	return NewAnalyticsMiddleware(&recordingLinkService{visitCh: ch}, []string{"192.0.2.1"}), ch
+	mw := NewAnalyticsMiddleware(&recordingLinkService{visitCh: ch}, []string{"192.0.2.1"})
+	t.Cleanup(mw.Stop)
+	return mw, ch
 }
 
 func TestAnalyticsMiddleware_302TriggersRecordVisit(t *testing.T) {
-	mw, ch := newRecordingMiddleware()
+	mw, ch := newRecordingMiddleware(t)
 
 	handler := mw.Handle(func(w http.ResponseWriter, _ *http.Request) {
 		http.Redirect(w, httptest.NewRequest(http.MethodGet, "/abc123", nil), "https://example.com", http.StatusFound)
@@ -70,7 +74,7 @@ func TestAnalyticsMiddleware_302TriggersRecordVisit(t *testing.T) {
 }
 
 func TestAnalyticsMiddleware_404NoRecordVisit(t *testing.T) {
-	mw, ch := newRecordingMiddleware()
+	mw, ch := newRecordingMiddleware(t)
 
 	handler := mw.Handle(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
@@ -86,7 +90,7 @@ func TestAnalyticsMiddleware_404NoRecordVisit(t *testing.T) {
 }
 
 func TestAnalyticsMiddleware_403NoRecordVisit(t *testing.T) {
-	mw, ch := newRecordingMiddleware()
+	mw, ch := newRecordingMiddleware(t)
 
 	handler := mw.Handle(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
