@@ -16,7 +16,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestRunner_StartCancellation(_ *testing.T) {
-	r := cleanup.NewRunner(nil, config.RetentionConfig{
+	r := cleanup.NewRunner(nil, nil, nil, config.RetentionConfig{
 		VisitEventRetentionDays: 90,
 		ShortLinkRetentionDays:  365,
 		DailyStatRetentionDays:  730,

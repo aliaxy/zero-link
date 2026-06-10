@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/config"
+	"github.com/aliaxy/zero-link/services/link-rpc/internal/model"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
@@ -13,13 +14,24 @@ import (
 
 // Runner executes periodic data retention cleanup jobs.
 type Runner struct {
-	db  sqlx.SqlConn
-	cfg config.RetentionConfig
+	db             sqlx.SqlConn
+	shortLinkModel model.ShortLinkModel
+	archiver       *model.LinkArchiver
+	cfg            config.RetentionConfig
 }
 
 // NewRunner creates a Runner.
-func NewRunner(db sqlx.SqlConn, cfg config.RetentionConfig) *Runner {
-	return &Runner{db: db, cfg: cfg}
+// shortLinkModel is used for listing soft-deleted links and for the hard-delete
+// step (which also invalidates the Redis cache).
+// archiver coordinates the atomic archive+reserve transaction.
+// Pass nil for either to skip that step (useful in tests).
+func NewRunner(
+	db sqlx.SqlConn,
+	shortLinkModel model.ShortLinkModel,
+	archiver *model.LinkArchiver,
+	cfg config.RetentionConfig,
+) *Runner {
+	return &Runner{db: db, shortLinkModel: shortLinkModel, archiver: archiver, cfg: cfg}
 }
 
 // Start launches a background goroutine that runs cleanup every 24 hours.
