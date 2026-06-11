@@ -13,6 +13,7 @@ import (
 	"github.com/aliaxy/zero-link/services/link-rpc/client/healthservice"
 	"github.com/aliaxy/zero-link/services/link-rpc/client/linkservice"
 
+	"github.com/zeromicro/go-zero/core/proc"
 	"github.com/zeromicro/go-zero/core/stores/redis"
 	"github.com/zeromicro/go-zero/rest"
 	"github.com/zeromicro/go-zero/zrpc"
@@ -45,13 +46,16 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	analyticsRPC := analyticsservice.NewAnalyticsService(rpcClient)
 	redisClient := redis.MustNewRedis(c.Redis)
 
+	am := middleware.NewAnalyticsMiddleware(analyticsRPC, c.RateLimit.TrustedProxies)
+	proc.AddShutdownListener(am.Stop)
+
 	return &ServiceContext{
 		Config:              c,
 		TokenManager:        tokenManager,
 		RefreshTokenStore:   auth.NewRefreshTokenStore(redisClient),
 		Redis:               redisClient,
 		AuthMiddleware:      middleware.NewAuthMiddleware(tokenManager).Handle,
-		AnalyticsMiddleware: middleware.NewAnalyticsMiddleware(analyticsRPC, c.RateLimit.TrustedProxies).Handle,
+		AnalyticsMiddleware: am.Handle,
 		IPRateLimitMiddleware: middleware.NewIPRateLimitMiddleware(
 			redisClient, 1, c.RateLimit.RedirectPerIPPerSecond, "rl:redirect:ip:", c.RateLimit.TrustedProxies,
 		).Handle,
