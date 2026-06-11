@@ -23,6 +23,12 @@ RateLimit:
 LinkRPC:
   Target: link-rpc:9090
 
+Telemetry:
+  Name: link-api
+  Endpoint: http://jaeger:4317
+  Sampler: 1.0
+  Batcher: otlpgrpc
+
 Prometheus:
   Host: 0.0.0.0
   Port: 9100

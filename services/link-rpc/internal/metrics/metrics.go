@@ -38,3 +38,12 @@ var CleanupDeletedRowsTotal = metric.NewCounterVec(&metric.CounterVecOpts{
 	Help:      "Total rows deleted by the retention cleanup runner.",
 	Labels:    []string{"table"},
 })
+
+// FilterFillRatio tracks the cuckoo filter fill ratio (0.0–1.0), reported after startup load and each cleanup round.
+var FilterFillRatio = metric.NewGaugeVec(&metric.GaugeVecOpts{
+	Namespace: "zerolink",
+	Subsystem: "filter",
+	Name:      "fill_ratio",
+	Help:      "Current fill ratio of the in-process cuckoo filter (items / capacity).",
+	Labels:    []string{},
+})

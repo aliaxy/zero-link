@@ -17,6 +17,12 @@ CacheRedis:
 Analytics:
   IPSalt: ${LINK_RPC_IP_SALT}
 
+Telemetry:
+  Name: link-rpc
+  Endpoint: http://jaeger:4317
+  Sampler: 1.0
+  Batcher: otlpgrpc
+
 Prometheus:
   Host: 0.0.0.0
   Port: 9101

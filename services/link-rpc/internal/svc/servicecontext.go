@@ -7,6 +7,7 @@ import (
 
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/cleanup"
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/config"
+	"github.com/aliaxy/zero-link/services/link-rpc/internal/metrics"
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/model"
 	"github.com/aliaxy/zero-link/services/link-rpc/pkg/filter"
 
@@ -58,12 +59,13 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	})
 
 	loadCodesIntoFilter(context.Background(), db, cf)
+	metrics.FilterFillRatio.Set(float64(cf.Count()) / float64(c.Cuckoo.Capacity))
 
 	// Models are created before the cleanup runner so they can be shared.
 	shortLinkModel := model.NewShortLinkModel(db, c.CacheRedis)
 	reservedCodeModel := model.NewReservedCodeModel(db)
 	archiver := model.NewLinkArchiver(db, shortLinkModel, reservedCodeModel)
-	cleanupRunner := cleanup.NewRunner(db, shortLinkModel, archiver, c.Retention)
+	cleanupRunner := cleanup.NewRunner(db, shortLinkModel, archiver, c.Retention, cf, c.Cuckoo.Capacity)
 	cleanupRunner.Start(rootCtx)
 
 	return &ServiceContext{
