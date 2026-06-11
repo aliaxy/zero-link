@@ -11,6 +11,8 @@ COPY . .
 RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" \
     -o /bin/link-rpc ./services/link-rpc
 
+RUN go install github.com/grpc-ecosystem/grpc-health-probe@v0.4.28
+
 FROM alpine:3.21
 
 RUN apk --no-cache add ca-certificates tzdata && \
@@ -19,6 +21,7 @@ RUN apk --no-cache add ca-certificates tzdata && \
 WORKDIR /app
 
 COPY --from=builder /bin/link-rpc /app/link-rpc
+COPY --from=builder /go/bin/grpc-health-probe /bin/grpc-health-probe
 COPY etc/link-rpc.compose.yaml /app/etc/link-rpc.compose.yaml
 
 USER appuser

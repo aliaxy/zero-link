@@ -12,6 +12,7 @@ import (
 
 	goredis "github.com/redis/go-redis/v9"
 	"github.com/zeromicro/go-zero/core/logx"
+	"github.com/zeromicro/go-zero/core/proc"
 	"github.com/zeromicro/go-zero/core/stores/redis"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 )
@@ -39,11 +40,22 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	rdb := redis.MustNewRedis(c.CacheRedis[0].RedisConf)
 	cf := filter.NewCodeFilter(c.Cuckoo.Capacity)
 
+	rootCtx, rootCancel := context.WithCancel(context.Background())
+
 	// Subscribe before loading DB to avoid a race window where a newly created
 	// code lands between the end of the batch scan and the start of Subscribe.
-	pubsubClient := goredis.NewClient(&goredis.Options{Addr: c.CacheRedis[0].Host})
-	pubsub := pubsubClient.Subscribe(context.Background(), codeCreatedChannel)
+	pubsubClient := goredis.NewClient(&goredis.Options{
+		Addr:     c.CacheRedis[0].Host,
+		Password: c.CacheRedis[0].Pass,
+	})
+	pubsub := pubsubClient.Subscribe(rootCtx, codeCreatedChannel)
 	go runCodeSubscription(pubsub, cf)
+
+	proc.AddShutdownListener(func() {
+		rootCancel()
+		_ = pubsub.Close()
+		_ = pubsubClient.Close()
+	})
 
 	loadCodesIntoFilter(context.Background(), db, cf)
 
@@ -52,7 +64,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	reservedCodeModel := model.NewReservedCodeModel(db)
 	archiver := model.NewLinkArchiver(db, shortLinkModel, reservedCodeModel)
 	cleanupRunner := cleanup.NewRunner(db, shortLinkModel, archiver, c.Retention)
-	cleanupRunner.Start(context.Background())
+	cleanupRunner.Start(rootCtx)
 
 	return &ServiceContext{
 		Config:            c,
