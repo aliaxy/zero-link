@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/aliaxy/zero-link/services/link-api/internal/metrics"
 	"github.com/aliaxy/zero-link/services/link-api/pkg/httputil"
 	"github.com/aliaxy/zero-link/services/link-rpc/client/analyticsservice"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -31,6 +32,7 @@ type AnalyticsMiddleware struct {
 	linkRPC        analyticsservice.AnalyticsService
 	trustedProxies []string
 	jobs           chan *analyticsJob
+	done           chan struct{}
 }
 
 // NewAnalyticsMiddleware creates an AnalyticsMiddleware and starts its worker pool.
@@ -39,10 +41,12 @@ func NewAnalyticsMiddleware(linkRPC analyticsservice.AnalyticsService, trustedPr
 		linkRPC:        linkRPC,
 		trustedProxies: trustedProxies,
 		jobs:           make(chan *analyticsJob, analyticsQueueSize),
+		done:           make(chan struct{}),
 	}
 	for range analyticsWorkers {
 		go m.runWorker()
 	}
+	go m.reportQueueDepth()
 	return m
 }
 
@@ -58,7 +62,21 @@ func (m *AnalyticsMiddleware) runWorker() {
 
 // Stop drains the worker pool. Call this once when the service shuts down.
 func (m *AnalyticsMiddleware) Stop() {
+	close(m.done)
 	close(m.jobs)
+}
+
+func (m *AnalyticsMiddleware) reportQueueDepth() {
+	ticker := time.NewTicker(15 * time.Second)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-m.done:
+			return
+		case <-ticker.C:
+			metrics.AnalyticsQueueDepth.Set(float64(len(m.jobs)))
+		}
+	}
 }
 
 // Handle wraps the redirect handler and records visit events asynchronously.
@@ -85,6 +103,7 @@ func (m *AnalyticsMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 		select {
 		case m.jobs <- job:
 		default:
+			metrics.AnalyticsDroppedTotal.Inc()
 			job.log.Errorf("analytics queue full, dropping visit for code %s", job.req.Code)
 		}
 	}

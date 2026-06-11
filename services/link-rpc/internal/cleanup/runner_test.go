@@ -21,7 +21,7 @@ func TestRunner_StartCancellation(_ *testing.T) {
 		ShortLinkRetentionDays:  365,
 		DailyStatRetentionDays:  730,
 		CleanupBatchSize:        1000,
-	})
+	}, nil, 0)
 	ctx, cancel := context.WithCancel(context.Background())
 	r.Start(ctx)
 	time.Sleep(10 * time.Millisecond)

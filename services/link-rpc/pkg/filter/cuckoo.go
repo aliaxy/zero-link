@@ -32,3 +32,10 @@ func (f *CodeFilter) Lookup(code string) bool {
 	defer f.mu.RUnlock()
 	return f.cf.Lookup([]byte(code))
 }
+
+// Count returns the number of items currently stored in the filter.
+func (f *CodeFilter) Count() uint {
+	f.mu.RLock()
+	defer f.mu.RUnlock()
+	return f.cf.Count()
+}

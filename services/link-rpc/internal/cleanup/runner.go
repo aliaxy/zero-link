@@ -6,7 +6,9 @@ import (
 	"time"
 
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/config"
+	"github.com/aliaxy/zero-link/services/link-rpc/internal/metrics"
 	"github.com/aliaxy/zero-link/services/link-rpc/internal/model"
+	"github.com/aliaxy/zero-link/services/link-rpc/pkg/filter"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
@@ -18,6 +20,8 @@ type Runner struct {
 	shortLinkModel model.ShortLinkModel
 	archiver       *model.LinkArchiver
 	cfg            config.RetentionConfig
+	filter         *filter.CodeFilter
+	filterCap      uint
 }
 
 // NewRunner creates a Runner.
@@ -25,13 +29,23 @@ type Runner struct {
 // step (which also invalidates the Redis cache).
 // archiver coordinates the atomic archive+reserve transaction.
 // Pass nil for either to skip that step (useful in tests).
+// cf and filterCap are optional (pass nil/0 to skip fill-ratio reporting).
 func NewRunner(
 	db sqlx.SqlConn,
 	shortLinkModel model.ShortLinkModel,
 	archiver *model.LinkArchiver,
 	cfg config.RetentionConfig,
+	cf *filter.CodeFilter,
+	filterCap uint,
 ) *Runner {
-	return &Runner{db: db, shortLinkModel: shortLinkModel, archiver: archiver, cfg: cfg}
+	return &Runner{
+		db:             db,
+		shortLinkModel: shortLinkModel,
+		archiver:       archiver,
+		cfg:            cfg,
+		filter:         cf,
+		filterCap:      filterCap,
+	}
 }
 
 // Start launches a background goroutine that runs cleanup every 24 hours.
@@ -61,4 +75,12 @@ func (r *Runner) runOnce(ctx context.Context) {
 	r.cleanArchivedLinks(ctx)
 	r.cleanDailyStats(ctx)
 	logx.Info("cleanup: retention run complete")
+	r.reportFilterFillRatio()
+}
+
+func (r *Runner) reportFilterFillRatio() {
+	if r.filter == nil || r.filterCap == 0 {
+		return
+	}
+	metrics.FilterFillRatio.Set(float64(r.filter.Count()) / float64(r.filterCap))
 }

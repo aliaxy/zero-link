@@ -17,6 +17,12 @@ CacheRedis:
 Analytics:
   IPSalt: replace-with-production-ip-salt
 
+# Telemetry:
+#   Name: link-rpc
+#   Endpoint: http://localhost:4317
+#   Sampler: 0.0   # set to 1.0 when Jaeger is running locally
+#   Batcher: otlpgrpc
+
 Prometheus:
   Host: 127.0.0.1
   Port: 9101
